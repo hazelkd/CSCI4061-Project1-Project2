@@ -3,7 +3,37 @@
 #include "commando.h"
 
 cmd_t *cmd_new(char *argv[]) {
-    // Allocates a new cmd_t with the given argv[] array. Makes string
+    cmd_t *newCmd = (cmd_t*)malloc(sizeof(*argv));
+    
+    char *target[sizeof(*argv)+1];
+    for (int i = 0; i < sizeof(*argv); i++) {
+        target[i] = strdup(argv[i]);
+    }
+    target[sizeof(*argv) + 1] = NULL;
+
+    //dont exactly know what to do if the end is not NULL, don't know what happens
+    if (newCmd->argv[sizeof(newCmd->argv)+1] != NULL) {
+        printf("we have a problem! No NULL");
+    }
+
+    *newCmd->name = *argv[0]; //think this line is wrong
+
+    newCmd->finished = 0;
+
+    snprintf(newCmd->str_status, 5, "INIT");
+
+    newCmd->status = -1;
+
+    newCmd->output = NULL;
+
+    newCmd->output_size = -1;
+
+    newCmd->pid = -1; //0 I think?
+
+    *newCmd->out_pipe = -1; //don't know why this only works with *
+
+
+// Allocates a new cmd_t with the given argv[] array. Makes string
 // copies of each of the strings contained within argv[] using
 // strdup() as they likely come from a source that will be
 // altered. Ensures that cmd->argv[] is ended with NULL. Sets the name
