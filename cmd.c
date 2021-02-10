@@ -84,16 +84,15 @@ if(WIFEXITED(status)){          //Uses the macro WIFEXITED to check the returned
     cmd->status = WEXITSTATUS(status);
 }                               //If command, sets the finished field to 1
                                 // and sets the cmd->status field to the exit status of the cmd using
-                                // the WEXITSTATUS macro. Calls cmd_fetch_output() to fill up the
+ else{                          // the WEXITSTATUS macro. Calls cmd_fetch_output() to fill up the
                                 // output buffer for later printing.
-                                //
- //Otherwise, updates the
-// state of cmd.  Uses waitpid() and the pid field of command to wait
-// selectively for the given process. Passes block (one of DOBLOCK or
-// NOBLOCK) to waitpid() to cause either non-blocking or blocking
-// waits.  
+     waitpid(pid, &status, block);              //Otherwise, updates the
+                                // state of cmd.  Uses waitpid() and the pid field of command to wait
+                                // selectively for the given process. Passes block (one of DOBLOCK or
+                                // NOBLOCK) to waitpid() to cause either non-blocking or blocking
+                                // waits.  
 
-
+ }                            
 // When a command finishes (the first time), prints a status update
 // message of the form
 //
@@ -101,19 +100,43 @@ if(WIFEXITED(status)){          //Uses the macro WIFEXITED to check the returned
 //
 // which includes the command name, PID, and exit status.
 }
-char *read_all(int fd, int *nread);
+char *read_all(int fd, int *nread);{
+    int max_size = 1, cur_pos = 0;                   // initial max and position
+  char *buf = malloc(max_size*sizeof(char));       // allocate 1 byte of intial space
+  
+  while(1){ 
+    int ret = fscanf(fd,"%c", &buf[cur_pos]);    //???      
+    if(ret == EOF || ret =='\0'){               // break if end of input is reached
+        *nread =                    //number of bytes read       When no data is left in fd,
+                                            // sets the integer pointed to by nread to the number of bytes read
+                                            // and return a pointer to the allocated buffer.  
+        return *buf;                                  
+    }          
+    cur_pos++;                                     // update current input
+    if(cur_pos == max_size){                       // check if more space is needed
+      max_size *= 2;                               // double size of buffer
+      char *new_buf =                              // pointer to either new or old location
+        realloc(buf, max_size*sizeof(char));       // re-allocate, copies characters to new space if needed
+      if(new_buf == NULL){                         // check that re-allocation succeeded
+        printf("ERROR: reallocation failed\n");    // if not...
+        free(buf);                                 // de-allocate current buffer
+        exit(1);                                   // bail out
+      }
+      buf = new_buf;                               // assigns either existin or new location of expanded space
+    } 
+    free(buf);
+    return 0;
+}
 // Reads all input from the open file descriptor fd. Assumes
 // character/text output and null-terminates the character output with
 // a '\0' character allowing for printf() to print it later. Stores
 // the results in a dynamically allocated buffer which may need to
 // grow as more data is read.  Uses an efficient growth scheme such as
 // doubling the size of the buffer when additional space is
-// needed. Uses realloc() for resizing.  When no data is left in fd,
-// sets the integer pointed to by nread to the number of bytes read
-// and return a pointer to the allocated buffer. Ensures the return
+// needed. Uses realloc() for resizing.   Ensures the return
 // string is null-terminated. Does not call close() on the fd as this
 // is done elsewhere.
-
+}
 void cmd_fetch_output(cmd_t *cmd);
 // If cmd->finished is zero, prints an error message with the format
 // 
