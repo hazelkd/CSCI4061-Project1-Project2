@@ -50,7 +50,14 @@ void cmd_free(cmd_t *cmd){
 // NULL. Finally, deallocates cmd itself.
 }
 
-void cmd_start(cmd_t *cmd);
+void cmd_start(cmd_t *cmd);{
+
+char *child_argv = {,NULL};
+pid_t pid = fork();
+if(pid == 0){
+  execvp(cmd, child_argv);  
+}
+
 // Forks a process and executes command in cmd in the process.
 // Changes the str_status field to "RUN" using snprintf().  Creates a
 // pipe for out_pipe to capture standard output.  In the parent
@@ -59,25 +66,41 @@ void cmd_start(cmd_t *cmd);
 // command. For both parent and child, ensures that unused file
 // descriptors for the pipe are closed (write in the parent, read in
 // the child).
+}
+void cmd_update_state(cmd_t *cmd, int block);{
 
-void cmd_update_state(cmd_t *cmd, int block);
-// If the finished flag is 1, does nothing. Otherwise, updates the
+if(finished){           // If the finished flag is 1, does nothing.
+    return 0;
+}
+if(block == DOBLOCK){
+    int returned_pid = waitpid(pid, &status, 0);
+}
+else {
+    int returned_pid = waitpid(pid, &status, WNOHANG);
+}
+
+if(WIFEXITED(status)){          //Uses the macro WIFEXITED to check the returned status for
+    finished = 1;                      // whether the command has exited. 
+    cmd->status = WEXITSTATUS(status);
+}                               //If command, sets the finished field to 1
+                                // and sets the cmd->status field to the exit status of the cmd using
+                                // the WEXITSTATUS macro. Calls cmd_fetch_output() to fill up the
+                                // output buffer for later printing.
+                                //
+ //Otherwise, updates the
 // state of cmd.  Uses waitpid() and the pid field of command to wait
 // selectively for the given process. Passes block (one of DOBLOCK or
 // NOBLOCK) to waitpid() to cause either non-blocking or blocking
-// waits.  Uses the macro WIFEXITED to check the returned status for
-// whether the command has exited. If so, sets the finished field to 1
-// and sets the cmd->status field to the exit status of the cmd using
-// the WEXITSTATUS macro. Calls cmd_fetch_output() to fill up the
-// output buffer for later printing.
-//
+// waits.  
+
+
 // When a command finishes (the first time), prints a status update
 // message of the form
 //
 // @!!! ls[#17331]: EXIT(0)
 //
 // which includes the command name, PID, and exit status.
-
+}
 char *read_all(int fd, int *nread);
 // Reads all input from the open file descriptor fd. Assumes
 // character/text output and null-terminates the character output with
