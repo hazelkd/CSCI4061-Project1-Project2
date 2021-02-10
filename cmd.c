@@ -17,21 +17,13 @@ cmd_t *cmd_new(char *argv[]) {
     }
 
     *newCmd->name = *argv[0]; //think this line is wrong
-
     newCmd->finished = 0;
-
     snprintf(newCmd->str_status, 5, "INIT");
-
     newCmd->status = -1;
-
     newCmd->output = NULL;
-
     newCmd->output_size = -1;
-
     newCmd->pid = -1; //0 I think?
-
     *newCmd->out_pipe = -1; //don't know why this only works with *
-
 
 // Allocates a new cmd_t with the given argv[] array. Makes string
 // copies of each of the strings contained within argv[] using
@@ -43,6 +35,16 @@ cmd_t *cmd_new(char *argv[]) {
 }
 
 void cmd_free(cmd_t *cmd){
+    //don't know if deallocates a cmd structure is description or task    
+    for(int i = 0; i < sizeof(cmd->argv); i++) {
+        free(cmd->argv[i]);
+    }
+
+    if (cmd->output != NULL) {
+        free(cmd->output);
+    }
+
+    free(cmd);
 // Deallocates a cmd structure. Deallocates the strings in the argv[]
 // array. Also deallocats the output buffer if it is not
 // NULL. Finally, deallocates cmd itself.
