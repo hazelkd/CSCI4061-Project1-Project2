@@ -52,11 +52,18 @@ void cmd_free(cmd_t *cmd){
 
 void cmd_start(cmd_t *cmd);{
 
-char *child_argv = {,NULL};
-pid_t pid = fork();
+char *child_argv = { //? ,NULL};
+pid_t child_pid = fork();
 if(pid == 0){
-  execvp(cmd, child_argv);  
+  execvp(cmd, child_argv); 
+  //use dup2() command 
+  //read()
 }
+else{
+   cmd->pid = child_pid; 
+   //write()
+}
+snprintf(cmd->str_status, 5, "RUN");   //?
 
 // Forks a process and executes command in cmd in the process.
 // Changes the str_status field to "RUN" using snprintf().  Creates a
@@ -81,8 +88,11 @@ else {
 
 if(WIFEXITED(status)){          //Uses the macro WIFEXITED to check the returned status for
     finished = 1;                      // whether the command has exited. 
-    cmd->status = WEXITSTATUS(status);
-}                               //If command, sets the finished field to 1
+    cmd->status = WEXITSTATUS(status);   //If command has exited, sets the finished field to 1
+    printf("@!!! %s %d EXIT(%s)\n", cmd->name, cmd->pid, cmd->str_status); //?
+}
+cmd_fetch_output(cmd); //?
+                               
                                 // and sets the cmd->status field to the exit status of the cmd using
  else{                          // the WEXITSTATUS macro. Calls cmd_fetch_output() to fill up the
                                 // output buffer for later printing.
@@ -101,27 +111,27 @@ if(WIFEXITED(status)){          //Uses the macro WIFEXITED to check the returned
 // which includes the command name, PID, and exit status.
 }
 char *read_all(int fd, int *nread);{
-    int max_size = 1, cur_pos = 0;                   // initial max and position
-  char *buf = malloc(max_size*sizeof(char));       // allocate 1 byte of intial space
+    
+  int max_size = 1, cur_pos = 0;                   // initial max and position
+  char *buf = malloc(max_size*sizeof(char));   //?? OR  char buf[BUFSIZE];
   
-  while(1){ 
-    int ret = fscanf(fd,"%c", &buf[cur_pos]);    //???      
-    if(ret == EOF || ret =='\0'){               // break if end of input is reached
-        *nread =                    //number of bytes read       When no data is left in fd,
-                                            // sets the integer pointed to by nread to the number of bytes read
-                                            // and return a pointer to the allocated buffer.  
-        return *buf;                                  
-    }          
-    cur_pos++;                                     // update current input
-    if(cur_pos == max_size){                       // check if more space is needed
-      max_size *= 2;                               // double size of buffer
-      char *new_buf =                              // pointer to either new or old location
-        realloc(buf, max_size*sizeof(char));       // re-allocate, copies characters to new space if needed
-      if(new_buf == NULL){                         // check that re-allocation succeeded
-        printf("ERROR: reallocation failed\n");    // if not...
-        free(buf);                                 // de-allocate current buffer
-        exit(1);                                   // bail out
-      }
+  while(1){      
+                  // break if end of input is reached
+        nread = read(fd, buf, cur_pos-1)   //???      //number of bytes read       When no data is left in fd,
+        if(nread == 0){
+            break;
+        } 
+        buf[nread] = '\0';                                  // sets the integer pointed to by nread to the number of bytes read
+  }                                            // and return a pointer to the allocated buffer.                                             
+        cur_pos++;                                     // update current input
+        if(cur_pos == max_size){                       // check if more space is needed
+            max_size *= 2;                               // double size of buffer
+            char *new_buf = realloc(buf, max_size*sizeof(char));                              // pointer to either new or old location      // re-allocate, copies characters to new space if needed
+        if(new_buf == NULL){                         // check that re-allocation succeeded
+            printf("ERROR: reallocation failed\n");    // if not...
+            free(buf);                                 // de-allocate current buffer
+            exit(1);                                   // bail out
+        }
       buf = new_buf;                               // assigns either existin or new location of expanded space
     } 
     free(buf);

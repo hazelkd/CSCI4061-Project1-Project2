@@ -5,11 +5,17 @@ CFLAGS = -Wall -Werror -g
 CC     = gcc $(CFLAGS)
 SHELL  = /bin/bash
 CWD    = $(shell pwd | sed 's/.*\///g')
+ 
+# Object files to build 
 
-all: 
-
-commando:
-
+commando: cmd.o cmdcol.o 
+	$(CC) -o commando cmd.o cmdcol.o
+	@echo commando is ready
+cmd.o: cmd.c commando.h
+	$(CC) -c cmd.c 
+cmdcol.o: cmdcol.o commando.h
+	$(CC) -c cmdcol.c
 clean:
+	rm -f commando *.o
 
 include test_Makefile
