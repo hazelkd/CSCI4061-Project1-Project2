@@ -6,14 +6,15 @@ cmd_t *cmd_new(char *argv[]) {
     cmd_t *cmd;
     *cmd->argv = malloc(sizeof(*argv)+1);
 
-     for(int i=0;i++;sizeof(*cmd->argv)){
-        *cmd->argv= malloc(strlen(argv[i])); //might need extra byte for 0 byte
-        printf("%0x20\n",*cmd);
+     for(int i=0; i < sizeof(*cmd->argv); i++){
+        cmd->argv[i]= malloc(strlen(argv[i])); //might need extra byte for 0 byte
+        cmd->argv[i] = strdup(argv[i]);
+        //printf("%0x20\n",*cmd);
         //make cmd an array or increment
      }
      //Use str dup & check if includes 0 byte
     //not sure if this is right
-    *cmd->argv = strdup(*argv);
+    //*cmd->argv = strdup(*argv);
 
     cmd->argv[sizeof(*argv)] = NULL;
 
