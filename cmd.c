@@ -3,13 +3,14 @@
 #include "commando.h"
 
 cmd_t *cmd_new(char *argv[]) {
-    cmd_t *cmd;
-    *cmd->argv = malloc(sizeof(*argv)+1);
+    cmd_t *cmd = malloc(sizeof(cmd_t)); //added
+    strcpy(cmd->name, strdup(argv[0]));
+    //*cmd->argv = malloc(sizeof(*argv)+1);
 
-     for(int i=0;i++;sizeof(*cmd->argv)){
-        *cmd->argv= malloc(strlen(argv[i])); //might need extra byte for 0 byte
-        printf("%0x20\n",*cmd);
-        //make cmd an array or increment
+     while((argv[i] != NULL) && (i < ARG_MAX))){
+        *cmd->argv[i]= strdup(argv[i]); 
+        i++;
+        
      }
      //Use str dup & check if includes 0 byte
     //not sure if this is right
@@ -20,6 +21,7 @@ cmd_t *cmd_new(char *argv[]) {
     *cmd->name = *cmd->argv[0]; //think this line is wrong
     cmd->finished = 0;
     snprintf(cmd->str_status, 5, "INIT");
+    //I think it might be : snprintf(cmd->str_status, STATUS_LEN, "%s", "INIT/0");
     cmd->status = -1;
     cmd->output = NULL;
     cmd->output_size = -1;
@@ -53,9 +55,10 @@ void cmd_free(cmd_t *cmd){
 void cmd_start(cmd_t *cmd){
 
 char *child_argv = {,NULL};
-pid_t pid = fork();
+pid_t child_pid = fork();
 if(pid == 0){
-  execvp(cmd, child_argv);  
+  execvp(cmd, child_argv); 
+ 
 }
 
 // Forks a process and executes command in cmd in the process.
