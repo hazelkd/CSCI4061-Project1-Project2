@@ -3,20 +3,20 @@
 #include "commando.h"
 
 cmd_t *cmd_new(char *argv[]) {
-    cmd_t *cmd = (cmd_t*)malloc(sizeof(*argv));
+    cmd_t *cmd = (cmd_t*)malloc(sizeof(*argv)+1);
     
-    char* target = strdup(*argv);
+    //not sure if this is right
+    *cmd->argv = strdup(*argv);
 
-    //not exactly sure what target does
-    cmd->argv[sizeof(cmd->argv)+1] = NULL;
+    cmd->argv[sizeof(*argv)] = NULL;
 
-    *cmd->name = *argv[0]; //think this line is wrong
+    *cmd->name = cmd->argv[0]; //think this line is wrong
     cmd->finished = 0;
     snprintf(cmd->str_status, 5, "INIT");
     cmd->status = -1;
     cmd->output = NULL;
     cmd->output_size = -1;
-    cmd->pid = -1; //0 I think?
+    cmd->pid = 0; //I think?
     *cmd->out_pipe = -1; //don't know why this only works with *
 
 // Allocates a new cmd_t with the given argv[] array. Makes string
@@ -29,8 +29,7 @@ cmd_t *cmd_new(char *argv[]) {
 }
 
 void cmd_free(cmd_t *cmd){
-    //don't know if deallocates a cmd structure is description or task    
-    for(int i = 0; i < sizeof(cmd->argv); i++) {
+    for(int i = 0; i < (sizeof(cmd->argv)-1); i++) {
         free(cmd->argv[i]);
     }
 
