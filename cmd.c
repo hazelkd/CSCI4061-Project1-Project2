@@ -3,14 +3,15 @@
 #include "commando.h"
 
 cmd_t *cmd_new(char *argv[]) {
-    cmd_t *cmd = (cmd_t*)malloc(sizeof(*argv)+1);
+    cmd_t *cmd;
+    *cmd->argv = malloc(sizeof(*argv)+1);
     
     //not sure if this is right
     *cmd->argv = strdup(*argv);
 
     cmd->argv[sizeof(*argv)] = NULL;
 
-    *cmd->name = cmd->argv[0]; //think this line is wrong
+    *cmd->name = *cmd->argv[0]; //think this line is wrong
     cmd->finished = 0;
     snprintf(cmd->str_status, 5, "INIT");
     cmd->status = -1;
