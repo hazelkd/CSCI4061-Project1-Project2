@@ -133,12 +133,12 @@ char *read_all(int fd, int *nread){
 }
 void cmd_fetch_output(cmd_t *cmd){
     if(cmd->finished == 0){
-        //I think it should be the pid?
         printf("%s[%d] not finished yet", (cmd->name), (cmd->pid));
     }
     else {
         cmd->output_size = sizeof(cmd->output);
         //don't think this is correct
+        //Has to be finished with read all and pipes once we learn it
         cmd->output = cmd->out_pipe;
     }
 }
@@ -158,9 +158,9 @@ void cmd_print_output(cmd_t *cmd){
     }
     //this doesn't work, not quite sure how to print void output might be 
     //with pipes
-    //else {
-       // printf("%s\n", (*cmd->output));
-   // }
+    else {
+       printf("%s\n",(*cmd->output));
+    }
 }
 // Prints the output of the cmd contained in the output field if it is
 // non-null. Prints the error message
