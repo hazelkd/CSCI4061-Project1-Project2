@@ -5,7 +5,13 @@
 cmd_t *cmd_new(char *argv[]) {
     cmd_t *cmd;
     *cmd->argv = malloc(sizeof(*argv)+1);
-    
+
+     for(int i=0;i++;sizeof(*cmd->argv)){
+        *cmd->argv= malloc(strlen(argv[i])); //might need extra byte for 0 byte
+        printf("%0x20\n",*cmd);
+        //make cmd an array or increment
+     }
+     //Use str dup & check if includes 0 byte
     //not sure if this is right
     *cmd->argv = strdup(*argv);
 
@@ -74,8 +80,10 @@ else {
 }
 
 if(WIFEXITED(cmd->status)){          //Uses the macro WIFEXITED to check the returned status for
-    cmd->finished = 1;                      // whether the command has exited. 
-    cmd->status = WEXITSTATUS(cmd->status);
+    cmd->finished = 1; 
+                         // whether the command has exited. 
+    cmd->status = WEXITSTATUS(&status);
+    printf("\n", cmd->status);
 }                               //If command, sets the finished field to 1
                                 // and sets the cmd->status field to the exit status of the cmd using
  else{                          // the WEXITSTATUS macro. Calls cmd_fetch_output() to fill up the
