@@ -2,19 +2,18 @@
 #include <stdlib.h> //don't know if we need this
 #include "commando.h"
 
-cmd_t *cmd_new(char *argv[]) {
-    cmd_t *cmd = malloc(sizeof(cmd_t)); //added
-    strcpy(cmd->name, strdup(argv[0]));
-    //*cmd->argv = malloc(sizeof(*argv)+1);
+    cmd_t *cmd;
+    *cmd->argv = malloc(sizeof(*argv)+1);
 
-     while((argv[i] != NULL) && (i < ARG_MAX))){
-        *cmd->argv[i]= strdup(argv[i]); 
-        i++;
-        
+     for(int i=0; i < sizeof(*cmd->argv); i++){
+        cmd->argv[i]= malloc(strlen(argv[i])); //might need extra byte for 0 byte
+        cmd->argv[i] = strdup(argv[i]);
+        //printf("%0x20\n",*cmd);
+        //make cmd an array or increment
      }
      //Use str dup & check if includes 0 byte
     //not sure if this is right
-    *cmd->argv = strdup(*argv);
+    //*cmd->argv = strdup(*argv);
 
     cmd->argv[sizeof(*argv)] = NULL;
 
@@ -72,33 +71,29 @@ if(pid == 0){
 }
 void cmd_update_state(cmd_t *cmd, int block){
 
-if(cmd->finished){           // If the finished flag is 1, does nothing.
-    return 0; //don't think we can return with a void? 
-}
-if(block == DOBLOCK){
-    int returned_pid = waitpid(cmd->pid, &status, 0);
-}
-else {
-    int returned_pid = waitpid(cmd->pid, &status, WNOHANG);
-}
+    int *status;
 
-if(WIFEXITED(cmd->status)){          //Uses the macro WIFEXITED to check the returned status for
-    cmd->finished = 1; 
-                         // whether the command has exited. 
-    cmd->status = WEXITSTATUS(&status);
-    printf("\n", cmd->status);
-}                               //If command, sets the finished field to 1
-                                // and sets the cmd->status field to the exit status of the cmd using
- else{                          // the WEXITSTATUS macro. Calls cmd_fetch_output() to fill up the
-                                // output buffer for later printing.
-     waitpid(cmd->pid, &status, block);              //Otherwise, updates the
-                                // state of cmd.  Uses waitpid() and the pid field of command to wait
+    while (cmd->finished != 1){
+        if(block == DOBLOCK){
+            //what is returned pid for?
+            int returned_pid = waitpid(cmd->pid, status, 0);
+        }
+        else {
+            int returned_pid = waitpid(cmd->pid, status, WNOHANG);
+        }
+
+        if (WIFEXITED(*status)){
+            cmd->finished = 1;
+            cmd->status = WEXITSTATUS(*status);
+            printf("%d \n", cmd->status);
+        }
+        else{                          // the WEXITSTATUS macro. Calls cmd_fetch_output() to fill up the                       // output buffer for later printing.
+            waitpid(cmd->pid,status, block);              //Otherwise, updates the
+        }                            // state of cmd.  Uses waitpid() and the pid field of command to wait
                                 // selectively for the given process. Passes block (one of DOBLOCK or
                                 // NOBLOCK) to waitpid() to cause either non-blocking or blocking
-                                // waits.  
-
- } 
-}                           
+    }                           // waits.  
+}                          
 // When a command finishes (the first time), prints a status update
 // message of the form
 //
