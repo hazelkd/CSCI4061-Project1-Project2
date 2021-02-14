@@ -3,11 +3,11 @@
 #include "commando.h"
 
 void cmdcol_add(cmdcol_t *col, cmd_t *cmd){
-    if(cmdcol_t->*cmd[MAX_CMDS] <= size){
+    if(col->cmd[MAX_CMDS] <= col->size){ //cant compare pointers and ints - needs to be fixed
         printf("Error, max commands exceeded");
     }
-    cmdcol_t->*cmd[size] = *cmd;
-    cmdcol_t->size++;
+    col->cmd[col->size] = cmd;
+    col->size++;
 }
 // Add the given cmd to the col structure. Update the cmd[] array and
 // size field. Report an error if adding would cause size to exceed
