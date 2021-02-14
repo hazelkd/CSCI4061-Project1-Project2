@@ -2,7 +2,13 @@
 #include <stdlib.h> //don't know if we need this
 #include "commando.h"
 
-void cmdcol_add(cmdcol_t *col, cmd_t *cmd);
+void cmdcol_add(cmdcol_t *col, cmd_t *cmd){
+    if(cmdcol_t->*cmd[MAX_CMDS] <= size){
+        printf("Error, max commands exceeded");
+    }
+    cmdcol_t->*cmd[size] = *cmd;
+    cmdcol_t->size++;
+}
 // Add the given cmd to the col structure. Update the cmd[] array and
 // size field. Report an error if adding would cause size to exceed
 // MAX_CMDS, the maximum number commands supported.
