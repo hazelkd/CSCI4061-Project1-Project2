@@ -2,6 +2,7 @@
 #include <stdlib.h> //don't know if we need this
 #include "commando.h"
 
+cmd_t *cmd_new(char *argv[]){
     cmd_t *cmd;
     *cmd->argv = malloc(sizeof(*argv)+1);
 
@@ -53,12 +54,11 @@ void cmd_free(cmd_t *cmd){
 
 void cmd_start(cmd_t *cmd){
 
-char *child_argv = {,NULL};
+char *child_argv[] = {"ls",NULL}; //FIX THIS JUST AN EXAMPLE
 pid_t child_pid = fork();
-if(pid == 0){
-  execvp(cmd, child_argv); 
- 
-}
+    if(child_pid == 0){
+         execvp(cmd->name, child_argv); 
+    }
 
 // Forks a process and executes command in cmd in the process.
 // Changes the str_status field to "RUN" using snprintf().  Creates a
@@ -103,7 +103,7 @@ void cmd_update_state(cmd_t *cmd, int block){
 
 char *read_all(int fd, int *nread){
     int max_size = 1, cur_pos = 0;                   // initial max and position
-  char *buf = malloc(max_size*sizeof(char));       // allocate 1 byte of intial space
+    char *buf = malloc(max_size*sizeof(char));       // allocate 1 byte of intial space
   
   while(1){ 
     int ret = fscanf(fd,"%c", &buf[cur_pos]);    //???      
