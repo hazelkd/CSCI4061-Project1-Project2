@@ -53,12 +53,19 @@ void cmd_free(cmd_t *cmd){
 }
 
 void cmd_start(cmd_t *cmd){
-    
-char *child_argv[] = {"ls",NULL}; //FIX THIS JUST AN EXAMPLE
-pid_t child_pid = fork();
-    if(child_pid == 0){
-         execvp(cmd->name, child_argv); 
+
+    char buffer[50];  //is this ok 
+    char* s = "RUN"; 
+    snprintf(buffer, 5,"%s\n", s);    
+    char *child_argv[] = {"ls",NULL}; //FIX THIS JUST AN EXAMPLE
+    pid_t child_pid = fork();
+    //int parent_pid = getppid(child_pid);
+ 
+    if(getpid() !=0 ){             //ASK IN OH
+        cmd->pid = child_pid; 
     }
+
+
 
 // Forks a process and executes command in cmd in the process.
 // Changes the str_status field to "RUN" using snprintf().  Creates a
@@ -106,25 +113,25 @@ char *read_all(int fd, int *nread){
     char *buf = malloc(max_size*sizeof(char));       // allocate 1 byte of intial space
   
   while(1){ 
-    int ret = fscanf(fd,"%c", &buf[cur_pos]);    //???      
-    if(ret == EOF || ret =='\0'){               // break if end of input is reached
-        *nread =                    //number of bytes read       When no data is left in fd,
-                                            // sets the integer pointed to by nread to the number of bytes read
-                                            // and return a pointer to the allocated buffer.  
-        return *buf;                                  
-    }          
-    cur_pos++;                                     // update current input
+    int ret = read(fd, buf, max_size);    //???      
+    if(ret == EOF || ret =='\0'){              
+        buf[ret] = '\0';
+        break;                                                      
+    }       
+    cur_pos++;      
+                                   // update current input
     if(cur_pos == max_size){                       // check if more space is needed
-      max_size *= 2;                               // double size of buffer
-      char *new_buf =                              // pointer to either new or old location
-        realloc(buf, max_size*sizeof(char));       // re-allocate, copies characters to new space if needed
-      if(new_buf == NULL){                         // check that re-allocation succeeded
-        printf("ERROR: reallocation failed\n");    // if not...
-        free(buf);                                 // de-allocate current buffer
-        exit(1);                                   // bail out
-      }
-      buf = new_buf;                               // assigns either existin or new location of expanded space
+        max_size *= 2;                               // double size of buffer
+        buf = realloc(buf, max_size*sizeof(char));          // pointer to either new or old location re-allocate, copies characters to new space if needed
+        
+        if(buf == NULL){                         // check that re-allocation succeeded
+            printf("ERROR: reallocation failed\n");    // if not...
+            free(buf);                                 // de-allocate current buffer
+            exit(1);                                   // bail out
+        }
+                                    
     } 
+
     free(buf);
     return 0;
 }
@@ -166,7 +173,7 @@ void cmd_print_output(cmd_t *cmd){
     //this doesn't work, not quite sure how to print void output might be 
     //with pipes
     else {
-       printf("%s\n",(*cmd->output));
+       printf("%s\n",(cmd->output));
     }
 }
 // Prints the output of the cmd contained in the output field if it is
