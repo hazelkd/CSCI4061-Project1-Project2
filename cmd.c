@@ -53,7 +53,7 @@ void cmd_free(cmd_t *cmd){
 }
 
 void cmd_start(cmd_t *cmd){
-
+    
 char *child_argv[] = {"ls",NULL}; //FIX THIS JUST AN EXAMPLE
 pid_t child_pid = fork();
     if(child_pid == 0){
