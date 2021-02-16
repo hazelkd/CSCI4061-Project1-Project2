@@ -54,27 +54,31 @@ void cmd_free(cmd_t *cmd){
 
 void cmd_start(cmd_t *cmd){
 
-    char buffer[50];  //is this ok 
-    char* s = "RUN"; 
-    snprintf(buffer, 5,"%s\n", s);    
+     
+    snprintf(cmd->str_status, STATUS_LEN, "RUN");   
+
     char *child_argv[] = {"ls",NULL}; //FIX THIS JUST AN EXAMPLE
+    
+    pipe(cmd->out_pipe);
+
     pid_t child_pid = fork();
-    //int parent_pid = getppid(child_pid);
  
-    if(getpid() !=0 ){             //ASK IN OH
-        cmd->pid = child_pid; 
+    if(getpid() ==0 ){             //ASK IN OH
+       backup = dup(STDOUT_FILENO);
+       dup2(out_pipe[PWRITE],STDOUT_FILENO); 
+        //closing the PREAD end of the pipe
+        execvp();
     }
-
-
-
+    else{
+    cmd->pid = child_pid; 
+    }
 // Forks a process and executes command in cmd in the process.
 // Changes the str_status field to "RUN" using snprintf().  Creates a
 // pipe for out_pipe to capture standard output.  In the parent
 // process, ensures that the pid field is set to the child PID. In the
 // child process, directs standard output to the pipe using the dup2()
 // command. For both parent and child, ensures that unused file
-// descriptors for the pipe are closed (write in the parent, read in
-// the child).
+// descriptors for the pipe are closed 
 }
 void cmd_update_state(cmd_t *cmd, int block){
 
