@@ -84,9 +84,10 @@ void cmd_update_state(cmd_t *cmd, int block){
         if(block == DOBLOCK){   //instead of this if else statement could we just have
         //the third parameter to waitpid be the block status? 
         //like waitpid(cmd->pid, cmd->status, block)
+
             //what is returned pid for?
             //int returned_pid = do we need this part?
-            waitpid(cmd->pid, cmd->status, 0); //should this be cmd->status or just status?
+            waitpid(cmd->pid, status, 0); //should this be cmd->status or just status?
         }
         else {
             //do we need this part? int returned_pid = 
@@ -95,7 +96,7 @@ void cmd_update_state(cmd_t *cmd, int block){
 
         if (WIFEXITED(*status)){
             cmd->finished = 1;
-            cmd->status = WEXITSTATUS(*status);
+            cmd->status = WEXITSTATUS(*status);//should all these status be cmd->status?
             cmd_fetch_output(cmd);
             printf("@!!! %s[#%d] : %s \n", cmd->name, cmd->pid, cmd->str_status);
         }
