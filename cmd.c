@@ -64,10 +64,10 @@ void cmd_start(cmd_t *cmd){
     pid_t child_pid = fork();
  
     if(getpid() ==0 ){             //ASK IN OH
-       backup = dup(STDOUT_FILENO);
-       dup2(out_pipe[PWRITE],STDOUT_FILENO); 
+       int backup = dup(STDOUT_FILENO);
+       dup2(cmd->out_pipe[PWRITE],STDOUT_FILENO); 
         //closing the PREAD end of the pipe
-        execvp();
+        execvp(cmd->name, cmd->argv);
     }
     else{
     cmd->pid = child_pid; 
@@ -91,20 +91,22 @@ void cmd_update_state(cmd_t *cmd, int block){
 
             //what is returned pid for?
             //int returned_pid = do we need this part?
-            waitpid(cmd->pid, status, 0); //should this be cmd->status or just status?
+            int ret = waitpid(cmd->pid, &status, 0); //should this be cmd->status or just status?
         }
         else {
             //do we need this part? int returned_pid = 
-            waitpid(cmd->pid, status, WNOHANG);
+            int ret = waitpid(cmd->pid, &status, WNOHANG);
         }
-
-        if (WIFEXITED(*status)){
+        if (ret == 0){ //patient parent 
+            //print something and keep waiting for parent
+        }
+        if (WIFEXITED(status)){
             cmd->finished = 1;
-            cmd->status = WEXITSTATUS(*status);//should all these status be cmd->status?
+            cmd->status = WEXITSTATUS(status);  //cmd->status?
             cmd_fetch_output(cmd);
             printf("@!!! %s[#%d] : %s \n", cmd->name, cmd->pid, cmd->str_status);
         }
-        else{                          // the WEXITSTATUS macro. Calls cmd_fetch_output() to fill up the                       // output buffer for later printing.
+        else{                                       
             waitpid(cmd->pid,status, block);              //Otherwise, updates the
         }                            // state of cmd.  Uses waitpid() and the pid field of command to wait
                                 // selectively for the given process. Passes block (one of DOBLOCK or
@@ -163,7 +165,7 @@ void cmd_fetch_output(cmd_t *cmd){
         cmd->output_size = sizeof(cmd->output);
         //don't think this is correct
         //Has to be finished with read all and pipes once we learn it
-        cmd->output = cmd->out_pipe;
+        cmd->output = cmd->out_pipe[PWRITE];
     }
 }
 // If cmd->finished is zero, prints an error message with the format
@@ -180,11 +182,11 @@ void cmd_print_output(cmd_t *cmd){
     if(cmd->output == NULL) {
         printf("%s[%d] : output not ready\n", (cmd->name), (cmd->pid));
     }
-    //this doesn't work, not quite sure how to print void output might be 
-    //with pipes
+    
     else {
        printf("%s\n",(cmd->output));
     }
+    close(cmd->out_pipe)
 }
 // Prints the output of the cmd contained in the output field if it is
 // non-null. Prints the error message
