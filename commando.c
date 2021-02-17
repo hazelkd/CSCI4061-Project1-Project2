@@ -44,10 +44,13 @@ int main(int argc, char *argv[]) {
 
         }
         else if(strcmp(tokens[0], 'output-for')==0){
-                
+            int jobNum = atoi(tokens[2]);
+            cmd_fetch_output(col->cmd[jobNum]);
         }
         else if(strcmp(tokens[0], 'output-all')==0){
-        
+            for (int i = 0; i < col->size; i++){
+                cmd_fetch_output(col->cmd[i]);
+            }
         }
         else if(strcmp(tokens[0], 'wait-for')==0){
 
