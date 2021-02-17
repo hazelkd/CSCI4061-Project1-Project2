@@ -10,8 +10,14 @@ int main() {
 
     while(result != NULL){
         fgets(*result, MAX_LINE, stdin);
+        parse_into_tokens(char input_command[], char *tokens[], int *ntok);
 
     }
+    //if(echoing is enabled){
+        //Echo (print)
+    //}
+    
+
    //didnt finish this
         printf("End of input\n");
         break;

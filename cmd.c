@@ -20,13 +20,14 @@ cmd_t *cmd_new(char *argv[]){
 
     *cmd->name = *cmd->argv[0]; //think this line is wrong
     cmd->finished = 0;
-    snprintf(cmd->str_status, 5, "INIT");
+    snprintf(cmd->str_status, STATUS_LEN, "INIT");
     //I think it might be : snprintf(cmd->str_status, STATUS_LEN, "%s", "INIT/0");
     cmd->status = -1;
     cmd->output = NULL;
     cmd->output_size = -1;
     cmd->pid = 0; //I think?
-    *cmd->out_pipe = -1; //don't know why this only works with *
+    *cmd->out_pipe = -1; //don't know why this only works with * 
+                            //This should be an array?
 
 // Allocates a new cmd_t with the given argv[] array. Makes string
 // copies of each of the strings contained within argv[] using
@@ -57,7 +58,7 @@ void cmd_start(cmd_t *cmd){
      
     snprintf(cmd->str_status, STATUS_LEN, "RUN");   
 
-    char *child_argv[] = {"ls",NULL}; //FIX THIS JUST AN EXAMPLE
+    //char *child_argv[] = {"ls",NULL}; //Purpose of this line?
     
     pipe(cmd->out_pipe);
 
@@ -85,19 +86,15 @@ void cmd_update_state(cmd_t *cmd, int block){
     int *status;
 
     while (cmd->finished != 1){
-        if(block == DOBLOCK){   //instead of this if else statement could we just have
-        //the third parameter to waitpid be the block status? 
-        //like waitpid(cmd->pid, cmd->status, block)
-
-            //what is returned pid for?
-            //int returned_pid = do we need this part?
+        if(block == DOBLOCK){  
+        
             int ret = waitpid(cmd->pid, &status, 0); //should this be cmd->status or just status?
         }
         else {
-            //do we need this part? int returned_pid = 
+    
             int ret = waitpid(cmd->pid, &status, WNOHANG);
         }
-        if (ret == 0){ //patient parent 
+        if (ret == 0){ //impatient parent.c example, 
             //print something and keep waiting for parent
         }
         if (WIFEXITED(status)){
@@ -107,12 +104,21 @@ void cmd_update_state(cmd_t *cmd, int block){
             printf("@!!! %s[#%d] : %s \n", cmd->name, cmd->pid, cmd->str_status);
         }
         else{                                       
-            waitpid(cmd->pid,status, block);              //Otherwise, updates the
-        }                            // state of cmd.  Uses waitpid() and the pid field of command to wait
-                                // selectively for the given process. Passes block (one of DOBLOCK or
-                                // NOBLOCK) to waitpid() to cause either non-blocking or blocking
-    }                           // waits.  
+            waitpid(cmd->pid,status, block);            
+        }                                                
+                                
+    }                        
 }                          
+// If the finished flag is 1, does nothing. Otherwise, updates the
+// state of cmd.  Uses waitpid() and the pid field of command to wait
+// selectively for the given process. Passes block (one of DOBLOCK or
+// NOBLOCK) to waitpid() to cause either non-blocking or blocking
+// waits.  Uses the macro WIFEXITED to check the returned status for
+// whether the command has exited. If so, sets the finished field to 1
+// and sets the cmd->status field to the exit status of the cmd using
+// the WEXITSTATUS macro. Calls cmd_fetch_output() to fill up the
+// output buffer for later printing.
+//
 // When a command finishes (the first time), prints a status update
 // message of the form
 //
@@ -162,11 +168,12 @@ void cmd_fetch_output(cmd_t *cmd){
         printf("%s[%d] not finished yet", (cmd->name), (cmd->pid));
     }
     else {
+        cmd->output = cmd->out_pipe[PWRITE]; //Should this be pwrite or pread?
         cmd->output_size = sizeof(cmd->output);
-        //don't think this is correct
-        //Has to be finished with read all and pipes once we learn it
-        cmd->output = cmd->out_pipe[PWRITE];
+        //How to check if all input is read?
+        close(cmd->out_pipe); //Both ends of pipe?
     }
+
 }
 // If cmd->finished is zero, prints an error message with the format
 // 
@@ -180,17 +187,12 @@ void cmd_fetch_output(cmd_t *cmd){
 
 void cmd_print_output(cmd_t *cmd){
     if(cmd->output == NULL) {
-        printf("%s[%d] : output not ready\n", (cmd->name), (cmd->pid));
+        printf("%s[#%d] : output not ready\n", (cmd->name), (cmd->pid));
     }
     
     else {
        printf("%s\n",(cmd->output));
     }
-    close(cmd->out_pipe)
 }
 // Prints the output of the cmd contained in the output field if it is
-// non-null. Prints the error message
-// 
-// ls[#17251] : output not ready
-//
-// if output is NULL. The message includes the command name and PID.
+// non-null. 
