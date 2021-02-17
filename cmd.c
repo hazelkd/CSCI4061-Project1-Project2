@@ -64,11 +64,12 @@ void cmd_start(cmd_t *cmd){
 
     pid_t child_pid = fork();
  
-    if(getpid() ==0 ){             //ASK IN OH
+    if(getpid() ==0 ){           
        int backup = dup(STDOUT_FILENO);
        dup2(cmd->out_pipe[PWRITE],STDOUT_FILENO); 
-        //closing the PREAD end of the pipe
+        
         execvp(cmd->name, cmd->argv);
+        close(cmd->out_pipe[PREAD]);
     }
     else{
     cmd->pid = child_pid; 
@@ -86,27 +87,21 @@ void cmd_update_state(cmd_t *cmd, int block){
     int *status;
 
     while (cmd->finished != 1){
-        if(block == DOBLOCK){  
+      
+        int ret = waitpid(cmd->pid, &status, block);
         
-            int ret = waitpid(cmd->pid, &status, 0); //should this be cmd->status or just status?
-        }
-        else {
-    
-            int ret = waitpid(cmd->pid, &status, WNOHANG);
-        }
         if (ret == 0){ //impatient parent.c example, 
-            //print something and keep waiting for parent
+            printf("Child has not exited");
         }
         if (WIFEXITED(status)){
             cmd->finished = 1;
-            cmd->status = WEXITSTATUS(status);  //cmd->status?
+            cmd->status = WEXITSTATUS(status);  
             cmd_fetch_output(cmd);
             printf("@!!! %s[#%d] : %s \n", cmd->name, cmd->pid, cmd->str_status);
         }
-        else{                                       
-            waitpid(cmd->pid,status, block);            
-        }                                                
-                                
+        //else{                                       
+           // waitpid(cmd->pid,status, block);            
+       // }                                                                          
     }                        
 }                          
 // If the finished flag is 1, does nothing. Otherwise, updates the
@@ -168,7 +163,8 @@ void cmd_fetch_output(cmd_t *cmd){
         printf("%s[%d] not finished yet", (cmd->name), (cmd->pid));
     }
     else {
-        cmd->output = read_all(cmd->out_pipe[PWRITE]); //Should this be pwrite or pread?
+        //loop for input?
+        cmd->output = read_all(cmd->out_pipe[PREAD]); //Should this be pwrite or pread?
         cmd->output_size = sizeof(cmd->output);
         //How to check if all input is read?
         close(cmd->out_pipe); //Both ends of pipe?
