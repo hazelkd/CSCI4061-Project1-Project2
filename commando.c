@@ -13,8 +13,8 @@ int main() {
         parse_into_tokens(char input_command[], char *tokens[], int *ntok);
 
     }
-    //if(echoing is enabled){
-        //Echo (print)
+    if(ECC){
+        echo();
     //}
     
 
