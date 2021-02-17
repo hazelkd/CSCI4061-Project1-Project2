@@ -168,7 +168,7 @@ void cmd_fetch_output(cmd_t *cmd){
         printf("%s[%d] not finished yet", (cmd->name), (cmd->pid));
     }
     else {
-        cmd->output = cmd->out_pipe[PWRITE]; //Should this be pwrite or pread?
+        cmd->output = read_all(cmd->out_pipe[PWRITE]); //Should this be pwrite or pread?
         cmd->output_size = sizeof(cmd->output);
         //How to check if all input is read?
         close(cmd->out_pipe); //Both ends of pipe?
