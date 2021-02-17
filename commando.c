@@ -8,6 +8,8 @@ int main(int argc, char *argv[]) {
     char* result[MAX_LINE];
     char *tokens[MAX_LINE]; // is it ok to declare here?//WHAT SIZE?
     int *ntok;
+    cmdcol_t *col;
+
     printf("@>");
 
     while(result != NULL){
@@ -33,16 +35,16 @@ int main(int argc, char *argv[]) {
 
         }
         else if(strcmp(tokens[0], 'list')==0){
-
+            cmdcol_print(col);
         }
         else if(strcmp(tokens[0], 'exit')==0){
-
+            exit;
         }
         else if(strcmp(tokens[0], 'pause')==0){
 
         }
         else if(strcmp(tokens[0], 'output-for')==0){
-
+                
         }
         else if(strcmp(tokens[0], 'output-all')==0){
         
@@ -56,7 +58,6 @@ int main(int argc, char *argv[]) {
         else{
             cmd_t *cmd1 = cmd_new(tokens); 
             //have to add the new cmd to cmdcol_t and start it running 
-            cmdcol_t *col;
             cmdcol_add(col, cmd1);
             cmd_start(cmd1);
         }
