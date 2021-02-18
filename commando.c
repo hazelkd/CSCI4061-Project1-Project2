@@ -7,22 +7,22 @@ int main(int argc, char *argv[]) {
     setvbuf(stdout, NULL, _IONBF, 0); //turn off output buffering
 
     char* result[MAX_LINE];
-    char *tokens[MAX_LINE]; // is it ok to declare here?//WHAT SIZE?
-    int *ntok;
-    cmdcol_t *col;
+    char *tokens[MAX_LINE]; //WHAT SIZE?
+    int *ntok=0;
+    cmdcol_t *col = cmd_new(tokens); 
 
     printf("@>");
 
     while(result != NULL){ //Checking for end of input
         fgets(*result, MAX_LINE, stdin);
-        parse_into_tokens(*result, tokens, ntok); //what is tokens[] and ntok?
+        parse_into_tokens(*result, tokens, ntok); 
         if(ntok == 0){
             break; //User hits enter ?
         }
-        if(strcmp(argv[1],"--echo")==0 || getenv("COMMAND_ECHO")!= NULL){ //How to check echoing?
+        if(strcmp(argv[1],"--echo")==0 || getenv("COMMAND_ECHO")!= NULL){ 
             setenv("COMMAND_ECHO", "ON",1); 
         }
-        if(strcmp(tokens[0], "help")==0){ // i changed to strcmp instead of strncmp cause then we don't need length
+        if(strcmp(tokens[0], "help")==0){ 
             printf("COMMANDO COMMANDS \n");
             printf("%-20s", "help"); printf(": show this message\n");
             printf("%-20s", "exit"); printf(": exit the program\n");
@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
             cmdcol_print(col);
         }
         else if(strcmp(tokens[0], "exit")==0){
-            exit;
+            exit(1); //added 1
         }
         else if(strcmp(tokens[0], "pause")==0){
             long nanos = atoi(tokens[2]);
