@@ -41,7 +41,9 @@ int main(int argc, char *argv[]) {
             exit;
         }
         else if(strcmp(tokens[0], 'pause')==0){
-
+            long nanos = tokens[2];
+            int secs = tokens[3];
+            pause_for(nanos, secs);
         }
         else if(strcmp(tokens[0], 'output-for')==0){
             int jobNum = atoi(tokens[2]);
@@ -68,15 +70,9 @@ int main(int argc, char *argv[]) {
             cmd_start(cmd1);
         }
     }
-    
-    
-
    //didnt finish this
         printf("End of input\n");
         cmdcol_update_state(col, NOBLOCK);
-        //break;
-    }
-
-
+        //break; - do we need this? 
 
 }
