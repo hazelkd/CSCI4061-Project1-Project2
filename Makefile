@@ -8,7 +8,7 @@ CWD    = $(shell pwd | sed 's/.*\///g')
  
 # Object files to build 
 
-commando: cmd.o cmdcol.o commando.o
+commando: cmd.o cmdcol.o commando.o commando.h
 	$(CC) -o commando commando.o cmd.o cmdcol.o 
 	@echo commando is ready
 commando.o: commando.c commando.h
@@ -19,8 +19,7 @@ cmd.o: cmd.c commando.h
 
 cmdcol.o: cmdcol.c commando.h
 	$(CC) -c cmdcol.c
-#util.o: util.o commando.h
-	#$(CC) -c util.c
+
 clean:
 	rm -f commando *.o
 
