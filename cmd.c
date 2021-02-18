@@ -88,14 +88,14 @@ void cmd_update_state(cmd_t *cmd, int block){
 
     while (cmd->finished != 1){
       
-        int ret = waitpid(cmd->pid, &status, block);
+        int ret = waitpid(cmd->pid, status, block);
         
         if (ret == 0){ //impatient parent.c example, 
             printf("Child has not exited");
         }
-        if (WIFEXITED(status)){
+        if (WIFEXITED(*status)){
             cmd->finished = 1;
-            cmd->status = WEXITSTATUS(status);  
+            cmd->status = WEXITSTATUS(*status);  
             cmd_fetch_output(cmd);
             printf("@!!! %s[#%d] : %s \n", cmd->name, cmd->pid, cmd->str_status);
         }
@@ -165,9 +165,10 @@ void cmd_fetch_output(cmd_t *cmd){
     else {
         //loop for input?
         cmd->output = read_all(cmd->out_pipe[PREAD]); //Should this be pwrite or pread?
+        //how to do read_all?
         cmd->output_size = sizeof(cmd->output);
         //How to check if all input is read?
-        close(cmd->out_pipe); //Both ends of pipe?
+        close(*cmd->out_pipe); //Both ends of pipe?
     }
 
 }
@@ -187,7 +188,7 @@ void cmd_print_output(cmd_t *cmd){
     }
     
     else {
-       printf("%s\n",(cmd->output));
+       printf("%s\n",(cmd->output));//this can't print because its void?
     }
 }
 // Prints the output of the cmd contained in the output field if it is
