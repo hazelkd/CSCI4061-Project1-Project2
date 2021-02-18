@@ -53,10 +53,13 @@ int main(int argc, char *argv[]) {
             }
         }
         else if(strcmp(tokens[0], 'wait-for')==0){
-
+            int jobNum = atoi(tokens[2]);
+            cmd_update_state((col->cmd[jobNum]), DOBLOCK);
         }
         else if(strcmp(tokens[0], 'wait-all')==0){
-
+            for (int i = 0; i < col->size; i++) {
+                cmd_update_state((col->cmd[i]), DOBLOCK);
+            }
         }
         else{
             cmd_t *cmd1 = cmd_new(tokens); 
@@ -70,7 +73,8 @@ int main(int argc, char *argv[]) {
 
    //didnt finish this
         printf("End of input\n");
-        break;
+        cmdcol_update_state(col, NOBLOCK);
+        //break;
     }
 
 
