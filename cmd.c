@@ -3,7 +3,7 @@
 #include "commando.h"
 
 cmd_t *cmd_new(char *argv[]){
-    cmd_t *cmd;
+    cmd_t *cmd = NULL;
     *cmd->argv = malloc(sizeof(*argv)+1);
 
      for(int i=0; i < sizeof(*cmd->argv); i++){
@@ -28,7 +28,7 @@ cmd_t *cmd_new(char *argv[]){
     cmd->pid = 0; //I think?
     *cmd->out_pipe = -1; //don't know why this only works with * 
                             //This should be an array?
-
+    return cmd;
 // Allocates a new cmd_t with the given argv[] array. Makes string
 // copies of each of the strings contained within argv[] using
 // strdup() as they likely come from a source that will be
@@ -54,7 +54,6 @@ void cmd_free(cmd_t *cmd){
 }
 
 void cmd_start(cmd_t *cmd){
-
      
     snprintf(cmd->str_status, STATUS_LEN, "RUN");   
 
@@ -64,16 +63,18 @@ void cmd_start(cmd_t *cmd){
 
     pid_t child_pid = fork();
  
-    if(getpid() ==0 ){           
+    if(getpid() == 0 ){           
        int backup = dup(STDOUT_FILENO);
        dup2(cmd->out_pipe[PWRITE],STDOUT_FILENO); 
         
         execvp(cmd->name, cmd->argv);
-        close(cmd->out_pipe[PREAD]);
+        dup2(backup,STDOUT_FILENO);
     }
+
     else{
     cmd->pid = child_pid; 
     }
+    close(cmd->out_pipe[PREAD]);
 // Forks a process and executes command in cmd in the process.
 // Changes the str_status field to "RUN" using snprintf().  Creates a
 // pipe for out_pipe to capture standard output.  In the parent
@@ -84,7 +85,7 @@ void cmd_start(cmd_t *cmd){
 }
 void cmd_update_state(cmd_t *cmd, int block){
 
-    int *status;
+    int *status=0;
 
     while (cmd->finished != 1){
       
@@ -141,13 +142,13 @@ char *read_all(int fd, int *nread){
             printf("ERROR: reallocation failed\n");    // if not...
             free(buf);                                 // de-allocate current buffer
             exit(1);                                   // bail out
-        }
-                                    
+        }                               
     } 
-
-    free(buf);
-    return 0;
-}
+   
+  
+} 
+return buf;   
+free(buf); 
 // Reads all input from the open file descriptor fd. Assumes
 // character/text output and null-terminates the character output with
 // a '\0' character allowing for printf() to print it later. Stores
@@ -159,12 +160,13 @@ char *read_all(int fd, int *nread){
 // is done elsewhere.
 }
 void cmd_fetch_output(cmd_t *cmd){
+    int *bytes_read =0;
     if(cmd->finished == 0){
         printf("%s[%d] not finished yet", (cmd->name), (cmd->pid));
     }
     else {
         //loop for input?
-        cmd->output = read_all(cmd->out_pipe[PREAD]); //Should this be pwrite or pread?
+        cmd->output = read_all(cmd->out_pipe[PREAD], bytes_read); //Should this be pwrite or pread?
         //how to do read_all?
         cmd->output_size = sizeof(cmd->output);
         //How to check if all input is read?
@@ -188,7 +190,7 @@ void cmd_print_output(cmd_t *cmd){
     }
     
     else {
-       printf("%s\n",(cmd->output));//this can't print because its void?
+       printf("%p\n",(cmd->output));//this can't print because its void?
     }
 }
 // Prints the output of the cmd contained in the output field if it is

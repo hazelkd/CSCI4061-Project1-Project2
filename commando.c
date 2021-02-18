@@ -12,16 +12,16 @@ int main(int argc, char *argv[]) {
 
     printf("@>");
 
-    while(result != NULL){
+    while(result != NULL){ //Checking for end of input
         fgets(*result, MAX_LINE, stdin);
-        parse_into_tokens(result, tokens, ntok); //what is tokens[] and ntok?
+        parse_into_tokens(*result, tokens, ntok); //what is tokens[] and ntok?
         if(ntok == 0){
             break; //User hits enter ?
         }
-        if(strcmp(argv[0],"--echo")==0 || getenv("COMMAND_ECHO")!= NULL){ //How to check echoing?
+        if(strcmp(argv[1],"--echo")==0 || getenv("COMMAND_ECHO")!= NULL){ //How to check echoing?
             setenv("COMMAND_ECHO", "ON",1); 
         }
-        if(strcmp(tokens[0], 'help')==0){ // i changed to strcmp instead of strncmp cause then we don't need length
+        if(strcmp(tokens[0], "help")==0){ // i changed to strcmp instead of strncmp cause then we don't need length
             printf("COMMANDO COMMANDS \n");
             printf("%-20s", "help"); printf(": show this message\n");
             printf("%-20s", "exit"); printf(": exit the program\n");
@@ -34,31 +34,31 @@ int main(int argc, char *argv[]) {
             printf("%-20s", "command arg1 ..."); printf(": non built-in is run as a job\n");
 
         }
-        else if(strcmp(tokens[0], 'list')==0){
+        else if(strcmp(tokens[0], "list")==0){
             cmdcol_print(col);
         }
-        else if(strcmp(tokens[0], 'exit')==0){
+        else if(strcmp(tokens[0], "exit")==0){
             exit;
         }
-        else if(strcmp(tokens[0], 'pause')==0){
-            long nanos = tokens[2];
-            int secs = tokens[3];
+        else if(strcmp(tokens[0], "pause")==0){
+            long nanos = atoi(tokens[2]);
+            int secs = atoi(tokens[3]);
             pause_for(nanos, secs);
         }
-        else if(strcmp(tokens[0], 'output-for')==0){
+        else if(strcmp(tokens[0], "output-for")==0){
             int jobNum = atoi(tokens[2]);
             cmd_fetch_output(col->cmd[jobNum]);
         }
-        else if(strcmp(tokens[0], 'output-all')==0){
+        else if(strcmp(tokens[0], "output-all")==0){
             for (int i = 0; i < col->size; i++){
                 cmd_fetch_output(col->cmd[i]);
             }
         }
-        else if(strcmp(tokens[0], 'wait-for')==0){
+        else if(strcmp(tokens[0], "wait-for")==0){
             int jobNum = atoi(tokens[2]);
             cmd_update_state((col->cmd[jobNum]), DOBLOCK);
         }
-        else if(strcmp(tokens[0], 'wait-all')==0){
+        else if(strcmp(tokens[0],"wait-all")==0){
             for (int i = 0; i < col->size; i++) {
                 cmd_update_state((col->cmd[i]), DOBLOCK);
             }
@@ -74,5 +74,5 @@ int main(int argc, char *argv[]) {
         printf("End of input\n");
         cmdcol_update_state(col, NOBLOCK);
         //break; - do we need this? 
-
+    cmdcol_freeall(col);
 }
