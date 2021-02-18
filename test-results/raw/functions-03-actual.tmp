@@ -1,0 +1,17 @@
+{
+    // Tests creation and init of a cmd_t along
+    // with cmd_free() to deallocate it
+    char *argv[] = {
+      "ls",
+      "-F",
+      "-a ",
+      "-1",
+      "test_data/stuff",
+      NULL
+    };
+    cmd_t *cmd = cmd_new(argv);
+    test_print_cmd(cmd);
+    assert_pointers_unique(argv, cmd);
+    cmd_free(cmd);
+}
+ALERTS:

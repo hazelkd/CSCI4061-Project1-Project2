@@ -1,0 +1,96 @@
+(TEST 16) cmdcol_add_2
+COMMENTS:
+
+program: ./test_cmd cmdcol_add_2
+Failure messages:
+- FAILURE(139) due to Kill Signal from OS: likely a SEGFAULT occured
+- FAILURE: Output Mismatch at lines marked
+
+--- Side by Side Differences ---
+- Expect output in: test-results/raw/functions-16-expect.tmp
+- Actual output in: test-results/raw/functions-16-actual.tmp
+- Differing lines have a character like '|' '>' or '<' in the middle
+==== EXPECT ====                                                         ==== ACTUAL ====                                                      
+{                                                                        {
+    // Tests whether cmdcol_add() properly adds a cmd to                     // Tests whether cmdcol_add() properly adds a cmd to
+    // those tracked by a cmdcol and that cmdcol_freeall()                   // those tracked by a cmdcol and that cmdcol_freeall()
+    // correctly frees memory associated with the collection.                // correctly frees memory associated with the collection.
+    char *children[][5] = {                                                  char *children[][5] = {
+      {"cat","test_data/quote.txt",NULL},                                      {"cat","test_data/quote.txt",NULL},    
+      {"ls","-a","test_data/stuff",NULL},                                      {"ls","-a","test_data/stuff",NULL},
+      {"ls","-a","-F","test_data/stuff",NULL},                                 {"ls","-a","-F","test_data/stuff",NULL},
+      {"gcc","-o","test_data/test_args","test_data/test_args.c",NULL},         {"gcc","-o","test_data/test_args","test_data/test_args.c",NULL},
+      {"grep","-i", "flurbo ","test_data/gettysburg.txt",NULL},                {"grep","-i", "flurbo ","test_data/gettysburg.txt",NULL},
+      {NULL},                                                                  {NULL},
+    };                                                                       };
+    cmdcol_t cmdcol_actual = {};                                             cmdcol_t cmdcol_actual = {};
+    cmdcol_t *cmdcol = &cmdcol_actual;                                       cmdcol_t *cmdcol = &cmdcol_actual;
+    for(int i=0; children[i][0] != NULL; i++){                               for(int i=0; children[i][0] != NULL; i++){
+      cmd_t *cmd = cmd_new(children[i]);                                       cmd_t *cmd = cmd_new(children[i]);
+      cmdcol_add(cmdcol, cmd);                                                 cmdcol_add(cmdcol, cmd);
+    }                                                                        }
+    printf("cmdcol->size: %d\n",cmdcol->size);                               printf("cmdcol->size: %d\n",cmdcol->size);
+    for(int i=0; children[i][0] != NULL; i++){                               for(int i=0; children[i][0] != NULL; i++){
+      printf("cmdcol->cmd[%d]->name: %s\n",                                    printf("cmdcol->cmd[%d]->name: %s\n",
+             i, cmdcol->cmd[i]->name);                                                i, cmdcol->cmd[i]->name);
+    }                                                                        }
+    cmdcol_freeall(cmdcol);                                                  cmdcol_freeall(cmdcol);
+}                                                                        }
+cmdcol->size: 5                                                        <
+cmdcol->cmd[0]->name: cat                                              <
+cmdcol->cmd[1]->name: ls                                               <
+cmdcol->cmd[2]->name: ls                                               <
+cmdcol->cmd[3]->name: gcc                                              <
+cmdcol->cmd[4]->name: grep                                             <
+ALERTS:                                                                  ALERTS:
+                                                                       (
+--- Line Differences ---
+EXPECT:  26) cmdcol->size: 5
+EXPECT:  27) cmdcol->cmd[0]->name: cat
+EXPECT:  28) cmdcol->cmd[1]->name: ls
+EXPECT:  29) cmdcol->cmd[2]->name: ls
+EXPECT:  30) cmdcol->cmd[3]->name: gcc
+EXPECT:  31) cmdcol->cmd[4]->name: grep
+
+--- Valgrind Log from: test-results/raw/functions-16-valgrd.tmp ---
+==2845355== Memcheck, a memory error detector
+==2845355== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==2845355== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==2845355== Command: ./test_cmd cmdcol_add_2
+==2845355== Parent PID: 2845354
+==2845355== 
+==2845355== Invalid write of size 8
+==2845355==    at 0x10B26B: cmd_new (cmd.c:7)
+==2845355==    by 0x10A8D5: main (test_cmd.c:379)
+==2845355==  Address 0x100 is not stack'd, malloc'd or (recently) free'd
+==2845355== 
+==2845355== 
+==2845355== Process terminating with default action of signal 11 (SIGSEGV)
+==2845355==  Access not within mapped region at address 0x100
+==2845355==    at 0x10B26B: cmd_new (cmd.c:7)
+==2845355==    by 0x10A8D5: main (test_cmd.c:379)
+==2845355==  If you believe this happened as a result of a stack
+==2845355==  overflow in your program's main thread (unlikely but
+==2845355==  possible), you can try to increase the size of the
+==2845355==  main thread stack using the --main-stacksize= flag.
+==2845355==  The main thread stack size used in this run was 8388608.
+==2845355== 
+==2845355== HEAP SUMMARY:
+==2845355==     in use at exit: 9 bytes in 1 blocks
+==2845355==   total heap usage: 1 allocs, 0 frees, 9 bytes allocated
+==2845355== 
+==2845355== 9 bytes in 1 blocks are definitely lost in loss record 1 of 1
+==2845355==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2845355==    by 0x10B263: cmd_new (cmd.c:7)
+==2845355==    by 0x10A8D5: main (test_cmd.c:379)
+==2845355== 
+==2845355== LEAK SUMMARY:
+==2845355==    definitely lost: 9 bytes in 1 blocks
+==2845355==    indirectly lost: 0 bytes in 0 blocks
+==2845355==      possibly lost: 0 bytes in 0 blocks
+==2845355==    still reachable: 0 bytes in 0 blocks
+==2845355==         suppressed: 0 bytes in 0 blocks
+==2845355== 
+==2845355== For lists of detected and suppressed errors, rerun with: -s
+==2845355== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
+
