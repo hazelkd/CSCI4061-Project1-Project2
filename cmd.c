@@ -144,7 +144,6 @@ char *read_all(int fd, int *nread){
             exit(1);                                   // bail out
         }                               
     } 
-   
   
 } 
 return buf;   

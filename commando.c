@@ -2,6 +2,7 @@
 #include <stdlib.h> //don't know if we need this
 #include "commando.h"
 
+
 int main(int argc, char *argv[]) {
     setvbuf(stdout, NULL, _IONBF, 0); //turn off output buffering
 
@@ -65,12 +66,12 @@ int main(int argc, char *argv[]) {
         }
         else{
             cmd_t *cmd1 = cmd_new(tokens); 
-            //have to add the new cmd to cmdcol_t and start it running 
+             
             cmdcol_add(col, cmd1);
             cmd_start(cmd1);
         }
     }
-   //didnt finish this
+   
         printf("End of input\n");
         cmdcol_update_state(col, NOBLOCK);
         //break; - do we need this? 

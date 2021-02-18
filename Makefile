@@ -11,12 +11,16 @@ CWD    = $(shell pwd | sed 's/.*\///g')
 commando: cmd.o cmdcol.o 
 	$(CC) -o commando cmd.o cmdcol.o 
 	@echo commando is ready
+commando.o: commando.c commando.h
+	$(CC) -c commando.c
+
 cmd.o: cmd.c commando.h
 	$(CC) -c cmd.c 
-cmdcol.o: cmdcol.o commando.h
+	
+cmdcol.o: cmdcol.c commando.h
 	$(CC) -c cmdcol.c
-util.o: util.o commando.h
-	$(CC) -c util.c
+#util.o: util.o commando.h
+	#$(CC) -c util.c
 clean:
 	rm -f commando *.o
 
