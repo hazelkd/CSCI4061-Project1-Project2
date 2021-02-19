@@ -3,8 +3,13 @@
 #include "commando.h"
 
 cmd_t *cmd_new(char *argv[]){
+<<<<<<< HEAD
     cmd_t *cmd = NULL;
     *cmd->argv = malloc(sizeof(char*)*sizeof(*argv));
+=======
+    cmd_t *cmd = malloc(sizeof(cmd_t));
+    *cmd->argv = malloc(sizeof(*argv));
+>>>>>>> 0bd147092d94f6938f8a4715835a11b15b78f574
     
      for(int i=0; i < sizeof(*argv); i++){
         cmd->argv[i]= malloc(sizeof(*argv[i])); //might need extra byte for 0 byte
@@ -17,7 +22,7 @@ cmd_t *cmd_new(char *argv[]){
 
     cmd->argv[sizeof(*argv)] = NULL;
 
-    *cmd->name = *argv[0]; //think this line is wrong
+    *cmd->name = *strdup(argv[0]); //think this line is wrong
     cmd->finished = 0;
     snprintf(cmd->str_status, STATUS_LEN, "INIT");
     //I think it might be : snprintf(cmd->str_status, STATUS_LEN, "%s", "INIT/0");
@@ -26,8 +31,15 @@ cmd_t *cmd_new(char *argv[]){
     cmd->output_size = -1;
     cmd->pid = 0; //I think?
     *cmd->out_pipe = -1; //don't know why this only works with * 
-                            //This should be an array?
+     
+                           //This should be an array?
+    free(cmd->argv);
+
+    free(cmd);
+
     return cmd;
+
+    
 // Allocates a new cmd_t with the given argv[] array. Makes string
 // copies of each ogf the strings contained within argv[] using
 // strdup() as they likely come from a source that will be
