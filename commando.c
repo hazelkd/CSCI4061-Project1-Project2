@@ -9,7 +9,9 @@ int main(int argc, char *argv[]) {
     char* result[MAX_LINE];
     char *tokens[MAX_LINE]; //WHAT SIZE?
     int *ntok=0;
-    cmdcol_t *col = cmd_new(tokens); 
+    cmdcol_t *col= NULL;
+    cmd_t *cmd = cmd_new(tokens);
+    cmdcol_add(col,cmd);
 
     printf("@>");
 

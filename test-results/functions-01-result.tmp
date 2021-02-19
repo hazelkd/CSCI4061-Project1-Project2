@@ -1,0 +1,94 @@
+(TEST 1) cmd_new_1
+COMMENTS:
+
+program: ./test_cmd cmd_new_1
+Failure messages:
+- FAILURE(139) due to Kill Signal from OS: likely a SEGFAULT occured
+- FAILURE: Output Mismatch at lines marked
+
+--- Side by Side Differences ---
+- Expect output in: test-results/raw/functions-01-expect.tmp
+- Actual output in: test-results/raw/functions-01-actual.tmp
+- Differing lines have a character like '|' '>' or '<' in the middle
+==== EXPECT ====                                  ==== ACTUAL ====                               
+{                                                 {
+    // Tests creation and init of a cmd_t along       // Tests creation and init of a cmd_t along
+    // with cmd_free() to deallocate it               // with cmd_free() to deallocate it
+    char *argv[] = {                                  char *argv[] = {
+      "cat",                                            "cat",
+      "test_data/quote.txt",                            "test_data/quote.txt",
+      "test_data/gettysburg.txt",                       "test_data/gettysburg.txt",
+      NULL                                              NULL
+    };                                                };
+    cmd_t *cmd = cmd_new(argv);                       cmd_t *cmd = cmd_new(argv);
+    test_print_cmd(cmd);                              test_print_cmd(cmd);
+    assert_pointers_unique(argv, cmd);                assert_pointers_unique(argv, cmd);
+    cmd_free(cmd);                                    cmd_free(cmd);
+}                                                 }
+cmd->name: cat                                  <
+cmd->argv[]:                                    <
+  [  0] : cat                                   <
+  [  1] : test_data/quote.txt                   <
+  [  2] : test_data/gettysburg.txt              <
+  [  3] : (null)                                <
+cmd->pid > 0 : no                               <
+cmd->pid: #-1                                   <
+cmd->out_pipe[PREAD]  > 0: no                   <
+cmd->out_pipe[PWRITE] > 0: no                   <
+cmd->status: -1                                 <
+cmd->str_status: INIT                           <
+cmd->finished: 0                                <
+cmd->output_size: -1                            <
+cmd->output:                                    <
+(null)                                          <
+ALERTS:                                           ALERTS:
+--- Line Differences ---
+EXPECT:  15) cmd->name: cat
+EXPECT:  16) cmd->argv[]:
+EXPECT:  17)   [  0] : cat
+EXPECT:  18)   [  1] : test_data/quote.txt
+EXPECT:  19)   [  2] : test_data/gettysburg.txt
+EXPECT:  20)   [  3] : (null)
+EXPECT:  21) cmd->pid > 0 : no
+EXPECT:  22) cmd->pid: #-1
+EXPECT:  23) cmd->out_pipe[PREAD]  > 0: no
+EXPECT:  24) cmd->out_pipe[PWRITE] > 0: no
+EXPECT:  25) cmd->status: -1
+EXPECT:  26) cmd->str_status: INIT
+EXPECT:  27) cmd->finished: 0
+EXPECT:  28) cmd->output_size: -1
+EXPECT:  29) cmd->output:
+EXPECT:  30) (null)
+
+--- Valgrind Log from: test-results/raw/functions-01-valgrd.tmp ---
+==3768916== Memcheck, a memory error detector
+==3768916== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==3768916== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==3768916== Command: ./test_cmd cmd_new_1
+==3768916== Parent PID: 3768915
+==3768916== 
+==3768916== Invalid write of size 1
+==3768916==    at 0x10B228: cmd_new (cmd.c:21)
+==3768916==    by 0x1097A7: main (test_cmd.c:62)
+==3768916==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
+==3768916== 
+==3768916== 
+==3768916== Process terminating with default action of signal 11 (SIGSEGV)
+==3768916==  Access not within mapped region at address 0x0
+==3768916==    at 0x10B228: cmd_new (cmd.c:21)
+==3768916==    by 0x1097A7: main (test_cmd.c:62)
+==3768916==  If you believe this happened as a result of a stack
+==3768916==  overflow in your program's main thread (unlikely but
+==3768916==  possible), you can try to increase the size of the
+==3768916==  main thread stack using the --main-stacksize= flag.
+==3768916==  The main thread stack size used in this run was 8388608.
+==3768916== 
+==3768916== HEAP SUMMARY:
+==3768916==     in use at exit: 0 bytes in 0 blocks
+==3768916==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
+==3768916== 
+==3768916== All heap blocks were freed -- no leaks are possible
+==3768916== 
+==3768916== For lists of detected and suppressed errors, rerun with: -s
+==3768916== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
