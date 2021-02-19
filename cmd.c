@@ -3,7 +3,7 @@
 #include "commando.h"
 
 cmd_t *cmd_new(char *argv[]){
-    cmd_t *cmd = NULL;
+    cmd_t *cmd = malloc(sizeof(cmd_t));
     *cmd->argv = malloc(sizeof(*argv));
     
      for(int i=0; i < sizeof(*argv); i++){
@@ -17,7 +17,7 @@ cmd_t *cmd_new(char *argv[]){
 
     cmd->argv[sizeof(*argv)] = NULL;
 
-    *cmd->name = *argv[0]; //think this line is wrong
+    *cmd->name = *strdup(argv[0]); //think this line is wrong
     cmd->finished = 0;
     snprintf(cmd->str_status, STATUS_LEN, "INIT");
     //I think it might be : snprintf(cmd->str_status, STATUS_LEN, "%s", "INIT/0");
@@ -26,8 +26,15 @@ cmd_t *cmd_new(char *argv[]){
     cmd->output_size = -1;
     cmd->pid = 0; //I think?
     *cmd->out_pipe = -1; //don't know why this only works with * 
-                            //This should be an array?
+     
+                           //This should be an array?
+    free(cmd->argv);
+
+    free(cmd);
+
     return cmd;
+
+    
 // Allocates a new cmd_t with the given argv[] array. Makes string
 // copies of each of the strings contained within argv[] using
 // strdup() as they likely come from a source that will be
