@@ -4,7 +4,7 @@
 
 cmd_t *cmd_new(char *argv[]){
     cmd_t *cmd = NULL;
-    *cmd->argv = malloc(sizeof(*argv));
+    *cmd->argv = malloc(sizeof(char*)*sizeof(*argv));
     
      for(int i=0; i < sizeof(*argv); i++){
         cmd->argv[i]= malloc(sizeof(*argv[i])); //might need extra byte for 0 byte
@@ -29,7 +29,7 @@ cmd_t *cmd_new(char *argv[]){
                             //This should be an array?
     return cmd;
 // Allocates a new cmd_t with the given argv[] array. Makes string
-// copies of each of the strings contained within argv[] using
+// copies of each ogf the strings contained within argv[] using
 // strdup() as they likely come from a source that will be
 // altered. Ensures that cmd->argv[] is ended with NULL. Sets the name
 // field to be the argv[0]. Sets finished to 0 (not finished yet). Set
