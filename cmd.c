@@ -7,8 +7,8 @@ cmd_t *cmd_new(char *argv[]){
     *cmd->argv = malloc(sizeof(*argv));
     
      for(int i=0; i < sizeof(*argv); i++){
-        cmd->argv[i]= malloc(sizeof(*argv[i])); //might need extra byte for 0 byte
-        *cmd->argv[i] = *strdup(argv[i]);
+        //cmd->argv[i] = malloc(sizeof(strlen(argv[i]))); //might need extra byte for 0 byte
+        cmd->argv[i] = strdup(argv[i]);
         //printf("%s\n",cmd->argv[i]);
         //make cmd an array or increment
      }
