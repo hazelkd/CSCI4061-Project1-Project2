@@ -12,7 +12,7 @@ cmd_t *cmd_new(char *argv[]){
         cmd->argv[i] = strdup(argv[i]);
      }
    
-    cmd->argv[sizeof(*argv)] = NULL;
+    //cmd->argv[sizeof(*argv)] = NULL;
 
     strcpy(cmd->name, argv[0]); 
     cmd->finished = 0;
