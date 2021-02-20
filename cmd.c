@@ -3,17 +3,15 @@
 #include "commando.h"
 
 cmd_t *cmd_new(char *argv[]){
-<<<<<<< HEAD
-    cmd_t *cmd = NULL;
-    *cmd->argv = malloc(sizeof(char*)*sizeof(*argv));
-=======
+
+
     cmd_t *cmd = malloc(sizeof(cmd_t));
     *cmd->argv = malloc(sizeof(*argv));
->>>>>>> 0bd147092d94f6938f8a4715835a11b15b78f574
+
     
      for(int i=0; i < sizeof(*argv); i++){
         cmd->argv[i]= malloc(sizeof(*argv[i])); //might need extra byte for 0 byte
-        *cmd->argv[i] = *strdup(argv[i]);
+        *cmd->argv[i] = strncpy(argv[i], sizeof(char*));
         //printf("%s\n",cmd->argv[i]);
         //make cmd an array or increment
      }
