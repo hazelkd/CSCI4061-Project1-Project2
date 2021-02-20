@@ -1,18 +1,26 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h> //don't know if we need this
 #include "commando.h"
 
 cmd_t *cmd_new(char *argv[]){
-
-
-    cmd_t *cmd = malloc(sizeof(cmd_t));
     
-     for(int i=0; i < sizeof(cmd->argv); i++){
+    cmd_t *cmd = malloc(sizeof(cmd_t));
+   // cmd_t cmd = (cmd_t)malloc(sizeof(cmd_t));
+
+     for(int i=0; i <= ARG_MAX+1; i++){
+         if(argv[i] == NULL){
+             cmd->argv[i]= NULL;
+             break;
+         }
+         else{
         //cmd->argv[i] = malloc(sizeof(strlen(argv[i]))); //might need extra byte for 0 byte
         cmd->argv[i] = strdup(argv[i]);
+        //free( cmd->argv[i]);
+         }
      }
    
-    //cmd->argv[sizeof(*argv)] = NULL;
+    //cmd->argv[sizeof(cmd->argv)] = NULL;
 
     strcpy(cmd->name, argv[0]); 
     cmd->finished = 0;
@@ -21,13 +29,13 @@ cmd_t *cmd_new(char *argv[]){
     cmd->status = -1;
     cmd->output = NULL;
     cmd->output_size = -1;
-    cmd->pid = 0; //I think?
+    cmd->pid = -1; 
     *cmd->out_pipe = -1; //don't know why this only works with * 
      
                            //This should be an array?
-    free(cmd->argv);
+    //free(cmd->argv);
 
-    free(cmd);
+    //free(cmd);
 
     return cmd;
 
@@ -42,7 +50,10 @@ cmd_t *cmd_new(char *argv[]){
 }
 
 void cmd_free(cmd_t *cmd){
-    for(int i = 0; i < (sizeof(cmd->argv)-1); i++) {
+    for(int i = 0; i <= ARG_MAX+1; i++) {
+        if(cmd->argv[i]==NULL){
+            break;
+        }
         free(cmd->argv[i]);
     }
 
