@@ -197,8 +197,8 @@ void cmd_print_output(cmd_t *cmd){
     }
     
     else { 
-       bytes_written = write(STDOUT_FILENO, cmd->output[PWRITE], bytes_written); //should it be bytes_written?
-       printf("%p\n",(cmd->output));
+        bytes_written = write(STDOUT_FILENO, cmd->output[PWRITE], BUFSIZE); 
+        printf("%p\n",(cmd->output));
 
     }
     close(cmd->output[PWRITE]);
