@@ -190,14 +190,18 @@ void cmd_fetch_output(cmd_t *cmd){
 // output. Closes the pipe associated with the command after reading
 // all input.
 
-void cmd_print_output(cmd_t *cmd){
+void cmd_print_output(cmd_t *cmd){ 
+    int *bytes_written = 0;
     if(cmd->output == NULL) {
         printf("%s[#%d] : output not ready\n", (cmd->name), (cmd->pid));
     }
     
-    else {
+    else { 
+       bytes_written = write(STDOUT_FILENO, cmd->output[PWRITE], bytes_written); //should it be bytes_written?
        printf("%p\n",(cmd->output));
+
     }
+    close(cmd->output[PWRITE]);
 }
 // Prints the output of the cmd contained in the output field if it is
 // non-null. 
