@@ -8,7 +8,7 @@ cmd_t *cmd_new(char *argv[]){
     cmd_t *cmd = malloc(sizeof(cmd_t));
    // cmd_t cmd = (cmd_t)malloc(sizeof(cmd_t));
 
-     for(int i=0; i <= ARG_MAX+1; i++){
+     for(int i=0; i < ARG_MAX; i++){
          if(argv[i] == NULL){
              cmd->argv[i]= NULL;
              break;
@@ -30,12 +30,9 @@ cmd_t *cmd_new(char *argv[]){
     cmd->output = NULL;
     cmd->output_size = -1;
     cmd->pid = -1; 
-    *cmd->out_pipe = -1; //don't know why this only works with * 
-     
-                           //This should be an array?
-    //free(cmd->argv);
-
-    //free(cmd);
+    cmd->out_pipe[0] = -1; //don't know why this only works with * 
+    cmd->out_pipe[1] = -1; 
+                          
 
     return cmd;
 
