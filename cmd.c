@@ -6,33 +6,27 @@
 cmd_t *cmd_new(char *argv[]){
     
     cmd_t *cmd = malloc(sizeof(cmd_t));
-   // cmd_t cmd = (cmd_t)malloc(sizeof(cmd_t));
 
      for(int i=0; i < ARG_MAX; i++){
-         if(argv[i] == NULL){
+        if(argv[i] == NULL){
              cmd->argv[i]= NULL;
              break;
-         }
-         else{
-        //cmd->argv[i] = malloc(sizeof(strlen(argv[i]))); //might need extra byte for 0 byte
-        cmd->argv[i] = strdup(argv[i]);
-        //free( cmd->argv[i]);
-         }
+        }
+        else{
+            cmd->argv[i] = strdup(argv[i]);
+        }
      }
-   
-    //cmd->argv[sizeof(cmd->argv)] = NULL;
+
 
     strcpy(cmd->name, argv[0]); 
     cmd->finished = 0;
     snprintf(cmd->str_status, STATUS_LEN, "INIT");
-    //I think it might be : snprintf(cmd->str_status, STATUS_LEN, "%s", "INIT/0");
     cmd->status = -1;
     cmd->output = NULL;
     cmd->output_size = -1;
     cmd->pid = -1; 
-    cmd->out_pipe[0] = -1; //don't know why this only works with * 
-    cmd->out_pipe[1] = -1; 
-                          
+    cmd->out_pipe[0] = -1;
+    cmd->out_pipe[1] = -1;            
 
     return cmd;
 
@@ -95,24 +89,28 @@ void cmd_start(cmd_t *cmd){
 }
 void cmd_update_state(cmd_t *cmd, int block){
 
-    int *status=0;
+    pid_t pid = cmd->pid;
+    int status=-11111;
 
     while (cmd->finished != 1){
       
-        int ret = waitpid(cmd->pid, status, block);
+        int ret = waitpid(cmd->pid, &status, block);
         
-        if (ret == 0){ //impatient parent.c example, 
-            printf("Child has not exited");
+        if(ret == -1){
+            perror("waitpid() failed\n");
         }
-        if (WIFEXITED(*status)){
+        else if (ret == 0){ 
+            printf("Pid process has not complete");
+        }
+        else if(ret == pid){
+
+            if (WIFEXITED(status)){
             cmd->finished = 1;
-            cmd->status = WEXITSTATUS(*status);  
+            cmd->status = WEXITSTATUS(status);  
             cmd_fetch_output(cmd);
             printf("@!!! %s[#%d] : %s \n", cmd->name, cmd->pid, cmd->str_status);
-        }
-        //else{                                       
-           // waitpid(cmd->pid,status, block);            
-       // }                                                                          
+            }
+        }                                                                         
     }                        
 }                          
 // If the finished flag is 1, does nothing. Otherwise, updates the
@@ -179,9 +177,8 @@ void cmd_fetch_output(cmd_t *cmd){
         //how to do read_all?
         cmd->output_size = sizeof(cmd->output);
         //How to check if all input is read?
-        close(*cmd->out_pipe); //Both ends of pipe?
     }
-
+    close(*cmd->out_pipe[PREAD]); //Both ends of pipe?
 }
 // If cmd->finished is zero, prints an error message with the format
 // 
@@ -199,7 +196,7 @@ void cmd_print_output(cmd_t *cmd){
     }
     
     else {
-       printf("%p\n",(cmd->output));//this can't print because its void?
+       printf("%p\n",(cmd->output));
     }
 }
 // Prints the output of the cmd contained in the output field if it is
