@@ -71,13 +71,12 @@ void cmd_start(cmd_t *cmd){
      
     snprintf(cmd->str_status, STATUS_LEN, "RUN");   
 
-    //char *child_argv[] = {"ls",NULL}; //Purpose of this line?
     
     pipe(cmd->out_pipe);
 
     pid_t child_pid = fork();
  
-    if(getpid() == 0 ){           
+    if(child_pid == 0 ){           
        int backup = dup(STDOUT_FILENO);
        dup2(cmd->out_pipe[PWRITE],STDOUT_FILENO); 
         
