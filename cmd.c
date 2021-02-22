@@ -103,6 +103,7 @@ void cmd_update_state(cmd_t *cmd, int block){
         }
         else if (ret == 0){ 
             printf("Pid process has not completed");
+            strcpy(cmd->str_status, "EXIT(1)");
         }
         else if(ret == pid){
 
@@ -110,11 +111,12 @@ void cmd_update_state(cmd_t *cmd, int block){
                 
                 cmd->finished = 1;
                 cmd->status = WEXITSTATUS(status);
-                strcpy( cmd->str_status,"EXIT(0)");
+                strcpy(cmd->str_status, "EXIT(0)");
                 cmd_fetch_output(cmd);
                 //cmd->output_size = 
                 printf("@!!! %s[#%d]: EXIT(%d)\n", cmd->name, cmd->pid, cmd->status);
             }
+            
         }                                                                         
     }                        
 }                          
