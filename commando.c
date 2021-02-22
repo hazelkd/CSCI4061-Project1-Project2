@@ -12,17 +12,15 @@ int main(int argc, char *argv[]) {
     cmdcol_t *col= NULL;
     cmd_t *cmd = cmd_new(tokens);
     cmdcol_add(col,cmd);
-
-  
    
-    while(1){ //Checking for end of input
-        printf("@>");
-        fgets(*result, MAX_LINE, stdin);
-        parse_into_tokens(*result, tokens, ntok); 
-        if(strcmp(argv[1],"--echo")==0 || getenv("COMMAND_ECHO")!= NULL){ 
-            setenv("COMMAND_ECHO", "ON",1); 
-        }
-        while(result != NULL){
+    
+    printf("@>");
+    fgets(*result, MAX_LINE, stdin);
+    parse_into_tokens(*result, tokens, ntok); 
+    if(strcmp(argv[1],"--echo")==0 || getenv("COMMAND_ECHO")!= NULL){ 
+        setenv("COMMAND_ECHO", "ON",1); 
+    }
+    while(result != NULL){//Checking for end of input
             if(ntok == 0){
                 break; //User hits enter ?
             }
@@ -75,7 +73,6 @@ int main(int argc, char *argv[]) {
                 cmdcol_add(col, cmd1);
                 cmd_start(cmd1);
             }
-        }
     }
    
         printf("End of input\n");
