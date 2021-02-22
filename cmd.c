@@ -73,12 +73,14 @@ void cmd_start(cmd_t *cmd){
         
         execvp(cmd->name, cmd->argv);
         dup2(backup,STDOUT_FILENO);
+        close(cmd->out_pipe[PREAD]);
     }
 
     else{
-    cmd->pid = child_pid; 
+        cmd->pid = child_pid;
+        close(cmd->out_pipe[PWRITE]); 
     }
-    close(cmd->out_pipe[PREAD]);
+    //close(cmd->out_pipe[PREAD]);
 // Forks a process and executes command in cmd in the process.
 // Changes the str_status field to "RUN" using snprintf().  Creates a
 // pipe for out_pipe to capture standard output.  In the parent
@@ -110,6 +112,7 @@ void cmd_update_state(cmd_t *cmd, int block){
                 cmd->status = WEXITSTATUS(status);
                 strcpy( cmd->str_status,"EXIT(0)");
                 cmd_fetch_output(cmd);
+                //cmd->output_size = 
                 printf("@!!! %s[#%d]: EXIT(%d)\n", cmd->name, cmd->pid, cmd->status);
             }
         }                                                                         
@@ -170,7 +173,7 @@ return buf;
 // is done elsewhere.
 }
 void cmd_fetch_output(cmd_t *cmd){
-    int bytes_read = -1;
+    int bytes_read = 0;
     
     if(cmd->finished == 0){
         printf("%s[%d] not finished yet", (cmd->name), (cmd->pid));
@@ -179,16 +182,16 @@ void cmd_fetch_output(cmd_t *cmd){
         if(cmd->output==NULL){
         
         cmd->output = read_all(cmd->out_pipe[PREAD], &bytes_read); 
-        printf("pipe: %d\n ", cmd->out_pipe[PREAD]);
+        //printf("pipe: %d\n ", cmd->out_pipe[PREAD]);
         cmd->output_size = bytes_read;
-        printf("bytes read: %d\n", bytes_read);
-        printf("output is : %s\n", (char *)cmd->output);
+        //printf("bytes read: %d\n", bytes_read);
+        //printf("output is : %s\n", (char *)cmd->output);
         }
-        
+        close(cmd->out_pipe[PREAD]); //Both ends of pipe? 
     }
     
     //free(bytes_read);
-    close(cmd->out_pipe[PREAD]); //Both ends of pipe?
+   
 }
 // If cmd->finished is zero, prints an error message with the format
 // 
@@ -201,13 +204,13 @@ void cmd_fetch_output(cmd_t *cmd){
 // all input.
 
 void cmd_print_output(cmd_t *cmd){ 
-    int *bytes_written = 0;
+    //int *bytes_written = -1;
     if(cmd->output == NULL) {
         printf("%s[#%d] : output not ready\n", (cmd->name), (cmd->pid));
     }
     
     else { 
-        *bytes_written = write(STDOUT_FILENO, cmd->output, BUFSIZE); 
+        write(STDOUT_FILENO, cmd->output, BUFSIZE); 
         printf("%p\n",(cmd->output));
 
     }
