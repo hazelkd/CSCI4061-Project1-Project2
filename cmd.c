@@ -135,7 +135,7 @@ char *read_all(int fd, int *nread){
     char *buf = malloc(max_size);//*sizeof(char));       // allocate 1 byte of intial space
     int bytes_read = 1;
     
-  while(bytes_read!=0){//bytes_read != 0){  
+  while(bytes_read!=0){  
     bytes_read = read(fd, buf+cur_pos, max_size);    //we need to keep track of our place in buffer but idk how
       
     cur_pos+=bytes_read;     //want to keep track of our current position in the buffer 
@@ -148,8 +148,7 @@ char *read_all(int fd, int *nread){
             printf("ERROR: reallocation failed\n");    // if not...
             //buf[bytes_read] = NULL;
             free(buf);
-            return buf;                                   // bail out
-                                         // de-allocate current buffer
+            return buf;                                   // de-allocate current buffer
         } 
         buf = newbuf;                              
     } 
