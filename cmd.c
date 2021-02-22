@@ -100,7 +100,7 @@ void cmd_update_state(cmd_t *cmd, int block){
             perror("waitpid() failed\n");
         }
         else if (ret == 0){ 
-            printf("Pid process has not complete");
+            printf("Pid process has not completed");
         }
         else if(ret == pid){
 
@@ -131,29 +131,35 @@ void cmd_update_state(cmd_t *cmd, int block){
 // which includes the command name, PID, and exit status.
 
 char *read_all(int fd, int *nread){
-    int max_size = 1, cur_pos = 0;                   // initial max and position
-    char *buf = malloc(max_size*sizeof(char));       // allocate 1 byte of intial space
-  
-  while(1){ 
-    int ret = read(fd, buf, max_size);    //???      
-    if(ret == EOF || ret =='\0'){              
-        buf[ret] = '\0';
-        break;                                                      
-    }       
-    cur_pos++;      
+    int max_size = 100, cur_pos = 0;                   // initial max and position
+    char *buf = malloc(max_size);//*sizeof(char));       // allocate 1 byte of intial space
+    int bytes_read = 1;
+    //int reads = 1;
+
+  while(bytes_read!=0){//bytes_read != 0){ 
+    bytes_read = read(fd, buf, max_size-1);    //???      //we need to keep track of our place in buffer but idk how
+    //if(buf[bytes_read-1] == EOF || buf[bytes_read-1] =='\0'){              
+        //buf[bytes_read-1] = '\0';
+        //break;                                                      
+    //}       
+    cur_pos+=bytes_read;     //want to keep track of our current position in the buffer 
                                    // update current input
     if(cur_pos == max_size){                       // check if more space is needed
         max_size *= 2;                               // double size of buffer
-        buf = realloc(buf, max_size*sizeof(char));          // pointer to either new or old location re-allocate, copies characters to new space if needed
+        char *newbuf = realloc(buf, max_size*sizeof(char));          // pointer to either new or old location re-allocate, copies characters to new space if needed
         
-        if(buf == NULL){                         // check that re-allocation succeeded
+        if(!newbuf){                         // check that re-allocation succeeded
             printf("ERROR: reallocation failed\n");    // if not...
+            buf[cur_pos] = '\0';
+            return buf;                                   // bail out
             free(buf);                                 // de-allocate current buffer
-            exit(1);                                   // bail out
-        }                               
+        } 
+        buf = newbuf;                              
     } 
   
-} 
+    } 
+    *nread = cur_pos;
+    //buf[cur_pos] = '/0';
 return buf;   
 free(buf); 
 // Reads all input from the open file descriptor fd. Assumes
@@ -167,7 +173,7 @@ free(buf);
 // is done elsewhere.
 }
 void cmd_fetch_output(cmd_t *cmd){
-    int *bytes_read =0;
+    int *bytes_read = malloc(sizeof(int));
     if(cmd->finished == 0){
         printf("%s[%d] not finished yet", (cmd->name), (cmd->pid));
     }
@@ -175,10 +181,10 @@ void cmd_fetch_output(cmd_t *cmd){
         //loop for input?
         cmd->output = read_all(cmd->out_pipe[PREAD], bytes_read); //Should this be pwrite or pread?
         //how to do read_all?
-        cmd->output_size = sizeof(cmd->output);
+        cmd->output_size = *bytes_read;//sizeof(cmd->output);
         //How to check if all input is read?
     }
-    close(*cmd->out_pipe[PREAD]); //Both ends of pipe?
+    close(cmd->out_pipe[PREAD]); //Both ends of pipe?
 }
 // If cmd->finished is zero, prints an error message with the format
 // 
@@ -197,11 +203,13 @@ void cmd_print_output(cmd_t *cmd){
     }
     
     else { 
-        bytes_written = write(STDOUT_FILENO, cmd->output[PWRITE], BUFSIZE); 
+        *bytes_written = write(STDOUT_FILENO, cmd->output, BUFSIZE); 
+        //[PWRITE]
         printf("%p\n",(cmd->output));
 
     }
-    close(cmd->output[PWRITE]);
+    //close(*cmd->output);
+    //[PWRITE]);
 }
 // Prints the output of the cmd contained in the output field if it is
 // non-null. 
