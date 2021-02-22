@@ -131,37 +131,33 @@ void cmd_update_state(cmd_t *cmd, int block){
 // which includes the command name, PID, and exit status.
 
 char *read_all(int fd, int *nread){
-    int max_size = 100, cur_pos = 0;                   // initial max and position
+    int max_size = BUFSIZE, cur_pos = 0;                   // initial max and position
     char *buf = malloc(max_size);//*sizeof(char));       // allocate 1 byte of intial space
     int bytes_read = 1;
-    //int reads = 1;
-
-  while(bytes_read!=0){//bytes_read != 0){ 
-    bytes_read = read(fd, buf, max_size-1);    //???      //we need to keep track of our place in buffer but idk how
-    //if(buf[bytes_read-1] == EOF || buf[bytes_read-1] =='\0'){              
-        //buf[bytes_read-1] = '\0';
-        //break;                                                      
-    //}       
+    
+  while(bytes_read!=0){//bytes_read != 0){  
+    bytes_read = read(fd, buf+cur_pos, max_size);    //we need to keep track of our place in buffer but idk how
+      
     cur_pos+=bytes_read;     //want to keep track of our current position in the buffer 
                                    // update current input
     if(cur_pos == max_size){                       // check if more space is needed
         max_size *= 2;                               // double size of buffer
-        char *newbuf = realloc(buf, max_size*sizeof(char));          // pointer to either new or old location re-allocate, copies characters to new space if needed
-        
+        char *newbuf = realloc(buf, max_size*sizeof(char));     // pointer to either new or old location re-allocate, copies characters to new space if needed
+
         if(!newbuf){                         // check that re-allocation succeeded
             printf("ERROR: reallocation failed\n");    // if not...
-            buf[cur_pos] = '\0';
+            //buf[bytes_read] = NULL;
+            free(buf);
             return buf;                                   // bail out
-            free(buf);                                 // de-allocate current buffer
+                                         // de-allocate current buffer
         } 
         buf = newbuf;                              
     } 
-  
-    } 
     *nread = cur_pos;
-    //buf[cur_pos] = '/0';
+    buf[bytes_read] = '\0';
+    }       
 return buf;   
-free(buf); 
+ 
 // Reads all input from the open file descriptor fd. Assumes
 // character/text output and null-terminates the character output with
 // a '\0' character allowing for printf() to print it later. Stores
