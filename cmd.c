@@ -6,6 +6,7 @@
 cmd_t *cmd_new(char *argv[]){
     
     cmd_t *cmd = malloc(sizeof(cmd_t));
+    *cmd->name = '\0';
 
      for(int i=0; i < ARG_MAX; i++){
         if(argv[i] == NULL){
@@ -16,9 +17,15 @@ cmd_t *cmd_new(char *argv[]){
             cmd->argv[i] = strdup(argv[i]);
         }
      }
+   
+    if (argv[0] == NULL) {
+        *cmd->name = '\0';
+    }
+    else {
+        strcpy(cmd->name,argv[0]);
+    }
 
-
-    strcpy(cmd->name, argv[0]); 
+    //strcpy(cmd->name,argv[0]); 
     cmd->finished = 0;
     snprintf(cmd->str_status, STATUS_LEN, "INIT");
     cmd->status = -1;
@@ -29,6 +36,7 @@ cmd_t *cmd_new(char *argv[]){
     cmd->out_pipe[1] = -1;            
 
     return cmd;
+    cmd_free(cmd);
 
     
 // Allocates a new cmd_t with the given argv[] array. Makes string
@@ -102,7 +110,6 @@ void cmd_update_state(cmd_t *cmd, int block){
         }
         else if (ret == 0){ 
             printf("Pid process has not completed");
-            strcpy(cmd->str_status, "EXIT(1)");
         }
         else if(ret == pid){
 
@@ -110,7 +117,12 @@ void cmd_update_state(cmd_t *cmd, int block){
                 
                 cmd->finished = 1;
                 cmd->status = WEXITSTATUS(status);
-                strcpy(cmd->str_status, "EXIT(0)");
+                if (cmd->status == 0) {
+                    strcpy(cmd->str_status, "EXIT(0)");
+                }
+                else if (cmd->status == 1) {
+                    strcpy(cmd->str_status, "EXIT(1)");
+                }
                 cmd_fetch_output(cmd);
                 printf("@!!! %s[#%d]: EXIT(%d)\n", cmd->name, cmd->pid, cmd->status);
             }
