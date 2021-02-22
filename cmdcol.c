@@ -32,10 +32,17 @@ void cmdcol_print(cmdcol_t *col){
         printf("%4d ", (col->cmd[i])->status);
         printf("%10s ", (col->cmd[i])->str_status);
         printf("%4d ", (col->cmd[i])->output_size);
-        for (int j = 0; j < (sizeof(col->cmd[i])->argv); j++) {
-            printf("%-s ", (col->cmd[i])->argv[j]);
+
+        for(int j = 0; j < sizeof(col->cmd[i]->argv); j++) {
+            if (col->cmd[i]->argv[j]!= NULL) {
+                printf("%-s ", (col->cmd[i]->argv[j]));
+            }
+            else {
+                printf("\n");
+                break;
+            }
+        //printf("\n");
         }
-        printf("\n");
     }
 }
 // JOB  #PID      STAT   STR_STAT OUTB COMMAND
