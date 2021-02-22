@@ -61,7 +61,6 @@ void cmd_free(cmd_t *cmd){
 void cmd_start(cmd_t *cmd){
      
     snprintf(cmd->str_status, STATUS_LEN, "RUN");   
-
     
     pipe(cmd->out_pipe);
 
@@ -113,7 +112,6 @@ void cmd_update_state(cmd_t *cmd, int block){
                 cmd->status = WEXITSTATUS(status);
                 strcpy(cmd->str_status, "EXIT(0)");
                 cmd_fetch_output(cmd);
-                //cmd->output_size = 
                 printf("@!!! %s[#%d]: EXIT(%d)\n", cmd->name, cmd->pid, cmd->status);
             }
             
