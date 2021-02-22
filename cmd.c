@@ -179,9 +179,9 @@ void cmd_fetch_output(cmd_t *cmd){
         if(cmd->output==NULL){
         
         cmd->output = read_all(cmd->out_pipe[PREAD], &bytes_read); 
-        printf("pipe: %d\n ",cmd->out_pipe[PREAD]);
+        printf("pipe: %d\n ", cmd->out_pipe[PREAD]);
         cmd->output_size = bytes_read;
-        printf("bytes read: %d\n",bytes_read);
+        printf("bytes read: %d\n", bytes_read);
         printf("output is : %s\n", (char *)cmd->output);
         }
         
