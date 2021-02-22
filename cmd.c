@@ -132,29 +132,29 @@ void cmd_update_state(cmd_t *cmd, int block){
 
 char *read_all(int fd, int *nread){
     int max_size = BUFSIZE, cur_pos = 0;                   // initial max and position
-    char *buf = malloc(max_size);//*sizeof(char));       // allocate 1 byte of intial space
+    char *buf = malloc(BUFSIZE+1);             // allocate 1 byte of intial space
     int bytes_read = 1;
     
-  while(bytes_read!=0){  
-    bytes_read = read(fd, buf+cur_pos, max_size);    //we need to keep track of our place in buffer but idk how
-      
-    cur_pos+=bytes_read;     //want to keep track of our current position in the buffer 
+ do {  
+    bytes_read = read(fd, buf+cur_pos, max_size-cur_pos);    //we need to keep track of our place in buffer but idk how
+   if(bytes_read > 0){
+        cur_pos+=bytes_read; //want to keep track of our current position in the buffer 
+   }   
                                    // update current input
     if(cur_pos == max_size){                       // check if more space is needed
         max_size *= 2;                               // double size of buffer
-        char *newbuf = realloc(buf, max_size*sizeof(char));     // pointer to either new or old location re-allocate, copies characters to new space if needed
+        char *newbuf = realloc(buf, max_size+1);     // pointer to either new or old location re-allocate, copies characters to new space if needed
 
         if(!newbuf){                         // check that re-allocation succeeded
             printf("ERROR: reallocation failed\n");    // if not...
-            //buf[bytes_read] = NULL;
-            free(buf);
-            return buf;                                   // de-allocate current buffer
+            exit(1);                                  
         } 
         buf = newbuf;                              
     } 
+    
+    } while(bytes_read>0);
     *nread = cur_pos;
-    buf[bytes_read] = '\0';
-    }       
+    buf[cur_pos] = '\0';       
 return buf;   
  
 // Reads all input from the open file descriptor fd. Assumes
