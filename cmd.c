@@ -105,10 +105,12 @@ void cmd_update_state(cmd_t *cmd, int block){
         else if(ret == pid){
 
             if (WIFEXITED(status)){
-            cmd->finished = 1;
-            cmd->status = WEXITSTATUS(status);  
-            cmd_fetch_output(cmd);
-            printf("@!!! %s[#%d] : %s \n", cmd->name, cmd->pid, cmd->str_status);
+                
+                cmd->finished = 1;
+                cmd->status = WEXITSTATUS(status);
+                strcpy( cmd->str_status,"EXIT(0)");
+                cmd_fetch_output(cmd);
+                printf("@!!! %s[#%d]: EXIT(%d)\n", cmd->name, cmd->pid, cmd->status);
             }
         }                                                                         
     }                        
@@ -132,15 +134,15 @@ void cmd_update_state(cmd_t *cmd, int block){
 
 char *read_all(int fd, int *nread){
     int max_size = BUFSIZE, cur_pos = 0;                   // initial max and position
-    char *buf = malloc(BUFSIZE+1);             // allocate 1 byte of intial space
+    char *buf = malloc(BUFSIZE+1);                      // allocate 1 byte of intial space
     int bytes_read = 1;
     
  do {  
     bytes_read = read(fd, buf+cur_pos, max_size-cur_pos);    //we need to keep track of our place in buffer but idk how
    if(bytes_read > 0){
-        cur_pos+=bytes_read; //want to keep track of our current position in the buffer 
+        cur_pos+=bytes_read;                //want to keep track of our current position in the buffer 
    }   
-                                   // update current input
+                                            // update current input
     if(cur_pos == max_size){                       // check if more space is needed
         max_size *= 2;                               // double size of buffer
         char *newbuf = realloc(buf, max_size+1);     // pointer to either new or old location re-allocate, copies characters to new space if needed
@@ -168,17 +170,24 @@ return buf;
 // is done elsewhere.
 }
 void cmd_fetch_output(cmd_t *cmd){
-    int *bytes_read = malloc(sizeof(int));
+    int bytes_read = -1;
+    
     if(cmd->finished == 0){
         printf("%s[%d] not finished yet", (cmd->name), (cmd->pid));
     }
     else {
-        //loop for input?
-        cmd->output = read_all(cmd->out_pipe[PREAD], bytes_read); //Should this be pwrite or pread?
-        //how to do read_all?
-        cmd->output_size = *bytes_read;//sizeof(cmd->output);
-        //How to check if all input is read?
+        if(cmd->output==NULL){
+        
+        cmd->output = read_all(cmd->out_pipe[PREAD], &bytes_read); 
+        printf("pipe: %d\n ",cmd->out_pipe[PREAD]);
+        cmd->output_size = bytes_read;
+        printf("bytes read: %d\n",bytes_read);
+        printf("output is : %s\n", (char *)cmd->output);
+        }
+        
     }
+    
+    //free(bytes_read);
     close(cmd->out_pipe[PREAD]); //Both ends of pipe?
 }
 // If cmd->finished is zero, prints an error message with the format
@@ -199,12 +208,11 @@ void cmd_print_output(cmd_t *cmd){
     
     else { 
         *bytes_written = write(STDOUT_FILENO, cmd->output, BUFSIZE); 
-        //[PWRITE]
         printf("%p\n",(cmd->output));
 
     }
-    //close(*cmd->output);
-    //[PWRITE]);
+    //close(cmd->outpipe[PWRITE]);
+
 }
 // Prints the output of the cmd contained in the output field if it is
 // non-null. 
