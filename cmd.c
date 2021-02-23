@@ -41,19 +41,19 @@ cmd_t *cmd_new(char *argv[]){
 
 }
 
-void cmd_free(cmd_t *cmd){
-    for(int i = 0; i <= ARG_MAX+1; i++) {
+void cmd_free(cmd_t *cmd){      //free cmd
+    for(int i = 0; i <= ARG_MAX+1; i++) {       //free cmd->argv elements
         if(cmd->argv[i]==NULL){
             break;
         }
         free(cmd->argv[i]);
     }
 
-    if (cmd->output != NULL) {
+    if (cmd->output != NULL) {          //free cmd output
         free(cmd->output);
     }
 
-    free(cmd);
+    free(cmd);          //free cmd itself
 
 }
 
@@ -124,11 +124,8 @@ char *read_all(int fd, int *nread){
     bytes_read = read(fd, buf+cur_pos, max_size-cur_pos);//-cur_pos    
   
     cur_pos+=bytes_read;                // Keep track of our current position in the buffer 
-      
-    printf("max size: %d\n", max_size); 
-    printf("cur pos: %d \n", cur_pos); 
-    printf("bytes read: %d\n", bytes_read);                   // update current input
-    if(cur_pos >= max_size){  
+                                       
+    if(cur_pos >= max_size){            // update current input
                             // check if more space is needed
         max_size *= 2;                               // double size of buffer
         char *newbuf = realloc(buf, max_size+1);     // pointer to either new or old location re-allocate, copies characters to new space if needed

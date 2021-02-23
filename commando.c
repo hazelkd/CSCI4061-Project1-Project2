@@ -6,37 +6,30 @@
 int main(int argc, char *argv[]) {
     setvbuf(stdout, NULL, _IONBF, 0); //turn off output buffering
 
-    char* result[MAX_LINE];
     char result[MAX_LINE] = {0};
     char *tokens[MAX_LINE]; 
-    int *ntok=0;
-    cmdcol_t *col= NULL;
-    cmd_t *cmd = cmd_new(tokens);
-    cmdcol_add(col,cmd);
-    int echo =0;
-
-    //printf("@>");
-    fgets(*result, MAX_LINE, stdin);
-    parse_into_tokens(*result, tokens, ntok); 
-
+     
     int ntok=0;
     char *backup=NULL;
     int echo =0;
     cmdcol_t *col= malloc(sizeof(cmdcol_t)); // Allocate an initial pointer to memory;
 
-    // if(strcmp(argv[1],"--echo")==0 || getenv("COMMAND_ECHO")!= NULL){ // Check for echoing
-    //      setenv("COMMAND_ECHO", "1",1);
-    //    echo = 1;
-    //}
-    while(result != NULL){   // Checking for end of input
-            if(ntok == 0){ // User hits enter 
+    if(strcmp(argv[1],"--echo")==0 || getenv("COMMAND_ECHO")!= NULL){ // Check for echoing
+          setenv("COMMAND_ECHO", "1",1);
+        echo = 1;
+    }
+
+    backup = fgets(result, MAX_LINE, stdin);
+
+    while(1){   // Checking for end of input
+            if(backup == 0){ // User hits enter 
                 break;}
     }                       
 
-    // backup = fgets(result, MAX_LINE, stdin);
+    backup = fgets(result, MAX_LINE, stdin);
 
     while(1){               // Checking for end of input
-            if(backup == NULL){   // User hits enter 
+            if(ntok == 0){     //backup == NULL){   // User hits enter 
                 break; 
             }
 
@@ -113,9 +106,8 @@ int main(int argc, char *argv[]) {
 
         free(*tokens);
         printf("End of input\n");
-        cmdcol_update_state(col, NOBLOCK);
-        //break; - do we need this? 
-    cmdcol_freeall(col);
+        //cmdcol_update_state(col, NOBLOCK);
+        cmdcol_freeall(col);
         cmdcol_update_state(col, NOBLOCK); 
 
     cmdcol_freeall(col); // Free all commands in col
