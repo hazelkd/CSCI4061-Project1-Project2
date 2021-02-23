@@ -1,0 +1,118 @@
+(TEST 10) cmd_update_1
+COMMENTS:
+
+program: ./test_cmd cmd_update_1
+Failure messages:
+- FAILURE: Output Mismatch at lines marked
+
+--- Side by Side Differences ---
+- Expect output in: test-results/raw/functions-10-expect.tmp
+- Actual output in: test-results/raw/functions-10-actual.tmp
+- Differing lines have a character like '|' '>' or '<' in the middle
+==== EXPECT ====                                                         ==== ACTUAL ====                                                      
+{                                                                        {
+    // Tests whether cmd_update() correctly checks                           // Tests whether cmd_update() correctly checks
+    // on a running command and blocks the calling                           // on a running command and blocks the calling
+    // process until the cmd is finished. Then checks                        // process until the cmd is finished. Then checks
+    // that the cmd_t is updated correctly based on                          // that the cmd_t is updated correctly based on
+    // completion of the cmd.                                                // completion of the cmd.
+    char *argv[] = {                                                         char *argv[] = {
+      "cat",                                                                   "cat",
+      "test_data/quote.txt",                                                   "test_data/quote.txt",
+      "test_data/gettysburg.txt",                                              "test_data/gettysburg.txt",
+      NULL                                                                     NULL
+    };                                                                       };
+    cmd_t *cmd = cmd_new(argv);                                              cmd_t *cmd = cmd_new(argv);
+    cmd_start(cmd);                // start running                          cmd_start(cmd);                // start running
+    cmd_update_state(cmd,DOBLOCK); // wait for completion                    cmd_update_state(cmd,DOBLOCK); // wait for completion
+                                   // should see an alert                                                   // should see an alert
+    test_print_cmd(cmd);           // show completed cmd                     test_print_cmd(cmd);           // show completed cmd
+    cmd_free(cmd);                                                           cmd_free(cmd);
+}                                                                        }
+                                                                       > max size: 1024
+                                                                       > cur pos: 1024 
+                                                                       > bytes read: 1024
+                                                                       > max size: 2048
+                                                                       > cur pos: 1636 
+                                                                       > bytes read: 612
+                                                                       > max size: 2048
+                                                                       > cur pos: 1636 
+                                                                       > bytes read: 0
+cmd->name: cat                                                           cmd->name: cat
+cmd->argv[]:                                                             cmd->argv[]:
+  [  0] : cat                                                              [  0] : cat
+  [  1] : test_data/quote.txt                                              [  1] : test_data/quote.txt
+  [  2] : test_data/gettysburg.txt                                         [  2] : test_data/gettysburg.txt
+  [  3] : (null)                                                           [  3] : (null)
+cmd->pid > 0 : yes                                                       cmd->pid > 0 : yes
+cmd->pid: %0                                                             cmd->pid: %0
+cmd->out_pipe[PREAD]  > 0: yes                                           cmd->out_pipe[PREAD]  > 0: yes
+cmd->out_pipe[PWRITE] > 0: yes                                           cmd->out_pipe[PWRITE] > 0: yes
+cmd->status: 0                                                           cmd->status: 0
+cmd->str_status: EXIT(0)                                                 cmd->str_status: EXIT(0)
+cmd->finished: 1                                                         cmd->finished: 1
+cmd->output_size: 1636                                                   cmd->output_size: 1636
+cmd->output:                                                             cmd->output:
+Object-oriented programming is an exceptionally bad idea which could     Object-oriented programming is an exceptionally bad idea which could
+only have originated in California.                                      only have originated in California.
+
+-- Edsger Dijkstra                                                       -- Edsger Dijkstra
+Four score and seven years ago our fathers brought forth on this         Four score and seven years ago our fathers brought forth on this
+continent, a new nation, conceived in Liberty, and dedicated to the      continent, a new nation, conceived in Liberty, and dedicated to the
+proposition that all men are created equal.                              proposition that all men are created equal.
+
+Now we are engaged in a great civil war, testing whether that nation,    Now we are engaged in a great civil war, testing whether that nation,
+or any nation so conceived and so dedicated, can long endure. We are     or any nation so conceived and so dedicated, can long endure. We are
+met on a great battle-field of that war. We have come to dedicate a      met on a great battle-field of that war. We have come to dedicate a
+portion of that field, as a final resting place for those who here       portion of that field, as a final resting place for those who here
+gave their lives that that nation might live. It is altogether fitting   gave their lives that that nation might live. It is altogether fitting
+and proper that we should do this.                                       and proper that we should do this.
+
+But, in a larger sense, we can not dedicate -- we can not consecrate     But, in a larger sense, we can not dedicate -- we can not consecrate
+-- we can not hallow -- this ground. The brave men, living and dead,     -- we can not hallow -- this ground. The brave men, living and dead,
+who struggled here, have consecrated it, far above our poor power to     who struggled here, have consecrated it, far above our poor power to
+add or detract. The world will little note, nor long remember what we    add or detract. The world will little note, nor long remember what we
+say here, but it can never forget what they did here. It is for us the   say here, but it can never forget what they did here. It is for us the
+living, rather, to be dedicated here to the unfinished work which they   living, rather, to be dedicated here to the unfinished work which they
+who fought here have thus far so nobly advanced. It is rather for us     who fought here have thus far so nobly advanced. It is rather for us
+to be here dedicated to the great task remaining before us -- that       to be here dedicated to the great task remaining before us -- that
+from these honored dead we take increased devotion to that cause for     from these honored dead we take increased devotion to that cause for
+which they gave the last full measure of devotion -- that we here        which they gave the last full measure of devotion -- that we here
+highly resolve that these dead shall not have died in vain -- that       highly resolve that these dead shall not have died in vain -- that
+this nation, under God, shall have a new birth of freedom -- and that    this nation, under God, shall have a new birth of freedom -- and that
+government of the people, by the people, for the people, shall not       government of the people, by the people, for the people, shall not
+perish from the earth.                                                   perish from the earth.
+
+Abraham Lincoln                                                          Abraham Lincoln
+November 19, 1863                                                        November 19, 1863
+
+ALERTS:                                                                  ALERTS:
+@!!! cat[%0]: EXIT(0)                                                    @!!! cat[%0]: EXIT(0)
+--- Line Differences ---
+ACTUAL:  20) max size: 1024
+ACTUAL:  21) cur pos: 1024 
+ACTUAL:  22) bytes read: 1024
+ACTUAL:  23) max size: 2048
+ACTUAL:  24) cur pos: 1636 
+ACTUAL:  25) bytes read: 612
+ACTUAL:  26) max size: 2048
+ACTUAL:  27) cur pos: 1636 
+ACTUAL:  28) bytes read: 0
+
+--- Valgrind Log from: test-results/raw/functions-10-valgrd.tmp ---
+==1359998== Memcheck, a memory error detector
+==1359998== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1359998== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==1359998== Command: ./test_cmd cmd_update_1
+==1359998== Parent PID: 1359997
+==1359998== 
+==1359998== 
+==1359998== HEAP SUMMARY:
+==1359998==     in use at exit: 0 bytes in 0 blocks
+==1359998==   total heap usage: 6 allocs, 6 frees, 5,475 bytes allocated
+==1359998== 
+==1359998== All heap blocks were freed -- no leaks are possible
+==1359998== 
+==1359998== For lists of detected and suppressed errors, rerun with: -s
+==1359998== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+

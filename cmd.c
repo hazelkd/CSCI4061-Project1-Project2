@@ -121,7 +121,7 @@ char *read_all(int fd, int *nread){
     int bytes_read = 1;
     
  do {  
-    bytes_read = read(fd, buf+cur_pos, max_size);//-cur_pos    
+    bytes_read = read(fd, buf+cur_pos, max_size-cur_pos);//-cur_pos    
   
     cur_pos+=bytes_read;                // Keep track of our current position in the buffer 
       
