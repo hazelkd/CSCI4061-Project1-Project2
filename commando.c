@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
     setvbuf(stdout, NULL, _IONBF, 0); //turn off output buffering
 
     char* result[MAX_LINE];
-    char *tokens[MAX_LINE]; //WHAT SIZE?
+    char *tokens[MAX_LINE]; 
     int *ntok=0;
     cmdcol_t *col= NULL;
     cmd_t *cmd = cmd_new(tokens);

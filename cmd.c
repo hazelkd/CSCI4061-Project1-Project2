@@ -68,24 +68,24 @@ void cmd_free(cmd_t *cmd){
 
 void cmd_start(cmd_t *cmd){
      
-    snprintf(cmd->str_status, STATUS_LEN, "RUN");   
+    snprintf(cmd->str_status, STATUS_LEN, "RUN");   // Change status to "RUN"
     
-    pipe(cmd->out_pipe);
+    pipe(cmd->out_pipe);   // Create an out-pipe for parent/child communication
 
     pid_t child_pid = fork();
  
     if(child_pid == 0 ){           
-       int backup = dup(STDOUT_FILENO);
+       int backup = dup(STDOUT_FILENO);     // Preserve STDOUT by storing in backup to restore later
        dup2(cmd->out_pipe[PWRITE],STDOUT_FILENO); 
         
-        execvp(cmd->name, cmd->argv);
-        dup2(backup,STDOUT_FILENO);
+        execvp(cmd->name, cmd->argv);    // Create a new memory image and run the command
+        dup2(backup,STDOUT_FILENO);     // Restore STDOUT
         close(cmd->out_pipe[PREAD]);
     }
 
     else{
-        cmd->pid = child_pid;
-        close(cmd->out_pipe[PWRITE]); 
+        cmd->pid = child_pid;       // Assign the child pid to the parent
+        close(cmd->out_pipe[PWRITE]); // Close write end of pipe
     }
     //close(cmd->out_pipe[PREAD]);
 // Forks a process and executes command in cmd in the process.
@@ -99,11 +99,11 @@ void cmd_start(cmd_t *cmd){
 void cmd_update_state(cmd_t *cmd, int block){
 
     pid_t pid = cmd->pid;
-    int status=-11111;
+    int status=-11111; // Initialize status to unreachable value
 
     while (cmd->finished != 1){
       
-        int ret = waitpid(cmd->pid, &status, block);
+        int ret = waitpid(cmd->pid, &status, block); // Make parent wait for child with the block argument that was passed in
         
         if(ret == -1){
             perror("waitpid() failed\n");
@@ -113,17 +113,17 @@ void cmd_update_state(cmd_t *cmd, int block){
         }
         else if(ret == pid){
 
-            if (WIFEXITED(status)){
+            if (WIFEXITED(status)){  // When child finishes...
                 
                 cmd->finished = 1;
-                cmd->status = WEXITSTATUS(status);
+                cmd->status = WEXITSTATUS(status); // Update status of command to the exit status 
                 if (cmd->status == 0) {
-                    strcpy(cmd->str_status, "EXIT(0)");
+                    strcpy(cmd->str_status, "EXIT(0)"); // Change str_status
                 }
                 else if (cmd->status == 1) {
                     strcpy(cmd->str_status, "EXIT(1)");
                 }
-                cmd_fetch_output(cmd);
+                cmd_fetch_output(cmd); // Print output on status change but only first time process finishes 
                 printf("@!!! %s[#%d]: EXIT(%d)\n", cmd->name, cmd->pid, cmd->status);
             }
             
@@ -148,8 +148,8 @@ void cmd_update_state(cmd_t *cmd, int block){
 // which includes the command name, PID, and exit status.
 
 char *read_all(int fd, int *nread){
-    int max_size = BUFSIZE, cur_pos = 0;                   // initial max and position
-    char *buf = malloc(BUFSIZE+1);                      // allocate 1 byte of intial space
+    int max_size = BUFSIZE, cur_pos = 0;         // initial max and position
+    char *buf = malloc(BUFSIZE+1);             // allocate 1 byte of intial space
     int bytes_read = 1;
     
  do {  
@@ -162,7 +162,7 @@ char *read_all(int fd, int *nread){
         max_size *= 2;                               // double size of buffer
         char *newbuf = realloc(buf, max_size+1);     // pointer to either new or old location re-allocate, copies characters to new space if needed
 
-        if(!newbuf){                         // check that re-allocation succeeded
+        if(!newbuf){                            // check that re-allocation succeeded
             printf("ERROR: reallocation failed\n");    // if not...
             exit(1);                                  
         } 
@@ -193,16 +193,13 @@ void cmd_fetch_output(cmd_t *cmd){
     else {
         if(cmd->output==NULL){
         
-        cmd->output = read_all(cmd->out_pipe[PREAD], &bytes_read); 
-        //printf("pipe: %d\n ", cmd->out_pipe[PREAD]);
-        cmd->output_size = bytes_read;
-        //printf("bytes read: %d\n", bytes_read);
-        //printf("output is : %s\n", (char *)cmd->output);
-        }
-        close(cmd->out_pipe[PREAD]); //Both ends of pipe? 
-    }
+        cmd->output = read_all(cmd->out_pipe[PREAD], &bytes_read); // Take output from read end of out_pipe, return buf which is assigned to cmd->output
     
-    //free(bytes_read);
+        cmd->output_size = bytes_read;
+        
+        }
+        close(cmd->out_pipe[PREAD]); // Close read end of pipe
+    }
    
 }
 // If cmd->finished is zero, prints an error message with the format
@@ -222,7 +219,7 @@ void cmd_print_output(cmd_t *cmd){
     }
     
     else { 
-        write(STDOUT_FILENO, cmd->output, BUFSIZE); 
+        write(STDOUT_FILENO, cmd->output, BUFSIZE); // Restore output to STDOUT
         printf("%p\n",(cmd->output));
 
     }
