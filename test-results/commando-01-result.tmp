@@ -47,59 +47,56 @@ EXPECT:  13) JOB  #PID      STAT   STR_STAT OUTB COMMAND
 EXPECT:  14) @> exit
 
 --- Valgrind Log from: test-results/raw/commando-01-valgrd.tmp ---
-==13999== Memcheck, a memory error detector
-==13999== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==13999== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
-==13999== Command: ./commando --echo
-==13999== Parent PID: 13998
-==13999== 
-==13999== Conditional jump or move depends on uninitialised value(s)
-==13999==    at 0x109A93: cmd_new (cmd.c:11)
-==13999==    by 0x10954C: main (commando.c:13)
-==13999==  Uninitialised value was created by a stack allocation
-==13999==    at 0x1094D9: main (commando.c:6)
-==13999== 
-==13999== Use of uninitialised value of size 8
-==13999==    at 0x483F094: strcpy (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==13999==    by 0x109B03: cmd_new (cmd.c:21)
-==13999==    by 0x10954C: main (commando.c:13)
-==13999==  Uninitialised value was created by a stack allocation
-==13999==    at 0x1094D9: main (commando.c:6)
-==13999== 
-==13999== Invalid read of size 1
-==13999==    at 0x483F094: strcpy (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==13999==    by 0x109B03: cmd_new (cmd.c:21)
-==13999==    by 0x10954C: main (commando.c:13)
-==13999==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
-==13999== 
-==13999== 
-==13999== Process terminating with default action of signal 11 (SIGSEGV)
-==13999==  Access not within mapped region at address 0x0
-==13999==    at 0x483F094: strcpy (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==13999==    by 0x109B03: cmd_new (cmd.c:21)
-==13999==    by 0x10954C: main (commando.c:13)
-==13999==  If you believe this happened as a result of a stack
-==13999==  overflow in your program's main thread (unlikely but
-==13999==  possible), you can try to increase the size of the
-==13999==  main thread stack using the --main-stacksize= flag.
-==13999==  The main thread stack size used in this run was 8388608.
-==13999== 
-==13999== HEAP SUMMARY:
-==13999==     in use at exit: 2,352 bytes in 1 blocks
-==13999==   total heap usage: 1 allocs, 0 frees, 2,352 bytes allocated
-==13999== 
-==13999== 2,352 bytes in 1 blocks are still reachable in loss record 1 of 1
-==13999==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==13999==    by 0x109A6B: cmd_new (cmd.c:8)
-==13999==    by 0x10954C: main (commando.c:13)
-==13999== 
-==13999== LEAK SUMMARY:
-==13999==    definitely lost: 0 bytes in 0 blocks
-==13999==    indirectly lost: 0 bytes in 0 blocks
-==13999==      possibly lost: 0 bytes in 0 blocks
-==13999==    still reachable: 2,352 bytes in 1 blocks
-==13999==         suppressed: 0 bytes in 0 blocks
-==13999== 
-==13999== For lists of detected and suppressed errors, rerun with: -s
-==13999== ERROR SUMMARY: 3 errors from 3 contexts (suppressed: 0 from 0)
+==515294== Memcheck, a memory error detector
+==515294== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==515294== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==515294== Command: ./commando --echo
+==515294== Parent PID: 515293
+==515294== 
+==515294== Conditional jump or move depends on uninitialised value(s)
+==515294==    at 0x109A7F: cmd_new (cmd.c:12)
+==515294==    by 0x10954C: main (commando.c:13)
+==515294==  Uninitialised value was created by a stack allocation
+==515294==    at 0x1094D9: main (commando.c:6)
+==515294== 
+==515294== Conditional jump or move depends on uninitialised value(s)
+==515294==    at 0x109AE4: cmd_new (cmd.c:21)
+==515294==    by 0x10954C: main (commando.c:13)
+==515294==  Uninitialised value was created by a stack allocation
+==515294==    at 0x1094D9: main (commando.c:6)
+==515294== 
+==515294== Invalid read of size 4
+==515294==    at 0x10A09E: cmdcol_add (cmdcol.c:6)
+==515294==    by 0x10956C: main (commando.c:14)
+==515294==  Address 0x2000 is not stack'd, malloc'd or (recently) free'd
+==515294== 
+==515294== 
+==515294== Process terminating with default action of signal 11 (SIGSEGV)
+==515294==  Access not within mapped region at address 0x2000
+==515294==    at 0x10A09E: cmdcol_add (cmdcol.c:6)
+==515294==    by 0x10956C: main (commando.c:14)
+==515294==  If you believe this happened as a result of a stack
+==515294==  overflow in your program's main thread (unlikely but
+==515294==  possible), you can try to increase the size of the
+==515294==  main thread stack using the --main-stacksize= flag.
+==515294==  The main thread stack size used in this run was 8388608.
+==515294== 
+==515294== HEAP SUMMARY:
+==515294==     in use at exit: 2,352 bytes in 1 blocks
+==515294==   total heap usage: 1 allocs, 0 frees, 2,352 bytes allocated
+==515294== 
+==515294== 2,352 bytes in 1 blocks are still reachable in loss record 1 of 1
+==515294==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==515294==    by 0x109A50: cmd_new (cmd.c:8)
+==515294==    by 0x10954C: main (commando.c:13)
+==515294== 
+==515294== LEAK SUMMARY:
+==515294==    definitely lost: 0 bytes in 0 blocks
+==515294==    indirectly lost: 0 bytes in 0 blocks
+==515294==      possibly lost: 0 bytes in 0 blocks
+==515294==    still reachable: 2,352 bytes in 1 blocks
+==515294==         suppressed: 0 bytes in 0 blocks
+==515294== 
+==515294== For lists of detected and suppressed errors, rerun with: -s
+==515294== ERROR SUMMARY: 3 errors from 3 contexts (suppressed: 0 from 0)
 

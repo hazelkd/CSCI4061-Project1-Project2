@@ -5,29 +5,29 @@
 
 cmd_t *cmd_new(char *argv[]){
     
-    cmd_t *cmd = malloc(sizeof(cmd_t));
+    cmd_t *cmd = malloc(sizeof(cmd_t)); // Allocate an initial pointer to memory
     *cmd->name = '\0';
 
      for(int i=0; i < ARG_MAX; i++){
-        if(argv[i] == NULL){
+        if(argv[i] == NULL){  // If no more arguments, break
              cmd->argv[i]= NULL;
              break;
         }
         else{
-            cmd->argv[i] = strdup(argv[i]);
+            cmd->argv[i] = strdup(argv[i]); // Take argv input and put it in cmd
         }
      }
    
-    if (argv[0] == NULL) {
+    if (argv[0] == NULL) { 
         *cmd->name = '\0';
     }
     else {
-        strcpy(cmd->name,argv[0]);
+        strcpy(cmd->name,argv[0]); // Take name of command input in argv and assign to name
     }
 
     //strcpy(cmd->name,argv[0]); 
-    cmd->finished = 0;
-    snprintf(cmd->str_status, STATUS_LEN, "INIT");
+    cmd->finished = 0;            // Initialize all fields of new cmd
+    snprintf(cmd->str_status, STATUS_LEN, "INIT");  
     cmd->status = -1;
     cmd->output = NULL;
     cmd->output_size = -1;
@@ -36,7 +36,7 @@ cmd_t *cmd_new(char *argv[]){
     cmd->out_pipe[1] = -1;            
 
     return cmd;
-    cmd_free(cmd);
+    cmd_free(cmd); // Free the cmd structure
 
     
 // Allocates a new cmd_t with the given argv[] array. Makes string

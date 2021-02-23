@@ -1,0 +1,52 @@
+==516546== Memcheck, a memory error detector
+==516546== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==516546== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==516546== Command: ./commando --echo
+==516546== Parent PID: 516545
+==516546== 
+==516546== Conditional jump or move depends on uninitialised value(s)
+==516546==    at 0x109A7F: cmd_new (cmd.c:12)
+==516546==    by 0x10954C: main (commando.c:13)
+==516546==  Uninitialised value was created by a stack allocation
+==516546==    at 0x1094D9: main (commando.c:6)
+==516546== 
+==516546== Conditional jump or move depends on uninitialised value(s)
+==516546==    at 0x109AE4: cmd_new (cmd.c:21)
+==516546==    by 0x10954C: main (commando.c:13)
+==516546==  Uninitialised value was created by a stack allocation
+==516546==    at 0x1094D9: main (commando.c:6)
+==516546== 
+==516546== Invalid read of size 4
+==516546==    at 0x10A09E: cmdcol_add (cmdcol.c:6)
+==516546==    by 0x10956C: main (commando.c:14)
+==516546==  Address 0x2000 is not stack'd, malloc'd or (recently) free'd
+==516546== 
+==516546== 
+==516546== Process terminating with default action of signal 11 (SIGSEGV)
+==516546==  Access not within mapped region at address 0x2000
+==516546==    at 0x10A09E: cmdcol_add (cmdcol.c:6)
+==516546==    by 0x10956C: main (commando.c:14)
+==516546==  If you believe this happened as a result of a stack
+==516546==  overflow in your program's main thread (unlikely but
+==516546==  possible), you can try to increase the size of the
+==516546==  main thread stack using the --main-stacksize= flag.
+==516546==  The main thread stack size used in this run was 8388608.
+==516546== 
+==516546== HEAP SUMMARY:
+==516546==     in use at exit: 2,352 bytes in 1 blocks
+==516546==   total heap usage: 1 allocs, 0 frees, 2,352 bytes allocated
+==516546== 
+==516546== 2,352 bytes in 1 blocks are still reachable in loss record 1 of 1
+==516546==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==516546==    by 0x109A50: cmd_new (cmd.c:8)
+==516546==    by 0x10954C: main (commando.c:13)
+==516546== 
+==516546== LEAK SUMMARY:
+==516546==    definitely lost: 0 bytes in 0 blocks
+==516546==    indirectly lost: 0 bytes in 0 blocks
+==516546==      possibly lost: 0 bytes in 0 blocks
+==516546==    still reachable: 2,352 bytes in 1 blocks
+==516546==         suppressed: 0 bytes in 0 blocks
+==516546== 
+==516546== For lists of detected and suppressed errors, rerun with: -s
+==516546== ERROR SUMMARY: 3 errors from 3 contexts (suppressed: 0 from 0)

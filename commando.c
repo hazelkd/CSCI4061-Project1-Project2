@@ -20,9 +20,9 @@ int main(int argc, char *argv[]) {
     if(strcmp(argv[1],"--echo")==0 || getenv("COMMAND_ECHO")!= NULL){ 
         setenv("COMMAND_ECHO", "ON",1); 
     }
-    while(result != NULL){//Checking for end of input
-            if(ntok == 0){
-                break; //User hits enter ?
+    while(result != NULL){   // Checking for end of input
+            if(ntok == 0){   // User hits enter 
+                break; 
             }
        
             if(strcmp(tokens[0], "help")==0){ 
