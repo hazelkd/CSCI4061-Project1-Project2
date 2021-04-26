@@ -15,7 +15,14 @@ client_t *server_get_client(server_t *server, int idx){
 // index is beyond n_clients, the behavior of the function is
 // unspecified and may cause a program crash.
 
-void server_start(server_t *server, char *server_name, int perms);
+void server_start(server_t *server, char *server_name, int perms){
+    log_printf("BEGIN: server_start()\n");              // at beginning of function
+    *server->server_name = server_name; // start the server with the given name dont know if this should be a pointer
+    remove("server_name.fifo"); //remove any existing file of this name
+    mkfifo("server_name.fifo", S_IRUSR | S_IWUSR); //join fifo created
+    server->join_fd = open("server_name.fifo", O_RDWR); //open fifo and store fd //not exactly sure if its read and write
+    log_printf("END: server_start()\n");                // at end of function
+}
 // Initializes and starts the server with the given name. A join fifo
 // called "server_name.fifo" should be created. Removes any existing
 // file of that name prior to creation. Opens the FIFO and stores its
