@@ -1,4 +1,16 @@
-client_t *server_get_client(server_t *server, int idx);
+#include "blather.h"
+
+client_t *server_get_client(server_t *server, int idx){
+    //do I need to do something for the size, or is it unknown? 
+    if (idx > server->n_clients){
+        printf("Index is greater than n_clients, program is exiting\n");
+        exit(0);
+    }
+    else{
+        client_t *givenIndex;
+        *givenIndex = server->client[idx];
+    }
+}
 // Gets a pointer to the client_t struct at the given index. If the
 // index is beyond n_clients, the behavior of the function is
 // unspecified and may cause a program crash.
