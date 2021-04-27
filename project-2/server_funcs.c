@@ -62,7 +62,20 @@ int server_add_client(server_t *server, join_t *join);
 // log_printf("BEGIN: server_add_client()\n");         // at beginning of function
 // log_printf("END: server_add_client()\n");           // at end of function
 
-int server_remove_client(server_t *server, int idx);
+int server_remove_client(server_t *server, int idx){
+    close(server->client[idx].to_client_fd);
+    close(server->client[idx].to_server_fd);
+    remove(server->client[idx].to_client_fname);
+    remove(server->client[idx].to_server_fname);
+
+    for (int i = idx; i < server->n_clients - 1; i++) {
+        server->client[idx] = server->client[idx+1];
+    }
+    
+    server->n_clients = server->n_clients-1;
+
+    //need to return 0 or 1
+}
 // Remove the given client likely due to its having departed or
 // disconnected. Close fifos associated with the client and remove
 // them.  Shift the remaining clients to lower indices of the client[]
