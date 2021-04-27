@@ -62,7 +62,9 @@ void server_shutdown(server_t *server){
 // log_printf("END: server_shutdown()\n");             // at end of function
 
 int server_add_client(server_t *server, join_t *join){
-    
+    if (n_clients == MAXCLIENTS){
+        return 1;
+    }
     int index = -1;                                              // search for name matching request 
     for(int i=0; data[i][0][0] != '\0'; i++){
       if( strcmp(join->name, server->client[i][0])==0 ){
@@ -72,12 +74,16 @@ int server_add_client(server_t *server, join_t *join){
       }
     }
     if(index == -1){  
-      mesg_t msg;                                           // matching name not found
-      snprintf(msg->body = [], BUFSIZE, 
-               "name '%s' not found", join->name);
+      return 1;                                           // matching name not found
     }
-    server->client[server->n_clients+1] = found_client;
-    // Still need to open file descriptors and initialize data field
+    server->client[server->n_clients] = found_client;
+    // Does the string name of the fifo matter?
+    // mkfifo in this function?
+    mkfifo("msg.fifo", S_IRUSR | S_IWUSR);
+    found_client->to_client_fd = open("msg.fifo",O_RDWR);
+    found_client->to_server_fd = open("msg.fifo",O_RDWR);
+    found_client->data_ready = 0;
+    return 0;
 
 }
 // Adds a client to the server according to the parameter join which
@@ -100,10 +106,12 @@ int server_remove_client(server_t *server, int idx){
     for (int i = idx; i < server->n_clients - 1; i++) {
         server->client[idx] = server->client[idx+1];
     }
-    
-    server->n_clients = server->n_clients-1;
-
-    //need to return 0 or 1
+    if (server->n_clients != 0){
+        server->n_clients = server->n_clients-1;
+        return 0;
+    }
+    return 1;
+    //need to return 0 or 1 - DONE
 }
 // Remove the given client likely due to its having departed or
 // disconnected. Close fifos associated with the client and remove
@@ -111,7 +119,17 @@ int server_remove_client(server_t *server, int idx){
 // preserving their order in the array; decreases n_clients. Returns 0
 // on success, 1 on failure.
 
-void server_broadcast(server_t *server, mesg_t *mesg);
+void server_broadcast(server_t *server, mesg_t *mesg){
+    // Loop through server->client
+    int num_loops = server->n_clients;
+    for(int i=0; num_loops; i++){ // Or num_loops +1 ?
+        // open the fifo ?
+        write((server->client[i])->to_client_fd, mesg, strlen(mesg)); 
+        write((server->client[i])->to_server_fd, mesg, strlen(mesg));  // ?
+    } 
+    
+
+}
 // Send the given message to all clients connected to the server by
 // writing it to the file descriptors associated with them.
 //
