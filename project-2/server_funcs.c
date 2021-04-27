@@ -62,7 +62,23 @@ void server_shutdown(server_t *server){
 // log_printf("END: server_shutdown()\n");             // at end of function
 
 int server_add_client(server_t *server, join_t *join){
-    server->client[server->n_clients+1] = 
+    
+    int index = -1;                                              // search for name matching request 
+    for(int i=0; data[i][0][0] != '\0'; i++){
+      if( strcmp(join->name, server->client[i][0])==0 ){
+        index = i;                                               // found matching record
+        client_t found_client = server->client[i][0];
+        break;
+      }
+    }
+    if(index == -1){  
+      mesg_t msg;                                           // matching name not found
+      snprintf(msg->body = [], BUFSIZE, 
+               "name '%s' not found", join->name);
+    }
+    server->client[server->n_clients+1] = found_client;
+    // Still need to open file descriptors and initialize data field
+
 }
 // Adds a client to the server according to the parameter join which
 // should have fileds such as name filed in.  The client data is
