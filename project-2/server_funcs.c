@@ -127,7 +127,6 @@ void server_broadcast(server_t *server, mesg_t *mesg){
         write((server->client[i])->to_client_fd, mesg, strlen(mesg)); 
         write((server->client[i])->to_server_fd, mesg, strlen(mesg));  // ?
     } 
-    
 
 }
 // Send the given message to all clients connected to the server by
