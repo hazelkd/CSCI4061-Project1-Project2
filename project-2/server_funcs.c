@@ -38,7 +38,18 @@ void server_start(server_t *server, char *server_name, int perms){
 // log_printf("BEGIN: server_start()\n");              // at beginning of function
 // log_printf("END: server_start()\n");                // at end of function
 
-void server_shutdown(server_t *server);
+void server_shutdown(server_t *server){
+    printf("SERVER #%5d: Signalled to shut down\n", getpid());
+    close(server->join_fd);
+    server->join_ready = 0;
+    remove("join_fd.fifo");
+    mesg_t msg;
+    msg->kind = BL_SHUTDOWN;
+    // How to send message?
+
+}
+
+
 // Shut down the server. Close the join FIFO and unlink (remove) it so
 // that no further clients can join. Send a BL_SHUTDOWN message to all
 // clients and proceed to remove all clients in any order.
@@ -50,7 +61,9 @@ void server_shutdown(server_t *server);
 // log_printf("BEGIN: server_shutdown()\n");           // at beginning of function
 // log_printf("END: server_shutdown()\n");             // at end of function
 
-int server_add_client(server_t *server, join_t *join);
+int server_add_client(server_t *server, join_t *join){
+    server->client[server->n_clients+1] = 
+}
 // Adds a client to the server according to the parameter join which
 // should have fileds such as name filed in.  The client data is
 // copied into the client[] array and file descriptors are opened for
