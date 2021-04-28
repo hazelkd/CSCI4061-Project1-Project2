@@ -111,7 +111,6 @@ int server_remove_client(server_t *server, int idx){
         return 0;
     }
     return 1;
-    //need to return 0 or 1 - DONE
 }
 // Remove the given client likely due to its having departed or
 // disconnected. Close fifos associated with the client and remove
