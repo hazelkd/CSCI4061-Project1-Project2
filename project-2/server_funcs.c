@@ -39,16 +39,19 @@ void server_start(server_t *server, char *server_name, int perms){
 // log_printf("END: server_start()\n");                // at end of function
 
 void server_shutdown(server_t *server){
+    log_printf("BEGIN: server_shutdown()\n");           // at beginning of function
     printf("SERVER #%5d: Signalled to shut down\n", getpid());
     close(server->join_fd);
     server->join_ready = 0;
     remove("join_fd.fifo");
-    mesg_t msg;
-    msg.kind = BL_SHUTDOWN;
-    // How to send message?
-
+    mesg_t *msg;
+    msg->kind = BL_SHUTDOWN;
+    for (int i = 0; i < server->n_clients; i++){
+        write(server->client[i].to_client_fd, msg, strlen(msg));
+        //NEED TO REMOVE CLIENTS
+    }
+    log_printf("END: server_shutdown()\n");             // at end of function
 }
-
 
 // Shut down the server. Close the join FIFO and unlink (remove) it so
 // that no further clients can join. Send a BL_SHUTDOWN message to all
@@ -64,24 +67,20 @@ void server_shutdown(server_t *server){
 int server_add_client(server_t *server, join_t *join){
     if (server->n_clients == MAXCLIENTS){
         return 1;
-    }
-    int index = -1;                                              // search for name matching request 
-    for(int i=0; data[i][0][0] != '\0'; i++){
-      if( strcmp(join->name, server->client[i][0])==0 ){
-        index = i;                                               // found matching record
-        client_t found_client = server->client[i][0];
-        break;
-      }
-    }
-    if(index == -1){  
-      return 1;                                           // matching name not found
-    }
-    server->client[server->n_clients] = found_client;
+    }                                              // found matching record
+    client_t added_client;
+    strcpy(join->to_client_fname, added_client.to_client_fname);
+    strcpy(join->to_server_fname, added_client.to_server_fname);
+    mkfifo(added_client.to_server_fname, S_IRUSR | S_IWUSR);
+    added_client.to_server_fd = open(added_client.to_server_fname, O_RDWR);
+
+
+   
+    //server->client[server->n_clients] = found_client;
     // Does the string name of the fifo matter?
-    // mkfifo in this function?
-    mkfifo("msg.fifo", S_IRUSR | S_IWUSR);
+    /*mkfifo("msg.fifo", S_IRUSR | S_IWUSR);
     found_client->to_client_fd = open("msg.fifo",O_RDWR);
-    found_client->to_server_fd = open("msg.fifo",O_RDWR);
+    found_client->to_server_fd = open("msg.fifo",O_RDWR);*/
     found_client->data_ready = 0;
     return 0;
 
@@ -190,7 +189,7 @@ int server_client_ready(server_t *server, int idx){
 void server_handle_client(server_t *server, int idx){
     int status = server_client_ready(server, idx);
     if (status){
-        
+
     }
 }
 // Process a message from the specified client. This function should
