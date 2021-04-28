@@ -39,14 +39,14 @@ void server_start(server_t *server, char *server_name, int perms){
 // log_printf("END: server_start()\n");                // at end of function
 
 void server_shutdown(server_t *server){
-    printf("SERVER #%5d: Signalled to shut down\n", getpid());
+    log_printf("BEGIN: server_shutdown()\n"); 
     close(server->join_fd);
     server->join_ready = 0;
     remove("join_fd.fifo");
     mesg_t msg;
-    msg.kind = BL_SHUTDOWN;
+    msg->kind = BL_SHUTDOWN;
     // How to send message?
-
+    log_printf("END: server_shutdown()\n"); 
 }
 
 
@@ -111,6 +111,7 @@ int server_remove_client(server_t *server, int idx){
         return 0;
     }
     return 1;
+    //need to return 0 or 1 - DONE
 }
 // Remove the given client likely due to its having departed or
 // disconnected. Close fifos associated with the client and remove
@@ -139,7 +140,7 @@ void server_check_sources(server_t *server){
 }
 // Checks all sources of data for the server to determine if any are
 // ready for reading. Sets the servers join_ready flag and the
-// data_ready flags of each if client if data is ready for them.
+// data_ready flags of each of client if data is ready for them.
 // Makes use of the poll() system call to efficiently determine which
 // sources are ready.
 // 
@@ -171,6 +172,7 @@ void server_handle_join(server_t *server){
          
     }
 }
+
 // Call this function only if server_join_ready() returns true. Read a
 // join request and add the new client to the server. After finishing,
 // set the servers join_ready flag to 0.
