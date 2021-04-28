@@ -44,7 +44,7 @@ void server_shutdown(server_t *server){
     server->join_ready = 0;
     remove("join_fd.fifo");
     mesg_t msg;
-    msg->kind = BL_SHUTDOWN;
+    msg.kind = BL_SHUTDOWN;
     // How to send message?
 
 }
@@ -62,7 +62,7 @@ void server_shutdown(server_t *server){
 // log_printf("END: server_shutdown()\n");             // at end of function
 
 int server_add_client(server_t *server, join_t *join){
-    if (n_clients == MAXCLIENTS){
+    if (server->n_clients == MAXCLIENTS){
         return 1;
     }
     int index = -1;                                              // search for name matching request 
@@ -123,8 +123,8 @@ void server_broadcast(server_t *server, mesg_t *mesg){
     int num_loops = server->n_clients;
     for(int i=0; num_loops; i++){ // Or num_loops +1 ?
         // open the fifo ?
-        write((server->client[i])->to_client_fd, mesg, strlen(mesg)); 
-        write((server->client[i])->to_server_fd, mesg, strlen(mesg));  // ?
+        write(server->client[i].to_client_fd, mesg, strlen(mesg)); 
+        write(server->client[i].to_server_fd, mesg, strlen(mesg));  // ?
     } 
 
 }
@@ -134,10 +134,12 @@ void server_broadcast(server_t *server, mesg_t *mesg){
 // ADVANCED: Log the broadcast message unless it is a PING which
 // should not be written to the log.
 
-void server_check_sources(server_t *server);
+void server_check_sources(server_t *server){
+
+}
 // Checks all sources of data for the server to determine if any are
 // ready for reading. Sets the servers join_ready flag and the
-// data_ready flags of each of client if data is ready for them.
+// data_ready flags of each if client if data is ready for them.
 // Makes use of the poll() system call to efficiently determine which
 // sources are ready.
 // 
@@ -154,11 +156,21 @@ void server_check_sources(server_t *server);
 // log_printf("client %d '%s' data_ready = %d\n",...)         // whether client has data ready
 // log_printf("END: server_check_sources()\n");               // at end of function
 
-int server_join_ready(server_t *server);
+int server_join_ready(server_t *server){
+    return server->join_ready;
+}
 // Return the join_ready flag from the server which indicates whether
 // a call to server_handle_join() is safe.
 
-void server_handle_join(server_t *server);
+void server_handle_join(server_t *server){
+    int status = server_join_ready(server);
+    if (status) { //I think this is how to indicate true? 
+        join_t newClient;
+        int client_fifo_fd = open(server->join_fd, O_RDWR);
+        int nread = read(client_fifo_fd, newClient, 255); 
+         
+    }
+}
 // Call this function only if server_join_ready() returns true. Read a
 // join request and add the new client to the server. After finishing,
 // set the servers join_ready flag to 0.
@@ -168,11 +180,18 @@ void server_handle_join(server_t *server);
 // log_printf("join request for new client '%s'\n",...);      // reports name of new client
 // log_printf("END: server_handle_join()\n");                 // at end of function
 
-int server_client_ready(server_t *server, int idx);
+int server_client_ready(server_t *server, int idx){
+    return (server->client[idx].data_ready);
+}
 // Return the data_ready field of the given client which indicates
 // whether the client has data ready to be read from it.
 
-void server_handle_client(server_t *server, int idx);
+void server_handle_client(server_t *server, int idx){
+    int status = server_client_ready(server, idx);
+    if (status){
+        
+    }
+}
 // Process a message from the specified client. This function should
 // only be called if server_client_ready() returns true. Read a
 // message from to_server_fd and analyze the message kind. Departure
