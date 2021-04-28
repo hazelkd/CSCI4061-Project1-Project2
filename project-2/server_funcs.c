@@ -65,25 +65,31 @@ void server_shutdown(server_t *server){
 // log_printf("END: server_shutdown()\n");             // at end of function
 
 int server_add_client(server_t *server, join_t *join){
+
+    log_printf("BEGIN: server_add_client()\n");         // at beginning of function
+
     if (server->n_clients == MAXCLIENTS){
         return 1;
     }                                              // found matching record
     client_t added_client;
+    strcpy(join->name, added_client.name);
     strcpy(join->to_client_fname, added_client.to_client_fname);
     strcpy(join->to_server_fname, added_client.to_server_fname);
+    //opening and creating fd to server
     mkfifo(added_client.to_server_fname, S_IRUSR | S_IWUSR);
     added_client.to_server_fd = open(added_client.to_server_fname, O_RDWR);
+    //opening and creating fd to client 
+    mkfifo(added_client.to_client_fname, S_IRUSR | S_IWUSR);
+    added_client.to_client_fd = open(added_client.to_client_fname, O_RDWR);
+    //intializing data ready to zero
+    added_client.data_ready = 0;
 
+    server->client[server->n_clients] = added_client;
+    server->n_clients = server->n_clients + 1;
 
-   
-    //server->client[server->n_clients] = found_client;
-    // Does the string name of the fifo matter?
-    /*mkfifo("msg.fifo", S_IRUSR | S_IWUSR);
-    found_client->to_client_fd = open("msg.fifo",O_RDWR);
-    found_client->to_server_fd = open("msg.fifo",O_RDWR);*/
-    found_client->data_ready = 0;
+    log_printf("END: server_add_client()\n");           // at end of function
+
     return 0;
-
 }
 // Adds a client to the server according to the parameter join which
 // should have fileds such as name filed in.  The client data is
@@ -121,10 +127,11 @@ int server_remove_client(server_t *server, int idx){
 void server_broadcast(server_t *server, mesg_t *mesg){
     // Loop through server->client
     int num_loops = server->n_clients;
-    for(int i=0; num_loops; i++){ // Or num_loops +1 ?
+    for(int i=0; i < num_loops; i++){ // Or num_loops +1 ?
         // open the fifo ?
         write(server->client[i].to_client_fd, mesg, strlen(mesg)); 
         write(server->client[i].to_server_fd, mesg, strlen(mesg));  // ?
+        //DONT KNOW IF WE NEED TO DO BOTH?
     } 
 
 }
