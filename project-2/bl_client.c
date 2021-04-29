@@ -1,5 +1,12 @@
 #include "blather.h"
 #include <pthread.h>
+
+simpio_t simpio_actual;
+simpio_t *simpio = &simpio_actual;
+
+pthread_t user_thread;          // thread managing user input
+pthread_t background_thread;
+
 /*
 To summarize, bl_client will roughly take the following steps.
 
