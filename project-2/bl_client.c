@@ -42,7 +42,11 @@ void *threadA_func(void *x){
     }
     if(simpio->line_ready){
       mesg_t newMes;
-      newMes = simpio;
+     // newMes = simpio;
+      for(int i =0 ; i < simpio->pos; i++){
+        newMsg->body = simpio->buf 
+      }
+      //directly strcopy to message and then write that msg to the fifo
     }
   printf("Child A closed pipe\n");
   return NULL;

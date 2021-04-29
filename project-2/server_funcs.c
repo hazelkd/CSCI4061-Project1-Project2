@@ -142,7 +142,10 @@ void server_broadcast(server_t *server, mesg_t *mesg){
 // should not be written to the log.
 
 void server_check_sources(server_t *server){
-
+// hw12 , a outputs faster in ab_read, a output stacks up and parent doesnt respond, is stuck waiting for b
+// ab_threads is similar to bl_client
+// ab_poll a and b children write in pipes, parents uses fd to notify when ready, fd for 2 pipes for notifying when its ok parent to read (will it block or not) poll will block parent until ready. Then go through array to see if theyre ready 
+//create a fd array of join_fd with clients after, poll on that and when wake up when its ready  join_ready =1 
 }
 // Checks all sources of data for the server to determine if any are
 // ready for reading. Sets the servers join_ready flag and the
