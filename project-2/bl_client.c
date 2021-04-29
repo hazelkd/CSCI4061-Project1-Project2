@@ -50,9 +50,9 @@ void *threadA_func(void *x){
     if(simpio->line_ready){
       mesg_t newMes;
       strcopy(simpio->buf, newMes->body);
-      write(,)
+      write(newMes->body,client->to_server_fname);
     }
-  printf("Child A closed pipe\n");
+  printf("End of input, departing.\n");
   return NULL;
 }
 //void *threadB_func(void )
@@ -103,7 +103,7 @@ int main(int argc, char *argv[]){
   pthread_join(user_thread, NULL);
   pthread_join(background_thread, NULL);
   
-  simpio_reset_terminal_mode();
+  simpio_reset_terminal_mode(); // restore terminal output
   printf("\n");                 // newline just to make returning to the terminal prettier
   return 0;
 }
