@@ -60,11 +60,26 @@ void *threadA_func(void *x){
 int main(int argc, char *argv[]){
   
   
+  //printf("Child A closed pipe\n");
+
   char prompt[MAXNAME];
   snprintf(prompt, MAXNAME, "%s>> ","fgnd"); // create a prompt string
   simpio_set_prompt(simpio, prompt);         // set the prompt
   simpio_reset(simpio);                      // initialize io
   simpio_noncanonical_terminal_mode();       // set the terminal into a compatible mode
+
+  char buf[1024]; int nread;
+  while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete
+        simpio_get_char(simpio);
+    
+    if(simpio->line_ready){
+      server_t server;
+      strcopy(simpio->buf, server->server_name);
+      
+      client_t client;
+      strcopy(simpio->buf, client->name);
+    }
+  }
 
   pthread_create(&user_thread,   NULL, user_worker,   NULL);     // start user thread to read input
   pthread_create(&background_thread, NULL, background_worker, NULL);
