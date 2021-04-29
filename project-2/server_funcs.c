@@ -146,6 +146,47 @@ void server_check_sources(server_t *server){
 // ab_threads is similar to bl_client
 // ab_poll a and b children write in pipes, parents uses fd to notify when ready, fd for 2 pipes for notifying when its ok parent to read (will it block or not) poll will block parent until ready. Then go through array to see if theyre ready 
 //create a fd array of join_fd with clients after, poll on that and when wake up when its ready  join_ready =1 
+    log_printf("BEGIN: server_check_sources()\n");
+    struct pollfd pfds[server->n_clients+1];                               // array of structures for poll, 1 per fd to be monitored
+    int pipe1[2];
+    int pid1 = make_child(pipe1, 1, server->join_fd);
+
+    pfds[0].fd     = server->join_fd pipe1[PREAD];                                     // populate first entry with server join fd
+    pfds[0].events = POLLIN; 
+
+    for(int i = 1; i < server->n_clients; i++){
+         
+        int pipe1[2];
+        int pid1 = make_child(pipe1, 1, server->client[i]->to_server_fd);
+        pfds[i].fd     = pipe1[PREAD];                                     // populate other entries with fds
+        pfds[i].events = POLLIN; 
+        
+    }
+    log_printf("poll()'ing to check %d input sources\n", server->n_clients);
+    char buf[1024]; int nread;
+    int ret = poll(pfds, 2, -1); // Are these the right numbers?
+    if (ret == -1){
+        // poll had error
+        log_printf("poll() interrupted by a signal\n");
+    }
+    log_printf("poll() completed with return value %d\n", ret);
+
+    for(int j = 0; j < server->n_clients; j++){
+        if( pfds[j].revents & POLLIN ){         // If one is ready then set the server and client flags
+            
+            server->join_ready = 1;
+            server->client[j]->data_ready = 1;
+            
+        }
+        else{
+            server->join_ready = 0;
+            server->client[j]->data_ready = 0;
+        }
+        log_printf("join_ready = %d\n", server->join_ready);
+        log_printf("client %d '%s' data_ready = %d\n", server->client[j]->data_ready)
+    }
+    log_printf("END: server_check_sources()\n");
+
 }
 // Checks all sources of data for the server to determine if any are
 // ready for reading. Sets the servers join_ready flag and the
