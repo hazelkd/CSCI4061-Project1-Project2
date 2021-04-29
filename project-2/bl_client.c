@@ -59,8 +59,6 @@ void *threadA_func(void *x){
 
 int main(int argc, char *argv[]){
   
-  
-  //printf("Child A closed pipe\n");
 
   char prompt[MAXNAME];
   snprintf(prompt, MAXNAME, "%s>> ","fgnd"); // create a prompt string
