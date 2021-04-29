@@ -69,20 +69,36 @@ int main(int argc, char *argv[]){
   simpio_noncanonical_terminal_mode();       // set the terminal into a compatible mode
 
   char buf[1024]; int nread;
-  while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete
-        simpio_get_char(simpio);
+  while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete - server
+    simpio_get_char(simpio);
     
     if(simpio->line_ready){
       server_t server;
       strcopy(simpio->buf, server->server_name);
-      
-      client_t client;
-      strcopy(simpio->buf, client->name);
+      server_start(server, server->server_name, int perms); // Which permissions?
     }
   }
+  char buf2[1024]; int nread2;
+  while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete - client 
+        simpio_get_char(simpio);
+    
+    if(simpio->line_ready){
+      
+      client_t client;
+      strcopy(simpio->buf2, client->name);
+
+    }
+  }
+  mkfifo("client_name.fifo", S_IRUSR | S_IWUSR);      //join fifo created
+  client->to_client_fname = open("client_name.fifo", O_RDWR);
+
+  mkfifo("server_name.fifo", S_IRUSR | S_IWUSR);
+  client->to_server_fname = open("server_name.fifo", O_RDWR);
+
+  server_handle_join(server);
 
   pthread_create(&user_thread,   NULL, user_worker,   NULL);     // start user thread to read input
-  pthread_create(&background_thread, NULL, background_worker, NULL);
+  pthread_create(&background_thread, NULL, background_worker, NULL); // start thread to listen to info for server 
 
   pthread_join(user_thread, NULL);
   pthread_join(background_thread, NULL);
