@@ -52,15 +52,18 @@ void *user_thread(void *x){
         iprintf(simpio, "%2d You entered: %s\n",client->name,simpio->buf); // Should we print this ?
       }
       if(simpio->line_ready){
-      mesg_t *newMes;
-      strcopy(simpio->buf, newMes->body);
-      write(newMes,client->to_server_fname); // Can we send the whole message
+        mesg_t *newMes;
+        strcopy(simpio->buf, newMes->body);
+        strcopy(client->name, newMes->name);
+        newMes->kind = BL_MESG;
+        write(newMes,client->to_server_fname); // Can we send the whole message
       }
     }
   iprintf("End of input, departing.\n");
 
   mesg_t *newMes2;
   newMes2->kind = BL_DEPARTED;
+  strcopy(client->name, newMes->name);
 
   write(newMes2,client->to_server_fname); 
 
@@ -86,7 +89,7 @@ int main(int argc, char *argv[]){
     if(simpio->line_ready){
       server_t *server;
       strcopy(simpio->buf, server->server_name);
-      server_start(server, server->server_name, int perms); // Which permissions?
+      server_start(server, server->server_name, DEFAULT_PERMS); 
     }
   }
   char buf2[1024]; int nread2;
