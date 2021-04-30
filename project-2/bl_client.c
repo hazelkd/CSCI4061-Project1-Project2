@@ -42,17 +42,31 @@ server thread{
 
 void *threadA_func(void *x){
     
-    
     char buf[1024]; int nread;
-    while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete
+    
+    while(!simpio->end_of_input){
+      simpio_reset(simpio);
+      iprintf(simpio, ""); 
+      
+      while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete
         simpio_get_char(simpio);
-    }
-    if(simpio->line_ready){
-      mesg_t newMes;
+        //iprintf(simpio, "%2d You entered: %s\n",count,simpio->buf); // Should we print this ?
+      }
+      if(simpio->line_ready){
+      mesg_t *newMes;
       strcopy(simpio->buf, newMes->body);
-      write(newMes->body,client->to_server_fname);
+      write(newMes,client->to_server_fname); // Can we send the whole message
+      }
     }
-  printf("End of input, departing.\n");
+  iprintf("End of input, departing.\n");
+
+  mesg_t *newMes2;
+  newMes2->kind = BL_DEPARTED;
+
+  write(newMes2,client->to_server_fname); 
+
+  pthread_destroy();
+
   return NULL;
 }
 //void *threadB_func(void )
