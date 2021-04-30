@@ -151,14 +151,14 @@ void server_check_sources(server_t *server){
     int pipe1[2];
     int pid1 = make_child(pipe1, 1, server->join_fd);
 
-    pfds[0].fd     = server->join_fd pipe1[PREAD];                                     // populate first entry with server join fd
+    pfds[0].fd     = server->join_fd; //pipe1[PREAD]; DO we need this?                                      // populate first entry with server join fd
     pfds[0].events = POLLIN; 
 
     for(int i = 1; i < server->n_clients; i++){
          
         int pipe1[2];
-        int pid1 = make_child(pipe1, 1, server->client[i]->to_server_fd);
-        pfds[i].fd     = pipe1[PREAD];                                     // populate other entries with fds
+        int pid1 = make_child(pipe1, 1, server->client[i].to_server_fd);
+        pfds[i].fd     = pipe1[PREAD];  //WHICH SHOULD IT BE?                                    // populate other entries with fds
         pfds[i].events = POLLIN; 
         
     }
@@ -175,15 +175,15 @@ void server_check_sources(server_t *server){
         if( pfds[j].revents & POLLIN ){         // If one is ready then set the server and client flags
             
             server->join_ready = 1;
-            server->client[j]->data_ready = 1;
+            server->client[j].data_ready = 1;
             
         }
         else{
             server->join_ready = 0;
-            server->client[j]->data_ready = 0;
+            server->client[j].data_ready = 0;
         }
         log_printf("join_ready = %d\n", server->join_ready);
-        log_printf("client %d '%s' data_ready = %d\n", server->client[j]->data_ready)
+        log_printf("client %d '%s' data_ready = %d\n", server->client[j].data_ready);
     }
     log_printf("END: server_check_sources()\n");
 

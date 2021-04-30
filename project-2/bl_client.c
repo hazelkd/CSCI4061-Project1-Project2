@@ -39,7 +39,7 @@ server thread{
   */
 
 
-void *user_thread(void *x){
+void *user_worker(void *x){
     
     char buf[1024]; int nread;
     
@@ -56,23 +56,22 @@ void *user_thread(void *x){
         strcopy(simpio->buf, newMes->body);
         strcopy(client->name, newMes->name);
         newMes->kind = BL_MESG;
-        write(newMes,client->to_server_fd);  
-
+        write(client->to_server_fd, newMes, strlen(newMes->body));  
       }
     }
-  iprintf("End of input, departing.\n");
+  iprintf(simpio,"End of input, departing.\n");
 
   mesg_t *newMes2;
   newMes2->kind = BL_DEPARTED;
-  strcopy(client->name, newMes->name);
+  strcopy(client->name, newMes2->name);
 
-  write(newMes2,client->to_server_fd); 
+  write(client->to_server_fd, newMes2, strlen(newMes2->body)); 
 
-  pthread_cancel(server_thread); 
+  pthread_cancel(background_thread); 
 
   return NULL;
 }
-void *server_thread(void *x){
+void *background_worker(void *x){
   //char buf[1024];
   int nread;
   while(1){
@@ -81,7 +80,7 @@ void *server_thread(void *x){
 
     nread = read(client->to_client_fd, msg, 1024);              // Can we read a whole message?
 
-    if(*msg->kind == BL_SHUTDOWN){
+    if(msg->kind == BL_SHUTDOWN){
       pthread_cancel(user_thread);
     }
     //buf[nread] = '\0';
@@ -103,8 +102,8 @@ int main(int argc, char *argv[]){
   while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete - server
     simpio_get_char(simpio);
     
+    server_t *server;
     if(simpio->line_ready){
-      server_t *server;
       strcopy(simpio->buf, server->server_name);
       server_start(server, server->server_name, DEFAULT_PERMS); 
     }
@@ -116,7 +115,7 @@ int main(int argc, char *argv[]){
     if(simpio->line_ready){
       
       client_t *client;
-      strcopy(simpio->buf2, client->name);
+      strcopy(simpio->buf2, client->name); // I think we'll have to use the same buffer cause simpio doesn't have 2
 
     }
   }
@@ -128,7 +127,7 @@ int main(int argc, char *argv[]){
   client->to_server_fd = open("server_name.fifo", O_RDWR);
   strcopy("server_name.fifo",client->to_server_fname);
 
-  server_handle_join(server);
+  server_handle_join(server); //this doesn't recognize the server that we opened above
 
   pthread_create(&user_thread,   NULL, user_worker,   NULL);     // start user thread to read input
   pthread_create(&background_thread, NULL, background_worker, NULL); // start thread to listen to info for server 
