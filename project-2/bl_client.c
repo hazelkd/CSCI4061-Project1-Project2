@@ -38,9 +38,8 @@ server thread{
   cancel the user thread
   */
 
-  //directly strcopy to message and then write that msg to the fifo
 
-void *threadA_func(void *x){
+void *user_thread(void *x){
     
     char buf[1024]; int nread;
     
@@ -50,7 +49,7 @@ void *threadA_func(void *x){
       
       while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete
         simpio_get_char(simpio);
-        //iprintf(simpio, "%2d You entered: %s\n",count,simpio->buf); // Should we print this ?
+        iprintf(simpio, "%2d You entered: %s\n",client->name,simpio->buf); // Should we print this ?
       }
       if(simpio->line_ready){
       mesg_t *newMes;
@@ -65,7 +64,7 @@ void *threadA_func(void *x){
 
   write(newMes2,client->to_server_fname); 
 
-  pthread_destroy();
+  pthread_cancel(server_thread); // How to cancel the thread ?
 
   return NULL;
 }
@@ -85,7 +84,7 @@ int main(int argc, char *argv[]){
     simpio_get_char(simpio);
     
     if(simpio->line_ready){
-      server_t server;
+      server_t *server;
       strcopy(simpio->buf, server->server_name);
       server_start(server, server->server_name, int perms); // Which permissions?
     }
@@ -96,7 +95,7 @@ int main(int argc, char *argv[]){
     
     if(simpio->line_ready){
       
-      client_t client;
+      client_t *client;
       strcopy(simpio->buf2, client->name);
 
     }
