@@ -12,6 +12,7 @@ REPEAT:
 */
 int main() {
     server_t *server;
+    // while () ??
     server_check_sources(server);
     if(server_join_ready(server)){
         server_handle_join(server);

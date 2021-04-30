@@ -24,4 +24,4 @@ bl_client.o: bl_client.c blather.h
 clean:
 	rm -f blather *.o
 
-include test_Makefile
+#include test_Makefile

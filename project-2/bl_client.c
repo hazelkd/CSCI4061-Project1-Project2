@@ -56,7 +56,8 @@ void *user_thread(void *x){
         strcopy(simpio->buf, newMes->body);
         strcopy(client->name, newMes->name);
         newMes->kind = BL_MESG;
-        write(newMes,client->to_server_fname); // Can we send the whole message
+        write(newMes,client->to_server_fd);  
+
       }
     }
   iprintf("End of input, departing.\n");
@@ -65,13 +66,29 @@ void *user_thread(void *x){
   newMes2->kind = BL_DEPARTED;
   strcopy(client->name, newMes->name);
 
-  write(newMes2,client->to_server_fname); 
+  write(newMes2,client->to_server_fd); 
 
-  pthread_cancel(server_thread); // How to cancel the thread ?
+  pthread_cancel(server_thread); 
 
   return NULL;
 }
-//void *threadB_func(void )
+void *server_thread(void *x){
+  //char buf[1024];
+  int nread;
+  while(1){
+
+    mesg_t *msg;
+
+    nread = read(client->to_client_fd, msg, 1024);              // Can we read a whole message?
+
+    if(*msg->kind == BL_SHUTDOWN){
+      pthread_cancel(user_thread);
+    }
+    //buf[nread] = '\0';
+    iprintf(simpio, "%s Message: |%s|\n", client->name, msg->body);
+  }
+  return NULL;
+}
 
 int main(int argc, char *argv[]){
   
@@ -104,10 +121,12 @@ int main(int argc, char *argv[]){
     }
   }
   mkfifo("client_name.fifo", S_IRUSR | S_IWUSR);      //join fifo created
-  client->to_client_fname = open("client_name.fifo", O_RDWR);
+  client->to_client_fd = open("client_name.fifo", O_RDWR);
+  strcopy("client_name.fifo",client->to_client_fname);
 
   mkfifo("server_name.fifo", S_IRUSR | S_IWUSR);
-  client->to_server_fname = open("server_name.fifo", O_RDWR);
+  client->to_server_fd = open("server_name.fifo", O_RDWR);
+  strcopy("server_name.fifo",client->to_server_fname);
 
   server_handle_join(server);
 
