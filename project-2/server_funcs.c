@@ -7,9 +7,10 @@ client_t *server_get_client(server_t *server, int idx){
         exit(0);
     }
     else{
-        client_t *givenIndex;
+        client_t *givenIndex = NULL;
         *givenIndex = server->client[idx];
     }
+    return 0;
 }
 // Gets a pointer to the client_t struct at the given index. If the
 // index is beyond n_clients, the behavior of the function is
@@ -17,7 +18,8 @@ client_t *server_get_client(server_t *server, int idx){
 
 void server_start(server_t *server, char *server_name, int perms){
     log_printf("BEGIN: server_start()\n");              // at beginning of function
-    *server->server_name = server_name; // start the server with the given name dont know if this should be a pointer
+    *server->server_name = *server_name;
+    //server_name = server_name; // start the server with the given name dont know if this should be a pointer
     remove("server_name.fifo"); //remove any existing file of this name
     mkfifo("server_name.fifo", S_IRUSR | S_IWUSR); //join fifo created
     server->join_fd = open("server_name.fifo", O_RDWR); //open fifo and store fd //not exactly sure if its read and write
@@ -45,10 +47,10 @@ void server_shutdown(server_t *server){
     close(server->join_fd);
     server->join_ready = 0;
     remove("join_fd.fifo");
-    mesg_t *msg;
+    mesg_t *msg = NULL;
     msg->kind = BL_SHUTDOWN;
     for (int i = 0; i < server->n_clients; i++){
-        write(server->client[i].to_client_fd, msg, strlen(msg));
+        write(server->client[i].to_client_fd, msg, strlen(msg->body));
         server_remove_client(server, i);
     }
     log_printf("END: server_shutdown()\n");             // at end of function
@@ -131,8 +133,8 @@ void server_broadcast(server_t *server, mesg_t *mesg){
     int num_loops = server->n_clients;
     for(int i=0; i < num_loops; i++){ // Or num_loops +1 ?
         // open the fifo ?
-        write(server->client[i].to_client_fd, mesg, strlen(mesg)); 
-        write(server->client[i].to_server_fd, mesg, strlen(mesg));  
+        write(server->client[i].to_client_fd, mesg, strlen(mesg->body)); 
+        write(server->client[i].to_server_fd, mesg, strlen(mesg->body));  
     } 
 }
 // Send the given message to all clients connected to the server by
@@ -163,7 +165,7 @@ void server_check_sources(server_t *server){
         
     }
     log_printf("poll()'ing to check %d input sources\n", server->n_clients);
-    char buf[1024]; int nread;
+    //char buf[1024]; int nread;
     int ret = poll(pfds, (server->n_clients + 1), -1); 
     if (ret == -1){
         // poll had error
@@ -219,6 +221,9 @@ void server_handle_join(server_t *server){
     if (status) {  
         join_t *newRequest;
         int nread = read(server->join_fd, &newRequest, sizeof(join_t));
+            if (nread == 0) {
+                log_printf("No request read."); //DONT KNOW IF THIS NEEDS TO BE HERE
+            }
         log_printf("join request for new client '%s'\n",newRequest->name);      // reports name of new client
 
         server_add_client(server, newRequest);
@@ -251,8 +256,12 @@ void server_handle_client(server_t *server, int idx){
         mesg_t *newMessage;
     
         int nread = read(server->client[idx].to_server_fd, &newMessage, sizeof(mesg_t));
+            if (nread == 0) {
+                log_printf("No request read."); //DONT KNOW IF THIS NEEDS TO BE HERE
+            }
 
-        mesg_kind_t *newMessageType;
+
+        mesg_kind_t newMessageType;
         newMessageType = newMessage->kind;
 
         if(newMessageType == BL_DEPARTED) {

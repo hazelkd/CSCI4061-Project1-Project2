@@ -8,12 +8,12 @@ CWD    = $(shell pwd | sed 's/.*\///g')
  
 # Object files to build 
 
-blatherS: bl_server.o util.o blather.h
-	$(CC) -o blather bl_server.o util.o 
+blatherS: bl_server.o server_funcs.o util.o blather.h
+	$(CC) -o blather bl_server.o server_funcs.o util.o 
 	@echo blather is ready
 
-blatherC: bl_client.o util.o blather.h
-	$(CC) -o blather bl_client.o util.o 
+blatherC: bl_client.o  server_funcs.o util.o blather.h
+	$(CC) -o blather bl_client.o server_funcs.o util.o 
 	@echo blather is ready
 
 util.o: util.c blather.h
@@ -24,6 +24,9 @@ bl_server.o: bl_server.c blather.h
 
 bl_client.o: bl_client.c blather.h
 	$(CC) -c bl_client.c 
+
+server_funcs.o: server_funcs.c blather.h
+	$(CC) -c server_funcs.c 
 
 clean:
 	rm -f blather *.o
