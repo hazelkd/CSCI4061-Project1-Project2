@@ -148,23 +148,23 @@ void server_check_sources(server_t *server){
 //create a fd array of join_fd with clients after, poll on that and when wake up when its ready  join_ready =1 
     log_printf("BEGIN: server_check_sources()\n");
     struct pollfd pfds[server->n_clients+1];                               // array of structures for poll, 1 per fd to be monitored
-    int pipe1[2];
-    int pid1 = make_child(pipe1, 1, server->join_fd);
+    //int pipe1[2];
+    //int pid1 = make_child(pipe1, 1, server->join_fd);
 
     pfds[0].fd     = server->join_fd; //pipe1[PREAD]; DO we need this?                                      // populate first entry with server join fd
     pfds[0].events = POLLIN; 
 
     for(int i = 1; i < server->n_clients; i++){
          
-        int pipe1[2];
-        int pid1 = make_child(pipe1, 1, server->client[i].to_server_fd);
-        pfds[i].fd     = pipe1[PREAD];  //WHICH SHOULD IT BE?                                    // populate other entries with fds
+        //int pipe1[2];
+        //int pid1 = make_child(pipe1, 1, server->client[i].to_server_fd);
+        pfds[i].fd     = server->client[i].to_server_fd;  //WHICH SHOULD IT BE?                                    // populate other entries with fds
         pfds[i].events = POLLIN; 
         
     }
     log_printf("poll()'ing to check %d input sources\n", server->n_clients);
     char buf[1024]; int nread;
-    int ret = poll(pfds, 2, -1); // Are these the right numbers?
+    int ret = poll(pfds, (server->n_clients + 1), -1); 
     if (ret == -1){
         // poll had error
         log_printf("poll() interrupted by a signal\n");

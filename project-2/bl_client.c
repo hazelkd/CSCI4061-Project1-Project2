@@ -1,5 +1,7 @@
 #include <pthread.h>
+#include <termios.h>
 #include "blather.h"
+//#include "simpio.c"
 
 simpio_t simpio_actual;
 simpio_t *simpio = &simpio_actual;
@@ -38,10 +40,9 @@ server thread{
   cancel the user thread
   */
 
-
 void *user_worker(void *x){
     
-    char buf[1024]; int nread;
+    //char buf[1024]; int nread;
     
     while(!simpio->end_of_input){
       simpio_reset(simpio);
@@ -52,20 +53,20 @@ void *user_worker(void *x){
         iprintf(simpio, "%2d You entered: %s\n",client->name,simpio->buf); // Should we print this ?
       }
       if(simpio->line_ready){
-        mesg_t *newMes;
-        strcopy(simpio->buf, newMes->body);
-        strcopy(client->name, newMes->name);
+        mesg_t *newMes = NULL;
+        strcpy(simpio->buf, newMes->body);
+        strcpy(client->name, newMes->name);
         newMes->kind = BL_MESG;
         write(client->to_server_fd, newMes, strlen(newMes->body));  
       }
     }
   iprintf(simpio,"End of input, departing.\n");
 
-  mesg_t *newMes2;
+  mesg_t *newMes2 = NULL;
   newMes2->kind = BL_DEPARTED;
-  strcopy(client->name, newMes2->name);
+  strcpy(client->name, newMes2->name);
 
-  write(client->to_server_fd, newMes2, strlen(newMes2->body)); 
+  write(client->to_server_fd, newMes2->body, strlen(newMes2->body)); 
 
   pthread_cancel(background_thread); 
 
@@ -73,12 +74,17 @@ void *user_worker(void *x){
 }
 void *background_worker(void *x){
   //char buf[1024];
-  int nread;
+  
   while(1){
+    int nread = 0;
 
-    mesg_t *msg;
+    mesg_t *msg = NULL;
 
     nread = read(client->to_client_fd, msg, 1024);              // Can we read a whole message?
+
+    if(nread == 0){
+      break;
+    }
 
     if(msg->kind == BL_SHUTDOWN){
       pthread_cancel(user_thread);
@@ -89,7 +95,7 @@ void *background_worker(void *x){
   return NULL;
 }
 
-int main(int argc, char *argv[]){
+int main2(int argc, char *argv[]){
   
 
   char prompt[MAXNAME];
@@ -98,34 +104,35 @@ int main(int argc, char *argv[]){
   simpio_reset(simpio);                      // initialize io
   simpio_noncanonical_terminal_mode();       // set the terminal into a compatible mode
 
-  char buf[1024]; int nread;
+  //char buf[1024]; int nread;
+  server_t *server = NULL;
   while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete - server
     simpio_get_char(simpio);
     
-    server_t *server;
+   
     if(simpio->line_ready){
-      strcopy(simpio->buf, server->server_name);
+      strcpy(simpio->buf, server->server_name);
       server_start(server, server->server_name, DEFAULT_PERMS); 
     }
   }
-  char buf2[1024]; int nread2;
+  
   while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete - client 
         simpio_get_char(simpio);
     
     if(simpio->line_ready){
       
-      client_t *client;
-      strcopy(simpio->buf2, client->name); // I think we'll have to use the same buffer cause simpio doesn't have 2
+      client_t *client = NULL;
+      strcpy(simpio->buf, client->name); // I think we'll have to use the same buffer cause simpio doesn't have 2
 
     }
   }
   mkfifo("client_name.fifo", S_IRUSR | S_IWUSR);      //join fifo created
   client->to_client_fd = open("client_name.fifo", O_RDWR);
-  strcopy("client_name.fifo",client->to_client_fname);
+  strcpy("client_name.fifo",client->to_client_fname);
 
   mkfifo("server_name.fifo", S_IRUSR | S_IWUSR);
   client->to_server_fd = open("server_name.fifo", O_RDWR);
-  strcopy("server_name.fifo",client->to_server_fname);
+  strcpy("server_name.fifo",client->to_server_fname);
 
   server_handle_join(server); //this doesn't recognize the server that we opened above
 
