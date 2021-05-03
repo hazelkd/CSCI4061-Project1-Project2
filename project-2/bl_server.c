@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     sig.sa_flags = SA_RESTART;
     sigaction(SIGINT, &sig,NULL);
 
-    server_t *server = NULL;
+    server_t *server =0;
     while (KEEP_GOING){
         server_check_sources(server);
         if(server_join_ready(server)){
