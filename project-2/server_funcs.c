@@ -18,6 +18,7 @@ client_t *server_get_client(server_t *server, int idx){
 void server_start(server_t *server, char *server_name, int perms){
     log_printf("BEGIN: server_start()\n");              // at beginning of function
     *server->server_name = *server_name;
+    printf("%s", __func__);
     //server_name = server_name; // start the server with the given name dont know if this should be a pointer
     remove("server_name.fifo"); //remove any existing file of this name
     mkfifo("server_name.fifo", S_IRUSR | S_IWUSR); //join fifo created
@@ -152,8 +153,8 @@ void server_check_sources(server_t *server){
 //create a fd array of join_fd with clients after, poll on that and when wake up when its ready  join_ready =1 
     log_printf("BEGIN: server_check_sources()\n");
     struct pollfd pfds[server->n_clients+1];                               // array of structures for poll, 1 per fd to be monitored
-    //int pipe1[2];
-    //int pid1 = make_child(pipe1, 1, server->join_fd);
+    server->join_ready = 0;
+    //server->client
 
     pfds[0].fd     = server->join_fd; //pipe1[PREAD]; DO we need this?                                      // populate first entry with server join fd
     pfds[0].events = POLLIN; 

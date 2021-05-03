@@ -2,9 +2,12 @@
 #include <termios.h>
 #include "blather.h"
 
-simpio_t simpio = {};
+simpio_t simpio_actual;
+simpio_t *simpio = &simpio_actual;
 
-client_t client = {}];
+client_t client_actual;
+client_t *client = &client_actual;
+
 pthread_t user_thread;          // thread managing user input
 pthread_t background_thread;
 
@@ -41,17 +44,17 @@ void *user_worker(void *x){
 
     //char buf[1024]; int nread;
     
-    while(!simpio.end_of_input){
+    while(!simpio->end_of_input){
       simpio_reset(simpio);
       iprintf(simpio, ""); 
       
-      while(!simpio.line_ready && !simpio.end_of_input){          // read until line is complete
+      while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete
         simpio_get_char(simpio);
-        iprintf(simpio, "%2d You entered: %s\n",client.name,simpio.buf); // Should we print this ?
+        iprintf(simpio, "%2d You entered: %s\n",client->name,simpio->buf); // Should we print this ?
       }
-      if(simpio.line_ready){
+      if(simpio->line_ready){
         mesg_t newMes = {};
-        strcpy(simpio.buf, newMes.body);
+        strcpy(simpio->buf, newMes.body);
         strcpy(client->name, newMes.name);
         newMes.kind = BL_MESG;
         write(client->to_server_fd, &newMes, strlen(newMes.body));  
