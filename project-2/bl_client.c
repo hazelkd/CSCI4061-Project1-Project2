@@ -40,7 +40,26 @@ server thread{
   */
 
 void *user_worker(void *x){
+
+  char prompt[MAXNAME];
+  snprintf(prompt, MAXNAME, "%s>> ","fgnd"); // create a prompt string
+  simpio_set_prompt(simpio, prompt);         // set the prompt
+  simpio_reset(simpio);                      // initialize io
+  simpio_noncanonical_terminal_mode();       // set the terminal into a compatible mode
+
+  //char buf[1024]; int nread;
+  server_t server = {};
+  while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete - server
+    simpio_get_char(simpio);
     
+   
+    if(simpio->line_ready){
+      strcpy(simpio->buf, server.server_name);
+     // server_start(&server, server.server_name, DEFAULT_PERMS); 
+    }
+  }
+
+    // editing before this line ----------
     //char buf[1024]; int nread;
     
     while(!simpio->end_of_input){
@@ -96,7 +115,7 @@ void *background_worker(void *x){
 
 int main(int argc, char *argv[]){
   
-
+/*
   char prompt[MAXNAME];
   snprintf(prompt, MAXNAME, "%s>> ","fgnd"); // create a prompt string
   simpio_set_prompt(simpio, prompt);         // set the prompt
@@ -114,13 +133,12 @@ int main(int argc, char *argv[]){
      // server_start(&server, server.server_name, DEFAULT_PERMS); 
     }
   }
-  
+*/
   while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete - client 
         simpio_get_char(simpio);
     
     if(simpio->line_ready){
       
-      //client_t client = {};
       strcpy(simpio->buf, client->name); // I think we'll have to use the same buffer cause simpio doesn't have 2
 
     }
