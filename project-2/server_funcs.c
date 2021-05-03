@@ -7,7 +7,7 @@ client_t *server_get_client(server_t *server, int idx){
         exit(0);
     }
     else{
-        client_t *givenIndex = NULL;
+        client_t *givenIndex = {};
         *givenIndex = server->client[idx];
     }
     return 0;

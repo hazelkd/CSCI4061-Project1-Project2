@@ -78,7 +78,7 @@ void *background_worker(void *x){
   while(1){
     int nread = 0;
 
-    mesg_t *msg = NULL;
+    mesg_t *msg = {};
 
     nread = read(client->to_client_fd, msg, 1024);              // Can we read a whole message?
 
@@ -105,7 +105,8 @@ int main2(int argc, char *argv[]){
   simpio_noncanonical_terminal_mode();       // set the terminal into a compatible mode
 
   //char buf[1024]; int nread;
-  server_t *server = NULL;
+  server_t *server;
+  server = {};
   while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete - server
     simpio_get_char(simpio);
     
