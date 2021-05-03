@@ -2,11 +2,9 @@
 #include <termios.h>
 #include "blather.h"
 
-simpio_t simpio_actual;
-simpio_t *simpio = &simpio_actual;
+simpio_t simpio = {};
 
-client_t client_actual;
-client_t *client = &client_actual;
+client_t client = {}];
 pthread_t user_thread;          // thread managing user input
 pthread_t background_thread;
 
@@ -41,38 +39,19 @@ server thread{
 
 void *user_worker(void *x){
 
-  char prompt[MAXNAME];
-  snprintf(prompt, MAXNAME, "%s>> ","fgnd"); // create a prompt string
-  simpio_set_prompt(simpio, prompt);         // set the prompt
-  simpio_reset(simpio);                      // initialize io
-  simpio_noncanonical_terminal_mode();       // set the terminal into a compatible mode
-
-  //char buf[1024]; int nread;
-  server_t server = {};
-  while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete - server
-    simpio_get_char(simpio);
-    
-   
-    if(simpio->line_ready){
-      strcpy(simpio->buf, server.server_name);
-     // server_start(&server, server.server_name, DEFAULT_PERMS); 
-    }
-  }
-
-    // editing before this line ----------
     //char buf[1024]; int nread;
     
-    while(!simpio->end_of_input){
+    while(!simpio.end_of_input){
       simpio_reset(simpio);
       iprintf(simpio, ""); 
       
-      while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete
+      while(!simpio.line_ready && !simpio.end_of_input){          // read until line is complete
         simpio_get_char(simpio);
-        iprintf(simpio, "%2d You entered: %s\n",client->name,simpio->buf); // Should we print this ?
+        iprintf(simpio, "%2d You entered: %s\n",client.name,simpio.buf); // Should we print this ?
       }
-      if(simpio->line_ready){
+      if(simpio.line_ready){
         mesg_t newMes = {};
-        strcpy(simpio->buf, newMes.body);
+        strcpy(simpio.buf, newMes.body);
         strcpy(client->name, newMes.name);
         newMes.kind = BL_MESG;
         write(client->to_server_fd, &newMes, strlen(newMes.body));  
@@ -82,7 +61,7 @@ void *user_worker(void *x){
 
   mesg_t newMes2 = {};
   newMes2.kind = BL_DEPARTED;
-  strcpy(client->name, newMes2.name);//client shouldnt be apointer
+  strcpy(client->name, newMes2.name); //client shouldnt be apointer
 
   write(client->to_server_fd, newMes2.body, strlen(newMes2.body)); 
 
@@ -115,34 +94,13 @@ void *background_worker(void *x){
 
 int main(int argc, char *argv[]){
   
-/*
+
   char prompt[MAXNAME];
   snprintf(prompt, MAXNAME, "%s>> ","fgnd"); // create a prompt string
   simpio_set_prompt(simpio, prompt);         // set the prompt
   simpio_reset(simpio);                      // initialize io
   simpio_noncanonical_terminal_mode();       // set the terminal into a compatible mode
 
-  //char buf[1024]; int nread;
-  server_t server = {};
-  while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete - server
-    simpio_get_char(simpio);
-    
-   
-    if(simpio->line_ready){
-      strcpy(simpio->buf, server.server_name);
-     // server_start(&server, server.server_name, DEFAULT_PERMS); 
-    }
-  }
-*/
-  while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete - client 
-        simpio_get_char(simpio);
-    
-    if(simpio->line_ready){
-      
-      strcpy(simpio->buf, client->name); // I think we'll have to use the same buffer cause simpio doesn't have 2
-
-    }
-  }
   mkfifo("client_name.fifo", S_IRUSR | S_IWUSR);      //join fifo created
   client->to_client_fd = open("client_name.fifo", O_RDWR);
   strcpy("client_name.fifo",client->to_client_fname);
@@ -151,7 +109,6 @@ int main(int argc, char *argv[]){
   client->to_server_fd = open("server_name.fifo", O_RDWR);
   strcpy("server_name.fifo",client->to_server_fname);
 
-  //server_handle_join(&server); //this doesn't recognize the server that we opened above
 
   pthread_create(&user_thread,   NULL, user_worker,   NULL);     // start user thread to read input
   pthread_create(&background_thread, NULL, background_worker, NULL); // start thread to listen to info for server 

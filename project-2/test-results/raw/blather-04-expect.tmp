@@ -1,0 +1,5 @@
+>> START server ./bl_server gotham
+>> START bruce ./bl_client gotham Bruce
+>> INPUT bruce This is a test
+>> INPUT bruce Is anyone there? Anyone at all?
+>> INPUT bruce Alfreeeed!

@@ -1,0 +1,157 @@
+TEST OUTPUT MISMATCH: Side by Side Differences shown below 
+- Expect output in: test-results/raw/blather-05-expect.tmp
+- Acutal output in: test-results/raw/blather-05-actual.tmp
+- Differing lines have a character like '|' and '<' in the middle
+
+#+BEGIN_SRC diff
+==== EXPECT ====                                                                     ==== ACTUAL ====                                                                  
+>> START server ./bl_server gotham                                                   >> START server ./bl_server gotham
+>> START bruce ./bl_client gotham Bruce                                              >> START bruce ./bl_client gotham Bruce
+>> INPUT bruce This is a test                                                        >> INPUT bruce This is a test
+                                                                                   > Program 'bruce' is not alive: ./testy: line 284: kill: (348101) - No such process
+                                                                                   > Non-zero return code 127
+                                                                                   > Can't send INPUT to dead program 'bruce' (./bl_client gotham Bruce)
+>> INPUT bruce Is anyone there? Anyone at all?                                       >> INPUT bruce Is anyone there? Anyone at all?
+                                                                                   > Program 'bruce' has already died
+>> INPUT bruce Alfreeeed!                                                            >> INPUT bruce Alfreeeed!
+                                                                                   > Program 'bruce' has already died
+>> SIGNAL server -15                                                                 >> SIGNAL server -15
+                                                                                   > Program 'server' is not alive: ./testy: line 284: kill: (348077) - No such process
+                                                                                   > Non-zero return code 127
+                                                                                   > Can't send SIGNAL to dead program 'server' (./bl_server gotham)
+>> WAIT_ALL                                                                          >> WAIT_ALL
+<testy> WAIT for server                                                              <testy> WAIT for server
+                                                                                   > Non-zero return code 127
+<testy> WAIT for bruce                                                               <testy> WAIT for bruce
+                                                                                   > Non-zero return code 127
+>> CHECK_ALL cat                                                                     >> CHECK_ALL cat
+<testy> CHECK_FAILURES for server                                                    <testy> CHECK_FAILURES for server
+<testy> CHECK_FAILURES for bruce                                                     <testy> CHECK_FAILURES for bruce
+>> OUTPUT_ALL ./test_filter_client_output                                            >> OUTPUT_ALL ./test_filter_client_output
+
+<testy> OUTPUT for server                                                            <testy> OUTPUT for server
+LOG: BEGIN: server_start()                                                         | valgrind: ./bl_server: No such file or directory
+LOG: END: server_start()                                                           <
+LOG: BEGIN: server_check_sources()                                                 <
+LOG: poll()'ing to check 1 input sources                                           <
+LOG: poll() completed with return value 1                                          <
+LOG: join_ready = 1                                                                <
+LOG: END: server_check_sources()                                                   <
+LOG: BEGIN: server_handle_join()                                                   <
+LOG: join request for new client 'Bruce'                                           <
+LOG: BEGIN: server_add_client()                                                    <
+LOG: END: server_add_client()                                                      <
+LOG: END: server_handle_join()                                                     <
+LOG: BEGIN: server_check_sources()                                                 <
+LOG: poll()'ing to check 2 input sources                                           <
+LOG: poll() completed with return value 1                                          <
+LOG: join_ready = 0                                                                <
+LOG: client 0 'Bruce' data_ready = 1                                               <
+LOG: END: server_check_sources()                                                   <
+LOG: BEGIN: server_handle_client()                                                 <
+LOG: client 0 'Bruce' MESSAGE 'This is a test'                                     <
+LOG: END: server_handle_client()                                                   <
+LOG: BEGIN: server_check_sources()                                                 <
+LOG: poll()'ing to check 2 input sources                                           <
+LOG: poll() completed with return value 1                                          <
+LOG: join_ready = 0                                                                <
+LOG: client 0 'Bruce' data_ready = 1                                               <
+LOG: END: server_check_sources()                                                   <
+LOG: BEGIN: server_handle_client()                                                 <
+LOG: client 0 'Bruce' MESSAGE 'Is anyone there? Anyone at all?'                    <
+LOG: END: server_handle_client()                                                   <
+LOG: BEGIN: server_check_sources()                                                 <
+LOG: poll()'ing to check 2 input sources                                           <
+LOG: poll() completed with return value 1                                          <
+LOG: join_ready = 0                                                                <
+LOG: client 0 'Bruce' data_ready = 1                                               <
+LOG: END: server_check_sources()                                                   <
+LOG: BEGIN: server_handle_client()                                                 <
+LOG: client 0 'Bruce' MESSAGE 'Alfreeeed!'                                         <
+LOG: END: server_handle_client()                                                   <
+LOG: BEGIN: server_check_sources()                                                 <
+LOG: poll()'ing to check 2 input sources                                           <
+LOG: poll() completed with return value -1                                         <
+LOG: poll() interrupted by a signal                                                <
+LOG: END: server_check_sources()                                                   <
+LOG: BEGIN: server_shutdown()                                                      <
+LOG: END: server_shutdown()                                                        <
+
+<testy> OUTPUT for bruce                                                             <testy> OUTPUT for bruce
+-- Bruce JOINED --                                                                 | valgrind: ./bl_client: No such file or directory
+[Bruce] : This is a test                                                           |
+[Bruce] : Is anyone there? Anyone at all?                                          |
+[Bruce] : Alfreeeed!                                                               <
+!!! server is shutting down !!!                                                    <
+Bruce>>                                                                            <
+
+
+#+END_SRC
+
+--- Line Differences ---
+ACTUAL:   4) Program 'bruce' is not alive: ./testy: line 284: kill: (348101) - No such process
+ACTUAL:   5) Non-zero return code 127
+ACTUAL:   6) Can't send INPUT to dead program 'bruce' (./bl_client gotham Bruce)
+ACTUAL:   8) Program 'bruce' has already died
+ACTUAL:  10) Program 'bruce' has already died
+ACTUAL:  12) Program 'server' is not alive: ./testy: line 284: kill: (348077) - No such process
+ACTUAL:  13) Non-zero return code 127
+ACTUAL:  14) Can't send SIGNAL to dead program 'server' (./bl_server gotham)
+ACTUAL:  17) Non-zero return code 127
+ACTUAL:  19) Non-zero return code 127
+EXPECT:  16) LOG: BEGIN: server_start()
+EXPECT:  17) LOG: END: server_start()
+EXPECT:  18) LOG: BEGIN: server_check_sources()
+EXPECT:  19) LOG: poll()'ing to check 1 input sources
+EXPECT:  20) LOG: poll() completed with return value 1
+EXPECT:  21) LOG: join_ready = 1
+EXPECT:  22) LOG: END: server_check_sources()
+EXPECT:  23) LOG: BEGIN: server_handle_join()
+EXPECT:  24) LOG: join request for new client 'Bruce'
+EXPECT:  25) LOG: BEGIN: server_add_client()
+EXPECT:  26) LOG: END: server_add_client()
+EXPECT:  27) LOG: END: server_handle_join()
+EXPECT:  28) LOG: BEGIN: server_check_sources()
+EXPECT:  29) LOG: poll()'ing to check 2 input sources
+EXPECT:  30) LOG: poll() completed with return value 1
+EXPECT:  31) LOG: join_ready = 0
+EXPECT:  32) LOG: client 0 'Bruce' data_ready = 1
+EXPECT:  33) LOG: END: server_check_sources()
+EXPECT:  34) LOG: BEGIN: server_handle_client()
+EXPECT:  35) LOG: client 0 'Bruce' MESSAGE 'This is a test'
+EXPECT:  36) LOG: END: server_handle_client()
+EXPECT:  37) LOG: BEGIN: server_check_sources()
+EXPECT:  38) LOG: poll()'ing to check 2 input sources
+EXPECT:  39) LOG: poll() completed with return value 1
+EXPECT:  40) LOG: join_ready = 0
+EXPECT:  41) LOG: client 0 'Bruce' data_ready = 1
+EXPECT:  42) LOG: END: server_check_sources()
+EXPECT:  43) LOG: BEGIN: server_handle_client()
+EXPECT:  44) LOG: client 0 'Bruce' MESSAGE 'Is anyone there? Anyone at all?'
+EXPECT:  45) LOG: END: server_handle_client()
+EXPECT:  46) LOG: BEGIN: server_check_sources()
+EXPECT:  47) LOG: poll()'ing to check 2 input sources
+EXPECT:  48) LOG: poll() completed with return value 1
+EXPECT:  49) LOG: join_ready = 0
+EXPECT:  50) LOG: client 0 'Bruce' data_ready = 1
+EXPECT:  51) LOG: END: server_check_sources()
+EXPECT:  52) LOG: BEGIN: server_handle_client()
+EXPECT:  53) LOG: client 0 'Bruce' MESSAGE 'Alfreeeed!'
+EXPECT:  54) LOG: END: server_handle_client()
+EXPECT:  55) LOG: BEGIN: server_check_sources()
+EXPECT:  56) LOG: poll()'ing to check 2 input sources
+EXPECT:  57) LOG: poll() completed with return value -1
+EXPECT:  58) LOG: poll() interrupted by a signal
+EXPECT:  59) LOG: END: server_check_sources()
+EXPECT:  60) LOG: BEGIN: server_shutdown()
+EXPECT:  61) LOG: END: server_shutdown()
+ACTUAL:  26) valgrind: ./bl_server: No such file or directory
+EXPECT:  64) -- Bruce JOINED --
+EXPECT:  65) [Bruce] : This is a test
+EXPECT:  66) [Bruce] : Is anyone there? Anyone at all?
+EXPECT:  67) [Bruce] : Alfreeeed!
+EXPECT:  68) !!! server is shutting down !!!
+EXPECT:  69) Bruce>> 
+ACTUAL:  29) valgrind: ./bl_client: No such file or directory
+ACTUAL:  30) 
+ACTUAL:  31) 

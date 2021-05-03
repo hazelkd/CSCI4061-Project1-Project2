@@ -1,0 +1,33 @@
+>> START server ./bl_server gotham
+>> START bruce ./bl_client gotham Bruce
+>> INPUT bruce This is a test
+Program 'bruce' is not alive: ./testy: line 284: kill: (348101) - No such process
+Non-zero return code 127
+Can't send INPUT to dead program 'bruce' (./bl_client gotham Bruce)
+>> INPUT bruce Is anyone there? Anyone at all?
+Program 'bruce' has already died
+>> INPUT bruce Alfreeeed!
+Program 'bruce' has already died
+>> SIGNAL server -15
+Program 'server' is not alive: ./testy: line 284: kill: (348077) - No such process
+Non-zero return code 127
+Can't send SIGNAL to dead program 'server' (./bl_server gotham)
+>> WAIT_ALL
+<testy> WAIT for server
+Non-zero return code 127
+<testy> WAIT for bruce
+Non-zero return code 127
+>> CHECK_ALL cat
+<testy> CHECK_FAILURES for server
+<testy> CHECK_FAILURES for bruce
+>> OUTPUT_ALL ./test_filter_client_output
+
+<testy> OUTPUT for server
+valgrind: ./bl_server: No such file or directory
+
+<testy> OUTPUT for bruce
+valgrind: ./bl_client: No such file or directory
+
+
+
+
