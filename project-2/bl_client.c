@@ -1,7 +1,6 @@
 #include <pthread.h>
 #include <termios.h>
 #include "blather.h"
-//#include "simpio.c"
 
 simpio_t simpio_actual;
 simpio_t *simpio = &simpio_actual;
@@ -95,7 +94,7 @@ void *background_worker(void *x){
   return NULL;
 }
 
-int main2(int argc, char *argv[]){
+int main(int argc, char *argv[]){
   
 
   char prompt[MAXNAME];
@@ -112,7 +111,7 @@ int main2(int argc, char *argv[]){
    
     if(simpio->line_ready){
       strcpy(simpio->buf, server.server_name);
-      server_start(&server, server.server_name, DEFAULT_PERMS); 
+     // server_start(&server, server.server_name, DEFAULT_PERMS); 
     }
   }
   
@@ -134,7 +133,7 @@ int main2(int argc, char *argv[]){
   client->to_server_fd = open("server_name.fifo", O_RDWR);
   strcpy("server_name.fifo",client->to_server_fname);
 
-  server_handle_join(&server); //this doesn't recognize the server that we opened above
+  //server_handle_join(&server); //this doesn't recognize the server that we opened above
 
   pthread_create(&user_thread,   NULL, user_worker,   NULL);     // start user thread to read input
   pthread_create(&background_thread, NULL, background_worker, NULL); // start thread to listen to info for server 
