@@ -31,4 +31,4 @@ server_funcs.o: server_funcs.c blather.h
 clean:
 	rm -f blather *.o
 
-#include test_Makefile
+include test_Makefile

@@ -53,20 +53,20 @@ void *user_worker(void *x){
         iprintf(simpio, "%2d You entered: %s\n",client->name,simpio->buf); // Should we print this ?
       }
       if(simpio->line_ready){
-        mesg_t *newMes = NULL;
-        strcpy(simpio->buf, newMes->body);
-        strcpy(client->name, newMes->name);
-        newMes->kind = BL_MESG;
-        write(client->to_server_fd, newMes, strlen(newMes->body));  
+        mesg_t newMes = {};
+        strcpy(simpio->buf, newMes.body);
+        strcpy(client->name, newMes.name);
+        newMes.kind = BL_MESG;
+        write(client->to_server_fd, &newMes, strlen(newMes.body));  
       }
     }
   iprintf(simpio,"End of input, departing.\n");
 
-  mesg_t *newMes2 = NULL;
-  newMes2->kind = BL_DEPARTED;
-  strcpy(client->name, newMes2->name);
+  mesg_t newMes2 = {};
+  newMes2.kind = BL_DEPARTED;
+  strcpy(client->name, newMes2.name);//client shouldnt be apointer
 
-  write(client->to_server_fd, newMes2->body, strlen(newMes2->body)); 
+  write(client->to_server_fd, newMes2.body, strlen(newMes2.body)); 
 
   pthread_cancel(background_thread); 
 
@@ -121,7 +121,7 @@ int main2(int argc, char *argv[]){
     
     if(simpio->line_ready){
       
-      client_t *client = NULL;
+      //client_t client = {};
       strcpy(simpio->buf, client->name); // I think we'll have to use the same buffer cause simpio doesn't have 2
 
     }
