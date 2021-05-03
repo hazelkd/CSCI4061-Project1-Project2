@@ -76,9 +76,9 @@ int server_add_client(server_t *server, join_t *join){
         return 1;
     }                                              // found matching record
     client_t added_client;
-    strcpy(join->name, added_client.name);
-    strcpy(join->to_client_fname, added_client.to_client_fname);
-    strcpy(join->to_server_fname, added_client.to_server_fname);
+    strncpy(join->name, added_client.name,sizeof(join->name));
+    strncpy(join->to_client_fname, added_client.to_client_fname,sizeof(join->to_client_fname));
+    strncpy(join->to_server_fname, added_client.to_server_fname,sizeof(join->to_server_fname));
     //opening and creating fd to server
     mkfifo(added_client.to_server_fname, S_IRUSR | S_IWUSR);
     added_client.to_server_fd = open(added_client.to_server_fname, O_RDWR);
@@ -107,12 +107,15 @@ int server_add_client(server_t *server, join_t *join){
 // log_printf("END: server_add_client()\n");           // at end of function
 
 int server_remove_client(server_t *server, int idx){
-    close(server->client[idx].to_client_fd);
-    close(server->client[idx].to_server_fd);
-    remove(server->client[idx].to_client_fname);
-    remove(server->client[idx].to_server_fname);
+    
+    // uses server_get_client() for readability ?
+    close(server_get_client(server, idx)->to_client_fd);
+    close(server_get_client(server, idx)->to_server_fd);
+    remove(server_get_client(server, idx)->to_client_fname);
+    remove(server_get_client(server, idx)->to_server_fname);
 
     for (int i = idx; i < server->n_clients - 1; i++) {
+
         server->client[idx] = server->client[idx+1];
     }
     if (server->n_clients != 0){
@@ -156,11 +159,11 @@ void server_check_sources(server_t *server){
     pfds[0].fd     = server->join_fd; //pipe1[PREAD]; DO we need this?                                      // populate first entry with server join fd
     pfds[0].events = POLLIN; 
 
-    for(int i = 1; i < server->n_clients; i++){
+    for(int i = 1; i <= server->n_clients; i++){
          
         //int pipe1[2];
         //int pid1 = make_child(pipe1, 1, server->client[i].to_server_fd);
-        pfds[i].fd     = server->client[i].to_server_fd;  //WHICH SHOULD IT BE?                                    // populate other entries with fds
+        pfds[i].fd     = server->client[i-1].to_server_fd;  //WHICH SHOULD IT BE?                                    // populate other entries with fds
         pfds[i].events = POLLIN; 
         
     }
@@ -168,7 +171,7 @@ void server_check_sources(server_t *server){
     //char buf[1024]; int nread;
     int ret = poll(pfds, (server->n_clients + 1), -1); 
     if (ret == -1){
-        // poll had error
+        
         log_printf("poll() interrupted by a signal\n");
     }
     log_printf("poll() completed with return value %d\n", ret);
