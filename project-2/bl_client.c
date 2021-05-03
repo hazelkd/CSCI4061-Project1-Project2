@@ -78,19 +78,19 @@ void *background_worker(void *x){
   while(1){
     int nread = 0;
 
-    mesg_t *msg = {};
+    mesg_t msg = {};
 
-    nread = read(client->to_client_fd, msg, 1024);              // Can we read a whole message?
+    nread = read(client->to_client_fd, &msg, 1024);              // Can we read a whole message?
 
     if(nread == 0){
       break;
     }
 
-    if(msg->kind == BL_SHUTDOWN){
+    if(msg.kind == BL_SHUTDOWN){
       pthread_cancel(user_thread);
     }
     //buf[nread] = '\0';
-    iprintf(simpio, "%s Message: |%s|\n", client->name, msg->body);
+    iprintf(simpio, "%s Message: |%s|\n", client->name, msg.body);
   }
   return NULL;
 }
@@ -105,15 +105,14 @@ int main2(int argc, char *argv[]){
   simpio_noncanonical_terminal_mode();       // set the terminal into a compatible mode
 
   //char buf[1024]; int nread;
-  server_t *server;
-  server = {};
+  server_t server = {};
   while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete - server
     simpio_get_char(simpio);
     
    
     if(simpio->line_ready){
-      strcpy(simpio->buf, server->server_name);
-      server_start(server, server->server_name, DEFAULT_PERMS); 
+      strcpy(simpio->buf, server.server_name);
+      server_start(&server, server.server_name, DEFAULT_PERMS); 
     }
   }
   
@@ -135,7 +134,7 @@ int main2(int argc, char *argv[]){
   client->to_server_fd = open("server_name.fifo", O_RDWR);
   strcpy("server_name.fifo",client->to_server_fname);
 
-  server_handle_join(server); //this doesn't recognize the server that we opened above
+  server_handle_join(&server); //this doesn't recognize the server that we opened above
 
   pthread_create(&user_thread,   NULL, user_worker,   NULL);     // start user thread to read input
   pthread_create(&background_thread, NULL, background_worker, NULL); // start thread to listen to info for server 

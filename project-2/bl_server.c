@@ -30,15 +30,15 @@ int main(int argc, char *argv[]) {
     sig.sa_flags = SA_RESTART;
     sigaction(SIGINT, &sig,NULL);
 
-    server_t *server =0;
+    server_t server = {};
     while (KEEP_GOING){
-        server_check_sources(server);
-        if(server_join_ready(server)){
-            server_handle_join(server);
+        server_check_sources(&server);
+        if(server_join_ready(&server)){
+            server_handle_join(&server);
         }
-        for (int i = 0; i < server->n_clients; i++) {
-            if(server_client_ready(server, i)){
-                server_handle_client(server, i);
+        for (int i = 0; i < server.n_clients; i++) {
+            if(server_client_ready(&server, i)){
+                server_handle_client(&server, i);
             }
             else {
                 break;

@@ -6,10 +6,9 @@ client_t *server_get_client(server_t *server, int idx){
         printf("Index is greater than n_clients, program is exiting\n");
         exit(0);
     }
-    else{
-        client_t *givenIndex = {};
-        *givenIndex = server->client[idx];
-    }
+   /* else{ //don't know what this does 
+        client_t givenIndex = server->client[idx];
+    }*/
     return 0;
 }
 // Gets a pointer to the client_t struct at the given index. If the
@@ -47,10 +46,10 @@ void server_shutdown(server_t *server){
     close(server->join_fd);
     server->join_ready = 0;
     remove("join_fd.fifo");
-    mesg_t *msg = NULL;
-    msg->kind = BL_SHUTDOWN;
+    mesg_t msg = {};
+    msg.kind = BL_SHUTDOWN;
     for (int i = 0; i < server->n_clients; i++){
-        write(server->client[i].to_client_fd, msg, strlen(msg->body));
+        write(server->client[i].to_client_fd, &msg, strlen(msg.body));
         server_remove_client(server, i);
     }
     log_printf("END: server_shutdown()\n");             // at end of function
