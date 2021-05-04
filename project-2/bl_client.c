@@ -53,21 +53,22 @@ void *user_worker(void *x){
         simpio_get_char(simpio); // Should we print this ?
       }
       if(simpio->line_ready){
+        log_printf("Message got here\n"); //never gets here 
+
         iprintf(simpio, "%2d You entered: %s\n",client->name,simpio->buf);
         mesg_t newMes = {};
-        strcpy(simpio->buf, newMes.body);
-        strcpy(client->name, newMes.name);
+        strncpy(newMes.body, simpio->buf, strlen(simpio->buf));
+        strncpy(newMes.name, client->name, strlen(simpio->buf));
         newMes.kind = BL_MESG;
-        write(client->to_server_fd, &newMes, strlen(newMes.body));  
+        write(client->to_server_fd, &newMes, sizeof(mesg_t));  
       }
     }
   iprintf(simpio,"End of input, departing.\n");
 
   mesg_t newMes2 = {};
   newMes2.kind = BL_DEPARTED;
-  strcpy(client->name, newMes2.name); //client shouldnt be apointer
-
-  write(client->to_server_fd, newMes2.body, strlen(newMes2.body)); 
+  strncpy(newMes2.name, client->name, strlen(client->name)); //client shouldnt be apointer
+  write(client->to_server_fd, &newMes2, sizeof(mesg_t)); 
 
   pthread_cancel(background_thread); 
 
@@ -86,24 +87,43 @@ void *background_worker(void *x){
     nread = read(client->to_client_fd, &msg, 1024);              // Can we read a whole message?
 
     //log_printf("Message: %s\n", msg.name );
-    if(nread == 0){
+    if(nread == -1){
       status = 0;
       break;
     }
-
-
-
-    if(msg.kind == BL_SHUTDOWN){
-      pthread_cancel(user_thread);
+    else if (nread != 0){
+      if(msg.kind == BL_JOINED){
+        iprintf(simpio, "-- %s JOINED --\n", msg.name);
+      }
+      else if(msg.kind == BL_MESG){
+        iprintf(simpio, "[%s]%s\n", msg.name, msg.body);
+      }
+      else if(msg.kind == BL_DEPARTED){
+        iprintf(simpio, "-- %s DEPARTED --\n", msg.name);
+      }
+      if(msg.kind == BL_SHUTDOWN){
+        iprintf(simpio, "!!! server is shutting down !!!\n");
+        status = 0;
+      }
     }
-    //buf[nread] = '\0';
-    iprintf(simpio, "%s Message: |%s|\n", client->name, msg.body);
   }
+  pthread_cancel(user_thread);
+
   return NULL;
 }
 
 int main(int argc, char *argv[]){
   
+  /*log_printf("From bl_client: argv1 is %s and argv2 is %s \n", argv[1], argv[2]);
+
+  char *fifo_name = ".fifo";
+  char *name_server = argv[1];
+  strcat(name_server, fifo_name);
+  snprintf to concatenate and put into a new var %s
+  log_printf("Name of server from bl_client: %s\n", argv[1]);
+
+  char *name_client = argv[2];
+  strcat(name_client, fifo_name);*/
 
   char prompt[MAXNAME];
   snprintf(prompt, MAXNAME, "%s>> ","fgnd"); // create a prompt string
@@ -111,17 +131,45 @@ int main(int argc, char *argv[]){
   simpio_reset(simpio);                      // initialize io
   simpio_noncanonical_terminal_mode();       // set the terminal into a compatible mode
 
-  char Cname[MAXPATH] = "client_name.fifo";
-  mkfifo(Cname, S_IRUSR | S_IWUSR);      //join fifo created
-  strncpy(Cname,client->to_client_fname, strlen(Cname));
-  client->to_client_fd = open("client_name.fifo", O_RDWR);
+  char server_name[MAXPATH];
+  memset(server_name, 0, MAXPATH);
+  strncpy(server_name, argv[1], strlen(argv[1]));
 
-  char Sname[MAXPATH] = "server_name.fifo"; 
-  mkfifo("server_name.fifo", S_IRUSR | S_IWUSR);
-  strncpy(Sname,client->to_server_fname, strlen(Sname));
-  client->to_server_fd = open("server_name.fifo", O_RDWR);
+  char user_name[MAXPATH];
+  memset(user_name, 0, MAXPATH);
+  strncpy(user_name, argv[2], strlen(argv[2]));
+
+  char nameClient[MAXPATH*2+13];
+  memset(nameClient, 0, MAXPATH*2+13);
+
+  char nameServer[MAXPATH*2+13];
+  memset(nameServer, 0, MAXPATH*2+13);
+
+  snprintf(nameClient, MAXPATH*2+13, "%s%s%s", server_name, user_name, "toClient.fifo");
+  snprintf(nameServer, MAXPATH*2+13, "%s%s%s", server_name, user_name, "toServer.fifo");
+  strncpy(client->to_client_fname, nameClient, strlen(nameClient));
+  strncpy(client->to_server_fname, nameServer, strlen(nameServer));
 
 
+  mkfifo(client->to_client_fname, DEFAULT_PERMS);      //join fifo created
+  client->to_client_fd = open(client->to_client_fname, O_RDWR);
+
+  mkfifo(client->to_server_fname, DEFAULT_PERMS);
+  //strncpy(client->to_server_fname, argv[1], strlen(argv[1]));
+  client->to_server_fd = open(client->to_server_fname, O_RDWR); //specific to server and client
+  //log_printf("server name from bl_client: %s\n", client->to_server_fname);
+
+  join_t request = {};
+  strncpy(request.name, user_name, strlen(user_name));
+  strncpy(request.to_client_fname, client->to_client_fname, strlen(client->to_client_fname));
+  strncpy(request.to_server_fname, client->to_server_fname, strlen(client->to_server_fname));
+
+  //copy info
+  char server_fifo[MAXPATH+5];
+  memset(server_fifo, 0, MAXPATH+5);
+  snprintf(server_fifo, MAXPATH+5, "%s%s", server_name, ".fifo");
+  int serverFD = open(server_fifo, O_RDWR);
+  write(serverFD, &request, sizeof(join_t));
 
   pthread_create(&user_thread,NULL, user_worker, NULL);     // start user thread to read input
   pthread_create(&background_thread, NULL, background_worker, NULL); // start thread to listen to info for server 

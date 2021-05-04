@@ -32,26 +32,17 @@ int main(int argc, char *argv[]) {
 
     server_t server = {};
 
-    //strncpy(argv[1], server.server_name, strlen(argv[1]));
-    char *fifo_name = ".fifo";
-    char *name_server = argv[1];
-    strcat(name_server, fifo_name);
-
-    log_printf("Name from bl_server: %s\n", name_server);
-
-    server_start(&server, name_server, DEFAULT_PERMS);
+    server_start(&server, argv[1], DEFAULT_PERMS);
 
     while(KEEP_GOING){
         server_check_sources(&server);
+
         if(server_join_ready(&server)){
             server_handle_join(&server);
         }
         for (int i = 0; i < server.n_clients; i++) {
             if(server_client_ready(&server, i)){
                 server_handle_client(&server, i);
-            }
-            else {
-                break;
             }
         }
     }

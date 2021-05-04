@@ -2,14 +2,17 @@
 
 client_t *server_get_client(server_t *server, int idx){
     //do I need to do something for the size, or is it unknown? 
-    if (idx > server->n_clients){
+    if (idx < server->n_clients){
+        return &server->client[idx];
+    }
+    else {
         printf("Index is greater than n_clients, program is exiting\n");
         exit(0);
     }
    /* else{ //don't know what this does 
         client_t givenIndex = server->client[idx];
     }*/
-    return 0;
+    return NULL;
 }
 // Gets a pointer to the client_t struct at the given index. If the
 // index is beyond n_clients, the behavior of the function is
@@ -17,14 +20,16 @@ client_t *server_get_client(server_t *server, int idx){
 
 void server_start(server_t *server, char *server_name, int perms){
     log_printf("BEGIN: server_start()\n");              // at beginning of function
-    *server->server_name = *server_name;
-    //strcpy(server_name, server->server_name);
-    log_printf("Name from server_start: %s\n", server->server_name);
-    //printf("%s", __func__);
-    //server_name = server_name; // start the server with the given name dont know if this should be a pointer
-    remove(server_name); //remove any existing file of this name
-    mkfifo(server_name, DEFAULT_PERMS); //join fifo created
-    server->join_fd = open(server_name, O_RDWR); //open fifo and store fd //not exactly sure if its read and write
+    //*server->server_name = *server_name;
+    strncpy(server->server_name, server_name, strlen(server_name));
+    char serverName1[MAXPATH];
+    memset(serverName1, 0, MAXPATH);
+    snprintf(serverName1, MAXPATH+5, "%s%s", server_name, ".fifo");
+   
+    remove(serverName1); //remove any existing file of this name
+    mkfifo(serverName1, DEFAULT_PERMS); //join fifo created
+    server->join_fd = open(serverName1, O_RDWR); //open fifo and store fd //not exactly sure if its read and write
+    server->join_ready = 0;
     log_printf("END: server_start()\n");                // at end of function
 }
 // Initializes and starts the server with the given name. A join fifo
@@ -77,15 +82,13 @@ int server_add_client(server_t *server, join_t *join){
     if (server->n_clients == MAXCLIENTS){
         return 1;
     }                                              // found matching record
-    client_t added_client;
-    strncpy(join->name, added_client.name,sizeof(join->name));
-    strncpy(join->to_client_fname, added_client.to_client_fname,sizeof(join->to_client_fname));
-    strncpy(join->to_server_fname, added_client.to_server_fname,sizeof(join->to_server_fname));
+    client_t added_client = {};
+    strncpy(added_client.name ,join->name, sizeof(join->name));
+    strncpy(added_client.to_client_fname,join->to_client_fname, sizeof(join->to_client_fname));
+    strncpy(added_client.to_server_fname,join->to_server_fname, sizeof(join->to_server_fname));
     //opening and creating fd to server
-    mkfifo(added_client.to_server_fname, S_IRUSR | S_IWUSR);
     added_client.to_server_fd = open(added_client.to_server_fname, O_RDWR);
     //opening and creating fd to client 
-    mkfifo(added_client.to_client_fname, S_IRUSR | S_IWUSR);
     added_client.to_client_fd = open(added_client.to_client_fname, O_RDWR);
     //intializing data ready to zero
     added_client.data_ready = 0;
@@ -136,8 +139,7 @@ int server_remove_client(server_t *server, int idx){
 void server_broadcast(server_t *server, mesg_t *mesg){
     // Loop through server->client
     int num_loops = server->n_clients;
-    for(int i=0; i < num_loops; i++){ // Or num_loops +1 ?
-        // open the fifo ?
+    for(int i=0; i < num_loops; i++){ 
         write(server->client[i].to_client_fd, mesg, strlen(mesg->body)); 
         write(server->client[i].to_server_fd, mesg, strlen(mesg->body));  
     } 
@@ -163,44 +165,31 @@ void server_check_sources(server_t *server){
     pfds[0].events = POLLIN; 
     //log_printf("Events of pfds at 0 is %d\n", pfds[0].events);
     if (server->n_clients > 0) {
-    for(int i = 1; i <= server->n_clients; i++){
-         
-        //int pipe1[2];
-        //int pid1 = make_child(pipe1, 1, server->client[i].to_server_fd);
-        pfds[i].fd     = server->client[i-1].to_server_fd;  //WHICH SHOULD IT BE?                                    // populate other entries with fds
-        pfds[i].events = POLLIN; 
-        
-    }
+        for(int i = 1; i <= server->n_clients; i++){
+            pfds[i].fd     = server->client[i-1].to_server_fd;                                      // populate other entries with fds
+            pfds[i].events = POLLIN; 
+            
+        }
     }
     log_printf("poll()'ing to check %d input sources\n", 1 + server->n_clients);
-    //char buf[1024]; int nread;
     
     int ret = poll(pfds, (server->n_clients + 1), -1); 
     log_printf("poll() completed with return value %d\n", ret);
     if (ret == -1){
-        
         log_printf("poll() interrupted by a signal\n");
     }
-    
-
-    for(int j = 0; j < server->n_clients; j++){
-        //if(pfds[j].revents & POLLIN ){         // If one is ready then set the server and client flags
-        if (POLLIN) {
-            server->join_ready = 1;
-            if (server->n_clients > 0) {
-            server->client[j-1].data_ready = 1;
-            log_printf("join_fd got here");
-            }
-            
+    if (pfds[0].revents & POLLIN){
+        server->join_ready = 1;
+    }
+    for(int j = 1; j <= server->n_clients; j++){        // If one is ready then set the server and client flags
+        if (pfds[j].revents & POLLIN) {
+            server->client[j-1].data_ready = 1;   
         }
         else{
-            server->join_ready = 0;
             server->client[j].data_ready = 0;
         }
         log_printf("join_ready = %d\n", server->join_ready);
-        if (server->n_clients > 0) {
-        log_printf("client %d '%s' data_ready = %d\n", j, server->client[j].name, server->client[j].data_ready);
-        }
+        log_printf("client %d '%s' data_ready = %d\n", j-1, server->client[j-1].name, server->client[j-1].data_ready);
     }
 
     log_printf("END: server_check_sources()\n");
@@ -240,13 +229,16 @@ void server_handle_join(server_t *server){
             if (nread == 0) {
                 log_printf("No request read."); //DONT KNOW IF THIS NEEDS TO BE HERE
             }
-        log_printf("join request for new client '%s'\n",newRequest.name);      // reports name of new client
+            else {
+                log_printf("join request for new client '%s'\n",newRequest.name);      // reports name of new client
 
-        server_add_client(server, &newRequest);
-        server->n_clients = server->n_clients + 1;
-        server->join_ready = 0;
+                server_add_client(server, &newRequest);
+                //server->n_clients = server->n_clients + 1;
+                //might broadcast message that someone joined
+                server->join_ready = 0;
 
-        log_printf("END: server_handle_join()\n");                 // at end of function
+                log_printf("END: server_handle_join()\n");                 // at end of function
+            }
     }
 }
 
@@ -276,21 +268,22 @@ void server_handle_client(server_t *server, int idx){
             if (nread == 0) {
                 log_printf("No request read."); //DONT KNOW IF THIS NEEDS TO BE HERE
             }
+            else{
+                mesg_kind_t newMessageType;
+                newMessageType = newMessage->kind;
 
-
-        mesg_kind_t newMessageType;
-        newMessageType = newMessage->kind;
-
-        if(newMessageType == BL_DEPARTED) {
-            server_broadcast(server, newMessage);
-            log_printf("client %d '%s' DEPARTED\n");                 // indicates client departed
-        } 
-        else if(newMessageType == BL_MESG){
-            server_broadcast(server, newMessage);
-            log_printf("client %d '%s' MESSAGE '%s'\n");              // indicates client message
-        }
-        server->client[idx].data_ready = 0;
-        log_printf("END: server_handle_client()\n");             // at end of function 
+                if(newMessageType == BL_DEPARTED) {
+                    server_broadcast(server, newMessage);
+                    server_remove_client(server, idx);
+                    log_printf("client %d '%s' DEPARTED\n");                 // indicates client departed
+                } 
+                else if(newMessageType == BL_MESG){
+                    server_broadcast(server, newMessage);
+                    log_printf("client %d '%s' MESSAGE '%s'\n");              // indicates client message
+                }
+                server->client[idx].data_ready = 0;
+                log_printf("END: server_handle_client()\n");             // at end of function 
+            }
     }
 }
 // Process a message from the specified client. This function should
