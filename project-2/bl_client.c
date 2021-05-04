@@ -53,7 +53,7 @@ void *user_worker(void *x){
         simpio_get_char(simpio); // Should we print this ?
       }
       if(simpio->line_ready){
-        log_printf("Message got here\n"); //never gets here 
+        //log_printf("Message got here\n"); //never gets here 
 
         iprintf(simpio, "%2d You entered: %s\n",client->name,simpio->buf);
         mesg_t newMes = {};

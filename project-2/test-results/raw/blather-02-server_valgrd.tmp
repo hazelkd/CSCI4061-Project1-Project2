@@ -1,0 +1,6 @@
+==1133453== Memcheck, a memory error detector
+==1133453== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1133453== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==1133453== Command: ./bl_server gotham
+==1133453== Parent PID: 1133451
+==1133453== 

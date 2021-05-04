@@ -157,11 +157,8 @@ void server_check_sources(server_t *server){
 //create a fd array of join_fd with clients after, poll on that and when wake up when its ready  join_ready =1 
     log_printf("BEGIN: server_check_sources()\n");
     struct pollfd pfds[server->n_clients+1];                               // array of structures for poll, 1 per fd to be monitored
-    //server->join_ready = 0;
-    //server->client
-    //log_printf("Number of clients: %d\n", server->n_clients);
 
-    pfds[0].fd     = server->join_fd; //pipe1[PREAD]; DO we need this?                                      // populate first entry with server join fd
+    pfds[0].fd     = server->join_fd;                                      // populate first entry with server join fd
     pfds[0].events = POLLIN; 
     //log_printf("Events of pfds at 0 is %d\n", pfds[0].events);
     if (server->n_clients > 0) {
@@ -175,11 +172,13 @@ void server_check_sources(server_t *server){
     
     int ret = poll(pfds, (server->n_clients + 1), -1); 
     log_printf("poll() completed with return value %d\n", ret);
-    if (ret == -1){
-        log_printf("poll() interrupted by a signal\n");
-    }
     if (pfds[0].revents & POLLIN){
         server->join_ready = 1;
+        log_printf("join_ready = %d\n", server->join_ready);
+        
+    }   
+    if (ret == -1){
+        log_printf("poll() interrupted by a signal\n");
     }
     for(int j = 1; j <= server->n_clients; j++){        // If one is ready then set the server and client flags
         if (pfds[j].revents & POLLIN) {
@@ -191,7 +190,7 @@ void server_check_sources(server_t *server){
         log_printf("join_ready = %d\n", server->join_ready);
         log_printf("client %d '%s' data_ready = %d\n", j-1, server->client[j-1].name, server->client[j-1].data_ready);
     }
-
+    
     log_printf("END: server_check_sources()\n");
 
 }

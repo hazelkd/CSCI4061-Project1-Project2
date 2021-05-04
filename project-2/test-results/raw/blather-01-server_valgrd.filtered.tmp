@@ -1,0 +1,21 @@
+==1133328== Memcheck, a memory error detector
+==1133328== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1133328== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==1133328== Command: ./bl_server gotham
+==1133328== Parent PID: 1133326
+==1133328== 
+==1133328== Conditional jump or move depends on uninitialised value(s)
+==1133328==    at 0x109E9C: server_check_sources (server_funcs.c:175)
+==1133328==    by 0x10950A: main (bl_server.c:38)
+==1133328==  Uninitialised value was created by a stack allocation
+==1133328==    at 0x109CF3: server_check_sources (server_funcs.c:159)
+==1133328== 
+==1133328== 
+==1133328== HEAP SUMMARY:
+==1133328==     in use at exit: 0 bytes in 0 blocks
+==1133328==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
+==1133328== 
+==1133328== All heap blocks were freed -- no leaks are possible
+==1133328== 
+==1133328== For lists of detected and suppressed errors, rerun with: -s
+==1133328== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
