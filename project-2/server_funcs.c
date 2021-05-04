@@ -18,11 +18,13 @@ client_t *server_get_client(server_t *server, int idx){
 void server_start(server_t *server, char *server_name, int perms){
     log_printf("BEGIN: server_start()\n");              // at beginning of function
     *server->server_name = *server_name;
-    printf("%s", __func__);
+    //strcpy(server_name, server->server_name);
+    log_printf("Name from server_start: %s\n", server->server_name);
+    //printf("%s", __func__);
     //server_name = server_name; // start the server with the given name dont know if this should be a pointer
-    remove("server_name.fifo"); //remove any existing file of this name
-    mkfifo("server_name.fifo", S_IRUSR | S_IWUSR); //join fifo created
-    server->join_fd = open("server_name.fifo", O_RDWR); //open fifo and store fd //not exactly sure if its read and write
+    remove(server_name); //remove any existing file of this name
+    mkfifo(server_name, DEFAULT_PERMS); //join fifo created
+    server->join_fd = open(server_name, O_RDWR); //open fifo and store fd //not exactly sure if its read and write
     log_printf("END: server_start()\n");                // at end of function
 }
 // Initializes and starts the server with the given name. A join fifo
@@ -43,10 +45,10 @@ void server_start(server_t *server, char *server_name, int perms){
 void server_shutdown(server_t *server){
 
     log_printf("BEGIN: server_shutdown()\n");           // at beginning of function
-    printf("SERVER #%5d: Signalled to shut down\n", getpid());
+    //printf("SERVER #%5d: Signalled to shut down\n", getpid());
     close(server->join_fd);
     server->join_ready = 0;
-    remove("join_fd.fifo");
+    remove(server->server_name);
     mesg_t msg = {};
     msg.kind = BL_SHUTDOWN;
     for (int i = 0; i < server->n_clients; i++){
@@ -153,12 +155,14 @@ void server_check_sources(server_t *server){
 //create a fd array of join_fd with clients after, poll on that and when wake up when its ready  join_ready =1 
     log_printf("BEGIN: server_check_sources()\n");
     struct pollfd pfds[server->n_clients+1];                               // array of structures for poll, 1 per fd to be monitored
-    server->join_ready = 0;
+    //server->join_ready = 0;
     //server->client
+    //log_printf("Number of clients: %d\n", server->n_clients);
 
     pfds[0].fd     = server->join_fd; //pipe1[PREAD]; DO we need this?                                      // populate first entry with server join fd
     pfds[0].events = POLLIN; 
-
+    //log_printf("Events of pfds at 0 is %d\n", pfds[0].events);
+    if (server->n_clients > 0) {
     for(int i = 1; i <= server->n_clients; i++){
          
         //int pipe1[2];
@@ -167,20 +171,26 @@ void server_check_sources(server_t *server){
         pfds[i].events = POLLIN; 
         
     }
-    log_printf("poll()'ing to check %d input sources\n", server->n_clients);
+    }
+    log_printf("poll()'ing to check %d input sources\n", 1 + server->n_clients);
     //char buf[1024]; int nread;
+    
     int ret = poll(pfds, (server->n_clients + 1), -1); 
+    log_printf("poll() completed with return value %d\n", ret);
     if (ret == -1){
         
         log_printf("poll() interrupted by a signal\n");
     }
-    log_printf("poll() completed with return value %d\n", ret);
+    
 
     for(int j = 0; j < server->n_clients; j++){
-        if( pfds[j].revents & POLLIN ){         // If one is ready then set the server and client flags
-            
+        //if(pfds[j].revents & POLLIN ){         // If one is ready then set the server and client flags
+        if (POLLIN) {
             server->join_ready = 1;
-            server->client[j].data_ready = 1;
+            if (server->n_clients > 0) {
+            server->client[j-1].data_ready = 1;
+            log_printf("join_fd got here");
+            }
             
         }
         else{
@@ -188,8 +198,11 @@ void server_check_sources(server_t *server){
             server->client[j].data_ready = 0;
         }
         log_printf("join_ready = %d\n", server->join_ready);
-        log_printf("client %d '%s' data_ready = %d\n", server->client[j].data_ready);
+        if (server->n_clients > 0) {
+        log_printf("client %d '%s' data_ready = %d\n", j, server->client[j].name, server->client[j].data_ready);
+        }
     }
+
     log_printf("END: server_check_sources()\n");
 
 }
@@ -222,14 +235,15 @@ void server_handle_join(server_t *server){
     log_printf("BEGIN: server_handle_join()\n");               // at beginnning of function
     int status = server_join_ready(server);
     if (status) {  
-        join_t *newRequest;
+        join_t newRequest = {};
         int nread = read(server->join_fd, &newRequest, sizeof(join_t));
             if (nread == 0) {
                 log_printf("No request read."); //DONT KNOW IF THIS NEEDS TO BE HERE
             }
-        log_printf("join request for new client '%s'\n",newRequest->name);      // reports name of new client
+        log_printf("join request for new client '%s'\n",newRequest.name);      // reports name of new client
 
-        server_add_client(server, newRequest);
+        server_add_client(server, &newRequest);
+        server->n_clients = server->n_clients + 1;
         server->join_ready = 0;
 
         log_printf("END: server_handle_join()\n");                 // at end of function

@@ -32,12 +32,12 @@ int main(int argc, char *argv[]) {
 
     server_t server = {};
 
-    strncpy(argv[1], server.server_name, strlen(argv[1]));
+    //strncpy(argv[1], server.server_name, strlen(argv[1]));
     char *fifo_name = ".fifo";
-    char *name_server = server.server_name;
+    char *name_server = argv[1];
     strcat(name_server, fifo_name);
 
-    mkfifo(name_server, S_IRUSR | S_IWUSR);
+    log_printf("Name from bl_server: %s\n", name_server);
 
     server_start(&server, name_server, DEFAULT_PERMS);
 
@@ -55,5 +55,6 @@ int main(int argc, char *argv[]) {
             }
         }
     }
+    server_shutdown(&server);
     return 0;
 }

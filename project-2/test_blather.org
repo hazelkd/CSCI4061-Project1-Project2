@@ -4,7 +4,7 @@
 #+TESTY: VALGRIND_OPTS='--suppressions=test_valgrind.supp'
 #+TESTY: TIMEOUT=20s
 #+TESTY: TICKTIME=0.1
-#+TESTY: VALGRIND_START_TICKS=8
+#+TESTY: VALGRIND_START_TICKS=60
 
 Adjust the parameters TICKTIME and VALGRIND_START_TICKS to be larger
 if the tests seem to be unstable. Reducing them may enable the tests

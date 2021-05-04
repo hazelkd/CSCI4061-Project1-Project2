@@ -43,16 +43,17 @@ server thread{
 void *user_worker(void *x){
 
     //char buf[1024]; int nread;
-    
+
     while(!simpio->end_of_input){
+      
       simpio_reset(simpio);
       iprintf(simpio, ""); 
       
       while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete
-        simpio_get_char(simpio);
-        iprintf(simpio, "%2d You entered: %s\n",client->name,simpio->buf); // Should we print this ?
+        simpio_get_char(simpio); // Should we print this ?
       }
       if(simpio->line_ready){
+        iprintf(simpio, "%2d You entered: %s\n",client->name,simpio->buf);
         mesg_t newMes = {};
         strcpy(simpio->buf, newMes.body);
         strcpy(client->name, newMes.name);
@@ -75,16 +76,22 @@ void *user_worker(void *x){
 void *background_worker(void *x){
   //char buf[1024];
   
-  while(1){
+  int status = 1;
+  while(status){
     int nread = 0;
+    //char buf[1024];
 
     mesg_t msg = {};
 
     nread = read(client->to_client_fd, &msg, 1024);              // Can we read a whole message?
 
+    //log_printf("Message: %s\n", msg.name );
     if(nread == 0){
+      status = 0;
       break;
     }
+
+
 
     if(msg.kind == BL_SHUTDOWN){
       pthread_cancel(user_thread);
@@ -104,16 +111,19 @@ int main(int argc, char *argv[]){
   simpio_reset(simpio);                      // initialize io
   simpio_noncanonical_terminal_mode();       // set the terminal into a compatible mode
 
-  mkfifo("client_name.fifo", S_IRUSR | S_IWUSR);      //join fifo created
+  char Cname[MAXPATH] = "client_name.fifo";
+  mkfifo(Cname, S_IRUSR | S_IWUSR);      //join fifo created
+  strncpy(Cname,client->to_client_fname, strlen(Cname));
   client->to_client_fd = open("client_name.fifo", O_RDWR);
-  strcpy("client_name.fifo",client->to_client_fname);
 
+  char Sname[MAXPATH] = "server_name.fifo"; 
   mkfifo("server_name.fifo", S_IRUSR | S_IWUSR);
+  strncpy(Sname,client->to_server_fname, strlen(Sname));
   client->to_server_fd = open("server_name.fifo", O_RDWR);
-  strcpy("server_name.fifo",client->to_server_fname);
 
 
-  pthread_create(&user_thread,   NULL, user_worker,   NULL);     // start user thread to read input
+
+  pthread_create(&user_thread,NULL, user_worker, NULL);     // start user thread to read input
   pthread_create(&background_thread, NULL, background_worker, NULL); // start thread to listen to info for server 
 
   pthread_join(user_thread, NULL);
