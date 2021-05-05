@@ -161,7 +161,7 @@ void server_check_sources(server_t *server){
     pfds[0].fd     = server->join_fd;                                      // populate first entry with server join fd
     pfds[0].events = POLLIN;
     pfds[0].revents = -1;
-    //log_printf("Events of pfds at 0 is %d\n", pfds[0].events);
+    
     if (server->n_clients > 0) {
         for(int i = 1; i <= server->n_clients; i++){
             pfds[i].fd     = server->client[i-1].to_server_fd;                                      // populate other entries with fds
