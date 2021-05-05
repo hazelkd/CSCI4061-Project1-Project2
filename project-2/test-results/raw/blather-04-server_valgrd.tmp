@@ -1,0 +1,6 @@
+==1305161== Memcheck, a memory error detector
+==1305161== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1305161== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==1305161== Command: ./bl_server gotham
+==1305161== Parent PID: 1305159
+==1305161== 

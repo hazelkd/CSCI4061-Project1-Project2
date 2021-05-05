@@ -1,0 +1,165 @@
+TEST OUTPUT MISMATCH: Side by Side Differences shown below 
+- Expect output in: test-results/raw/blather-04-expect.tmp
+- Acutal output in: test-results/raw/blather-04-actual.tmp
+- Differing lines have a character like '|' and '<' in the middle
+
+#+BEGIN_SRC diff
+==== EXPECT ====                                                  ==== ACTUAL ====                                               
+>> START server ./bl_server gotham                                >> START server ./bl_server gotham
+>> START bruce ./bl_client gotham Bruce                           >> START bruce ./bl_client gotham Bruce
+>> INPUT bruce This is a test                                     >> INPUT bruce This is a test
+>> INPUT bruce Is anyone there? Anyone at all?                    >> INPUT bruce Is anyone there? Anyone at all?
+>> INPUT bruce Alfreeeed!                                         >> INPUT bruce Alfreeeed!
+>> INPUT bruce <EOF>                                              >> INPUT bruce <EOF>
+>> SIGNAL server -15                                              >> SIGNAL server -15
+>> WAIT_ALL                                                       >> WAIT_ALL
+<testy> WAIT for server                                           <testy> WAIT for server
+<testy> WAIT for bruce                                            <testy> WAIT for bruce
+>> CHECK_ALL cat                                                  >> CHECK_ALL cat
+<testy> CHECK_FAILURES for server                                 <testy> CHECK_FAILURES for server
+<testy> CHECK_FAILURES for bruce                                  <testy> CHECK_FAILURES for bruce
+>> OUTPUT_ALL ./test_filter_client_output                         >> OUTPUT_ALL ./test_filter_client_output
+
+<testy> OUTPUT for server                                         <testy> OUTPUT for server
+LOG: BEGIN: server_start()                                        LOG: BEGIN: server_start()
+LOG: END: server_start()                                          LOG: END: server_start()
+LOG: BEGIN: server_check_sources()                                LOG: BEGIN: server_check_sources()
+LOG: poll()'ing to check 1 input sources                          LOG: poll()'ing to check 1 input sources
+LOG: poll() completed with return value 1                         LOG: poll() completed with return value 1
+LOG: join_ready = 1                                               LOG: join_ready = 1
+LOG: END: server_check_sources()                                  LOG: END: server_check_sources()
+LOG: BEGIN: server_handle_join()                                  LOG: BEGIN: server_handle_join()
+LOG: join request for new client 'Bruce'                          LOG: join request for new client 'Bruce'
+LOG: BEGIN: server_add_client()                                   LOG: BEGIN: server_add_client()
+LOG: END: server_add_client()                                     LOG: END: server_add_client()
+LOG: END: server_handle_join()                                    LOG: END: server_handle_join()
+LOG: BEGIN: server_check_sources()                                LOG: BEGIN: server_check_sources()
+LOG: poll()'ing to check 2 input sources                          LOG: poll()'ing to check 2 input sources
+LOG: poll() completed with return value 1                         LOG: poll() completed with return value 1
+LOG: join_ready = 0                                               LOG: join_ready = 0
+LOG: client 0 'Bruce' data_ready = 1                              LOG: client 0 'Bruce' data_ready = 1
+LOG: END: server_check_sources()                                  LOG: END: server_check_sources()
+LOG: BEGIN: server_handle_client()                                LOG: BEGIN: server_handle_client()
+LOG: client 0 'Bruce' MESSAGE 'This is a test'                    LOG: client 0 'Bruce' MESSAGE 'This is a test'
+LOG: END: server_handle_client()                                  LOG: END: server_handle_client()
+LOG: BEGIN: server_check_sources()                                LOG: BEGIN: server_check_sources()
+LOG: poll()'ing to check 2 input sources                          LOG: poll()'ing to check 2 input sources
+LOG: poll() completed with return value 1                         LOG: poll() completed with return value 1
+LOG: join_ready = 0                                               LOG: join_ready = 0
+LOG: client 0 'Bruce' data_ready = 1                              LOG: client 0 'Bruce' data_ready = 1
+LOG: END: server_check_sources()                                  LOG: END: server_check_sources()
+LOG: BEGIN: server_handle_client()                                LOG: BEGIN: server_handle_client()
+                                                                > LOG: client 0 'Bruce' MESSAGE ''
+                                                                > LOG: END: server_handle_client()
+                                                                > LOG: BEGIN: server_check_sources()
+                                                                > LOG: poll()'ing to check 2 input sources
+                                                                > LOG: poll() completed with return value 1
+                                                                > LOG: join_ready = 0
+                                                                > LOG: client 0 'Bruce' data_ready = 1
+                                                                > LOG: END: server_check_sources()
+                                                                > LOG: BEGIN: server_handle_client()
+LOG: client 0 'Bruce' MESSAGE 'Is anyone there? Anyone at all?'   LOG: client 0 'Bruce' MESSAGE 'Is anyone there? Anyone at all?'
+LOG: END: server_handle_client()                                  LOG: END: server_handle_client()
+LOG: BEGIN: server_check_sources()                                LOG: BEGIN: server_check_sources()
+LOG: poll()'ing to check 2 input sources                          LOG: poll()'ing to check 2 input sources
+LOG: poll() completed with return value 1                         LOG: poll() completed with return value 1
+LOG: join_ready = 0                                               LOG: join_ready = 0
+LOG: client 0 'Bruce' data_ready = 1                              LOG: client 0 'Bruce' data_ready = 1
+LOG: END: server_check_sources()                                  LOG: END: server_check_sources()
+LOG: BEGIN: server_handle_client()                                LOG: BEGIN: server_handle_client()
+                                                                > LOG: client 0 'Bruce' MESSAGE ''
+                                                                > LOG: END: server_handle_client()
+                                                                > LOG: BEGIN: server_check_sources()
+                                                                > LOG: poll()'ing to check 2 input sources
+                                                                > LOG: poll() completed with return value 1
+                                                                > LOG: join_ready = 0
+                                                                > LOG: client 0 'Bruce' data_ready = 1
+                                                                > LOG: END: server_check_sources()
+                                                                > LOG: BEGIN: server_handle_client()
+LOG: client 0 'Bruce' MESSAGE 'Alfreeeed!'                        LOG: client 0 'Bruce' MESSAGE 'Alfreeeed!'
+LOG: END: server_handle_client()                                  LOG: END: server_handle_client()
+LOG: BEGIN: server_check_sources()                                LOG: BEGIN: server_check_sources()
+LOG: poll()'ing to check 2 input sources                          LOG: poll()'ing to check 2 input sources
+LOG: poll() completed with return value 1                         LOG: poll() completed with return value 1
+LOG: join_ready = 0                                               LOG: join_ready = 0
+LOG: client 0 'Bruce' data_ready = 1                              LOG: client 0 'Bruce' data_ready = 1
+LOG: END: server_check_sources()                                  LOG: END: server_check_sources()
+LOG: BEGIN: server_handle_client()                                LOG: BEGIN: server_handle_client()
+                                                                > LOG: client 0 'Bruce' MESSAGE ''
+                                                                > LOG: END: server_handle_client()
+                                                                > LOG: BEGIN: server_check_sources()
+                                                                > LOG: poll()'ing to check 2 input sources
+                                                                > LOG: poll() completed with return value 1
+                                                                > LOG: join_ready = 0
+                                                                > LOG: client 0 'Bruce' data_ready = 1
+                                                                > LOG: END: server_check_sources()
+                                                                > LOG: BEGIN: server_handle_client()
+LOG: client 0 'Bruce' DEPARTED                                    LOG: client 0 'Bruce' DEPARTED
+LOG: END: server_handle_client()                                  LOG: END: server_handle_client()
+LOG: BEGIN: server_check_sources()                                LOG: BEGIN: server_check_sources()
+LOG: poll()'ing to check 1 input sources                          LOG: poll()'ing to check 1 input sources
+LOG: poll() completed with return value -1                        LOG: poll() completed with return value -1
+LOG: poll() interrupted by a signal                               LOG: poll() interrupted by a signal
+LOG: END: server_check_sources()                                  LOG: END: server_check_sources()
+LOG: BEGIN: server_shutdown()                                     LOG: BEGIN: server_shutdown()
+LOG: END: server_shutdown()                                       LOG: END: server_shutdown()
+
+<testy> OUTPUT for bruce                                          <testy> OUTPUT for bruce
+-- Bruce JOINED --                                              | Bruce You entered: This is a test
+[Bruce] : This is a test                                        | Bruce>> LOG: Message name: Bruce Message Body: 
+[Bruce] : Is anyone there? Anyone at all?                       | [Bruce]
+[Bruce] : Alfreeeed!                                            | Bruce You entered: Is anyone there? Anyone at all?
+End of Input, Departing                                         | Bruce>> LOG: Message name: Bruce Message Body: 
+                                                                > [Bruce]
+                                                                > Bruce You entered: Alfreeeed!
+                                                                > Bruce>> LOG: Message name: Bruce Message Body: 
+                                                                > [Bruce]
+                                                                > End of input, Departing
+Bruce>>                                                           Bruce>> 
+                                                                )
+                                                                )
+#+END_SRC
+
+--- Line Differences ---
+ACTUAL:  45) LOG: client 0 'Bruce' MESSAGE ''
+ACTUAL:  46) LOG: END: server_handle_client()
+ACTUAL:  47) LOG: BEGIN: server_check_sources()
+ACTUAL:  48) LOG: poll()'ing to check 2 input sources
+ACTUAL:  49) LOG: poll() completed with return value 1
+ACTUAL:  50) LOG: join_ready = 0
+ACTUAL:  51) LOG: client 0 'Bruce' data_ready = 1
+ACTUAL:  52) LOG: END: server_check_sources()
+ACTUAL:  53) LOG: BEGIN: server_handle_client()
+ACTUAL:  63) LOG: client 0 'Bruce' MESSAGE ''
+ACTUAL:  64) LOG: END: server_handle_client()
+ACTUAL:  65) LOG: BEGIN: server_check_sources()
+ACTUAL:  66) LOG: poll()'ing to check 2 input sources
+ACTUAL:  67) LOG: poll() completed with return value 1
+ACTUAL:  68) LOG: join_ready = 0
+ACTUAL:  69) LOG: client 0 'Bruce' data_ready = 1
+ACTUAL:  70) LOG: END: server_check_sources()
+ACTUAL:  71) LOG: BEGIN: server_handle_client()
+ACTUAL:  81) LOG: client 0 'Bruce' MESSAGE ''
+ACTUAL:  82) LOG: END: server_handle_client()
+ACTUAL:  83) LOG: BEGIN: server_check_sources()
+ACTUAL:  84) LOG: poll()'ing to check 2 input sources
+ACTUAL:  85) LOG: poll() completed with return value 1
+ACTUAL:  86) LOG: join_ready = 0
+ACTUAL:  87) LOG: client 0 'Bruce' data_ready = 1
+ACTUAL:  88) LOG: END: server_check_sources()
+ACTUAL:  89) LOG: BEGIN: server_handle_client()
+EXPECT:  74) -- Bruce JOINED --
+EXPECT:  75) [Bruce] : This is a test
+EXPECT:  76) [Bruce] : Is anyone there? Anyone at all?
+EXPECT:  77) [Bruce] : Alfreeeed!
+EXPECT:  78) End of Input, Departing
+ACTUAL: 101) Bruce You entered: This is a test
+ACTUAL: 102) Bruce>> LOG: Message name: Bruce Message Body: 
+ACTUAL: 103) [Bruce]
+ACTUAL: 104) Bruce You entered: Is anyone there? Anyone at all?
+ACTUAL: 105) Bruce>> LOG: Message name: Bruce Message Body: 
+ACTUAL: 106) [Bruce]
+ACTUAL: 107) Bruce You entered: Alfreeeed!
+ACTUAL: 108) Bruce>> LOG: Message name: Bruce Message Body: 
+ACTUAL: 109) [Bruce]
+ACTUAL: 110) End of input, Departing

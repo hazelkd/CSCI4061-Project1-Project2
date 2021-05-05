@@ -93,6 +93,7 @@ int server_add_client(server_t *server, join_t *join){
     //intializing data ready to zero
     added_client.data_ready = 0;
 
+    //log_printf("to server fname %s, to client fname %s\n", added_client.to_server_fname, added_client.to_client_fname);
     server->client[server->n_clients] = added_client;
     server->n_clients = server->n_clients + 1;
 
@@ -261,7 +262,7 @@ void server_handle_client(server_t *server, int idx){
     int status = server_client_ready(server, idx);
    
     if (status){
-        mesg_t *newMessage;
+        mesg_t newMessage = {};
     
         int nread = read(server->client[idx].to_server_fd, &newMessage, sizeof(mesg_t));
             if (nread == 0) {
@@ -269,16 +270,16 @@ void server_handle_client(server_t *server, int idx){
             }
             else{
                 mesg_kind_t newMessageType;
-                newMessageType = newMessage->kind;
+                newMessageType = newMessage.kind;
 
                 if(newMessageType == BL_DEPARTED) {
-                    server_broadcast(server, newMessage);
+                    server_broadcast(server, &newMessage);
                     server_remove_client(server, idx);
-                    log_printf("client %d '%s' DEPARTED\n");                 // indicates client departed
+                    log_printf("client %d '%s' DEPARTED\n", idx, server->client[idx].name);                 // indicates client departed
                 } 
                 else if(newMessageType == BL_MESG){
-                    server_broadcast(server, newMessage);
-                    log_printf("client %d '%s' MESSAGE '%s'\n");              // indicates client message
+                    server_broadcast(server, &newMessage);
+                    log_printf("client %d '%s' MESSAGE '%s'\n", idx, server->client[idx].name, newMessage.body);              // indicates client message
                 }
                 server->client[idx].data_ready = 0;
                 log_printf("END: server_handle_client()\n");             // at end of function 

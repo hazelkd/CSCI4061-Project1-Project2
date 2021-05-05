@@ -42,6 +42,7 @@ int main(int argc, char *argv[]) {
         }
         for (int i = 0; i < server.n_clients; i++) {
             if(server_client_ready(&server, i)){
+                //log_printf("Server client %s at %d\n", server.client[i].name, i);
                 server_handle_client(&server, i);
             }
         }

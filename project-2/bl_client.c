@@ -42,28 +42,27 @@ server thread{
 
 void *user_worker(void *x){
 
-    //char buf[1024]; int nread;
-
     while(!simpio->end_of_input){
       
       simpio_reset(simpio);
       iprintf(simpio, ""); 
       
       while(!simpio->line_ready && !simpio->end_of_input){          // read until line is complete
-        simpio_get_char(simpio); // Should we print this ?
+        simpio_get_char(simpio); 
       }
       if(simpio->line_ready){
-        //log_printf("Message got here\n"); //never gets here 
 
-        iprintf(simpio, "%2d You entered: %s\n",client->name,simpio->buf);
+        iprintf(simpio, "%s You entered: %s\n",client->name,simpio->buf);
         mesg_t newMes = {};
         strncpy(newMes.body, simpio->buf, strlen(simpio->buf));
-        strncpy(newMes.name, client->name, strlen(simpio->buf));
+        strncpy(newMes.name, client->name, strlen(client->name));
+        //log_printf("Nnew message body: %s New msg name: %s\n", newMes.body, newMes.name);
         newMes.kind = BL_MESG;
+        //log_printf("New message body: %s New msg name: %s\n", newMes.body, newMes.name);
         write(client->to_server_fd, &newMes, sizeof(mesg_t));  
       }
     }
-  iprintf(simpio,"End of input, departing.\n");
+  iprintf(simpio,"End of input, Departing\n");
 
   mesg_t newMes2 = {};
   newMes2.kind = BL_DEPARTED;
@@ -75,28 +74,28 @@ void *user_worker(void *x){
   return NULL;
 }
 void *background_worker(void *x){
-  //char buf[1024];
   
   int status = 1;
   while(status){
     int nread = 0;
-    //char buf[1024];
 
     mesg_t msg = {};
 
-    nread = read(client->to_client_fd, &msg, 1024);              // Can we read a whole message?
-
-    //log_printf("Message: %s\n", msg.name );
+    nread = read(client->to_client_fd, &msg, sizeof(mesg_t));     
+    log_printf("Message body: %s Message name: %s\n", msg.body, msg.name);
     if(nread == -1){
       status = 0;
       break;
     }
+    
     else if (nread != 0){
+      
       if(msg.kind == BL_JOINED){
         iprintf(simpio, "-- %s JOINED --\n", msg.name);
       }
       else if(msg.kind == BL_MESG){
         iprintf(simpio, "[%s]%s\n", msg.name, msg.body);
+        log_printf("Message name: %s Message Body: %s\n", msg.name, msg.body);
       }
       else if(msg.kind == BL_DEPARTED){
         iprintf(simpio, "-- %s DEPARTED --\n", msg.name);
@@ -126,7 +125,7 @@ int main(int argc, char *argv[]){
   strcat(name_client, fifo_name);*/
 
   char prompt[MAXNAME];
-  snprintf(prompt, MAXNAME, "%s>> ","fgnd"); // create a prompt string
+  snprintf(prompt, MAXNAME, "%s>> ",argv[2]); // create a prompt string
   simpio_set_prompt(simpio, prompt);         // set the prompt
   simpio_reset(simpio);                      // initialize io
   simpio_noncanonical_terminal_mode();       // set the terminal into a compatible mode
@@ -150,14 +149,13 @@ int main(int argc, char *argv[]){
   strncpy(client->to_client_fname, nameClient, strlen(nameClient));
   strncpy(client->to_server_fname, nameServer, strlen(nameServer));
 
+  strncpy(client->name, user_name, strlen(user_name));
 
   mkfifo(client->to_client_fname, DEFAULT_PERMS);      //join fifo created
   client->to_client_fd = open(client->to_client_fname, O_RDWR);
 
   mkfifo(client->to_server_fname, DEFAULT_PERMS);
-  //strncpy(client->to_server_fname, argv[1], strlen(argv[1]));
   client->to_server_fd = open(client->to_server_fname, O_RDWR); //specific to server and client
-  //log_printf("server name from bl_client: %s\n", client->to_server_fname);
 
   join_t request = {};
   strncpy(request.name, user_name, strlen(user_name));

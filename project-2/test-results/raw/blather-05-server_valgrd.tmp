@@ -1,0 +1,6 @@
+==1291623== Memcheck, a memory error detector
+==1291623== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1291623== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==1291623== Command: ./bl_server gotham
+==1291623== Parent PID: 1291621
+==1291623== 
