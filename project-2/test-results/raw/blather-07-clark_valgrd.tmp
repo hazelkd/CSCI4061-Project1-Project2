@@ -1,0 +1,15 @@
+==1335237== Memcheck, a memory error detector
+==1335237== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1335237== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==1335237== Command: ./bl_client gotham Clark
+==1335237== Parent PID: 1335235
+==1335237== 
+==1335237== 
+==1335237== HEAP SUMMARY:
+==1335237==     in use at exit: 0 bytes in 0 blocks
+==1335237==   total heap usage: 7 allocs, 7 frees, 2,254 bytes allocated
+==1335237== 
+==1335237== All heap blocks were freed -- no leaks are possible
+==1335237== 
+==1335237== For lists of detected and suppressed errors, rerun with: -s
+==1335237== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

@@ -233,6 +233,11 @@ void server_handle_join(server_t *server){
                 log_printf("join request for new client '%s'\n",newRequest.name);      // reports name of new client
 
                 server_add_client(server, &newRequest);
+                mesg_t msg ={};
+                msg.kind = BL_JOINED;
+                strncpy(msg.name, newRequest.name, strlen(newRequest.name));
+                server_broadcast(server, &msg);
+                
                 //server->n_clients = server->n_clients + 1;
                 //might broadcast message that someone joined
                 server->join_ready = 0;

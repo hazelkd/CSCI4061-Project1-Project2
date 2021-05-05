@@ -126,14 +126,17 @@ LOG: END: server_shutdown()                                       LOG: END: serv
 
 <testy> OUTPUT for bruce                                          <testy> OUTPUT for bruce
 -- Bruce JOINED --                                              | Bruce You entered: This is a test
-[Bruce] : This is a test                                        | Bruce>> LOG: Message name: Bruce Message Body: 
+[Bruce] : This is a test                                        | Bruce>> LOG: Message body:  Message name: Bruce
 [Bruce] : Is anyone there? Anyone at all?                       | [Bruce]
-[Bruce] : Alfreeeed!                                            | Bruce You entered: Is anyone there? Anyone at all?
-End of Input, Departing                                         | Bruce>> LOG: Message name: Bruce Message Body: 
+[Bruce] : Alfreeeed!                                            | Bruce>> LOG: Message name: Bruce Message Body: 
+End of Input, Departing                                         | Bruce You entered: Is anyone there? Anyone at all?
+                                                                > Bruce>> LOG: Message body:  Message name: Bruce
                                                                 > [Bruce]
-                                                                > Bruce You entered: Alfreeeed!
                                                                 > Bruce>> LOG: Message name: Bruce Message Body: 
+                                                                > Bruce You entered: Alfreeeed!
+                                                                > Bruce>> LOG: Message body:  Message name: Bruce
                                                                 > [Bruce]
+                                                                > Bruce>> LOG: Message name: Bruce Message Body: 
                                                                 > End of input, Departing
 Bruce>>                                                           Bruce>> 
                                                                 )
@@ -174,14 +177,17 @@ EXPECT:  76) [Bruce] : Is anyone there? Anyone at all?
 EXPECT:  77) [Bruce] : Alfreeeed!
 EXPECT:  78) End of Input, Departing
 ACTUAL: 101) Bruce You entered: This is a test
-ACTUAL: 102) Bruce>> LOG: Message name: Bruce Message Body: 
+ACTUAL: 102) Bruce>> LOG: Message body:  Message name: Bruce
 ACTUAL: 103) [Bruce]
-ACTUAL: 104) Bruce You entered: Is anyone there? Anyone at all?
-ACTUAL: 105) Bruce>> LOG: Message name: Bruce Message Body: 
-ACTUAL: 106) [Bruce]
-ACTUAL: 107) Bruce You entered: Alfreeeed!
+ACTUAL: 104) Bruce>> LOG: Message name: Bruce Message Body: 
+ACTUAL: 105) Bruce You entered: Is anyone there? Anyone at all?
+ACTUAL: 106) Bruce>> LOG: Message body:  Message name: Bruce
+ACTUAL: 107) [Bruce]
 ACTUAL: 108) Bruce>> LOG: Message name: Bruce Message Body: 
-ACTUAL: 109) [Bruce]
-ACTUAL: 110) End of input, Departing
+ACTUAL: 109) Bruce You entered: Alfreeeed!
+ACTUAL: 110) Bruce>> LOG: Message body:  Message name: Bruce
+ACTUAL: 111) [Bruce]
+ACTUAL: 112) Bruce>> LOG: Message name: Bruce Message Body: 
+ACTUAL: 113) End of input, Departing
 
 

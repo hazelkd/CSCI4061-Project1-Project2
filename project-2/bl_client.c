@@ -162,6 +162,7 @@ int main(int argc, char *argv[]){
   strncpy(request.to_client_fname, client->to_client_fname, strlen(client->to_client_fname));
   strncpy(request.to_server_fname, client->to_server_fname, strlen(client->to_server_fname));
 
+ 
   //copy info
   char server_fifo[MAXPATH+5];
   memset(server_fifo, 0, MAXPATH+5);
