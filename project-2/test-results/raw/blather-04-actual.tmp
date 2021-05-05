@@ -72,12 +72,9 @@ LOG: END: server_shutdown()
 
 <testy> OUTPUT for bruce
 -- Bruce JOINED --
-Bruce You entered: This is a test
-[Bruce]This is a test
-Bruce You entered: Is anyone there? Anyone at all?
-[Bruce]Is anyone there? Anyone at all?
-Bruce You entered: Alfreeeed!
-[Bruce]Alfreeeed!
+[Bruce] : This is a test
+[Bruce] : Is anyone there? Anyone at all?
+[Bruce] : Alfreeeed!
 End of Input, Departing
 Bruce>> 
 

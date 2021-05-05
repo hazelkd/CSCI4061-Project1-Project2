@@ -75,15 +75,15 @@ LOG: BEGIN: server_shutdown()                LOG: BEGIN: server_shutdown()
 LOG: END: server_shutdown()                  LOG: END: server_shutdown()
 
 <testy> OUTPUT for bruce                     <testy> OUTPUT for bruce
--- Bruce JOINED --                         | End of input, Departing
--- Clark JOINED --                         <
-End of Input, Departing                    <
+-- Bruce JOINED --                           -- Bruce JOINED --
+-- Clark JOINED --                           -- Clark JOINED --
+End of Input, Departing                      End of Input, Departing
 Bruce>>                                      Bruce>> 
 
 <testy> OUTPUT for clark                     <testy> OUTPUT for clark
--- Clark JOINED --                         | End of input, Departing
--- Bruce DEPARTED --                       <
-End of Input, Departing                    <
+-- Clark JOINED --                           -- Clark JOINED --
+-- Bruce DEPARTED --                         -- Bruce DEPARTED --
+End of Input, Departing                      End of Input, Departing
 Clark>>                                      Clark>> 
 
                                            )
@@ -96,11 +96,3 @@ ACTUAL:  34) LOG: join_ready = 1
 ACTUAL:  47) LOG: join_ready = 0
 EXPECT:  49) LOG: client 0 'Bruce' DEPARTED
 ACTUAL:  51) LOG: client 0 'Clark' DEPARTED
-EXPECT:  69) -- Bruce JOINED --
-EXPECT:  70) -- Clark JOINED --
-EXPECT:  71) End of Input, Departing
-ACTUAL:  71) End of input, Departing
-EXPECT:  75) -- Clark JOINED --
-EXPECT:  76) -- Bruce DEPARTED --
-EXPECT:  77) End of Input, Departing
-ACTUAL:  75) End of input, Departing

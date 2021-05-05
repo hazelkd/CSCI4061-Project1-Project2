@@ -79,12 +79,9 @@ LOG: END: server_shutdown()                                       LOG: END: serv
 
 <testy> OUTPUT for bruce                                          <testy> OUTPUT for bruce
 -- Bruce JOINED --                                                -- Bruce JOINED --
-[Bruce] : This is a test                                        | Bruce You entered: This is a test
-[Bruce] : Is anyone there? Anyone at all?                       | [Bruce]This is a test
-[Bruce] : Alfreeeed!                                            | Bruce You entered: Is anyone there? Anyone at all?
-                                                                > [Bruce]Is anyone there? Anyone at all?
-                                                                > Bruce You entered: Alfreeeed!
-                                                                > [Bruce]Alfreeeed!
+[Bruce] : This is a test                                          [Bruce] : This is a test
+[Bruce] : Is anyone there? Anyone at all?                         [Bruce] : Is anyone there? Anyone at all?
+[Bruce] : Alfreeeed!                                              [Bruce] : Alfreeeed!
 End of Input, Departing                                           End of Input, Departing
 Bruce>>                                                           Bruce>> 
                                                                 )
@@ -92,12 +89,3 @@ Bruce>>                                                           Bruce>>
 #+END_SRC
 
 --- Line Differences ---
-EXPECT:  75) [Bruce] : This is a test
-EXPECT:  76) [Bruce] : Is anyone there? Anyone at all?
-EXPECT:  77) [Bruce] : Alfreeeed!
-ACTUAL:  75) Bruce You entered: This is a test
-ACTUAL:  76) [Bruce]This is a test
-ACTUAL:  77) Bruce You entered: Is anyone there? Anyone at all?
-ACTUAL:  78) [Bruce]Is anyone there? Anyone at all?
-ACTUAL:  79) Bruce You entered: Alfreeeed!
-ACTUAL:  80) [Bruce]Alfreeeed!

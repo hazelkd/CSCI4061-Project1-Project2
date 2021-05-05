@@ -1,6 +1,15 @@
-==1741675== Memcheck, a memory error detector
-==1741675== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==1741675== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
-==1741675== Command: ./bl_client gotham Bruce
-==1741675== Parent PID: 1741673
-==1741675== 
+==1770945== Memcheck, a memory error detector
+==1770945== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1770945== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==1770945== Command: ./bl_client gotham Bruce
+==1770945== Parent PID: 1770943
+==1770945== 
+==1770945== 
+==1770945== HEAP SUMMARY:
+==1770945==     in use at exit: 0 bytes in 0 blocks
+==1770945==   total heap usage: 7 allocs, 7 frees, 2,254 bytes allocated
+==1770945== 
+==1770945== All heap blocks were freed -- no leaks are possible
+==1770945== 
+==1770945== For lists of detected and suppressed errors, rerun with: -s
+==1770945== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

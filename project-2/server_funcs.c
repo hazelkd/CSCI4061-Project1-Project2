@@ -26,7 +26,7 @@ void server_start(server_t *server, char *server_name, int perms){
     memset(serverName1, 0, MAXPATH);
     snprintf(serverName1, MAXPATH+5, "%s%s", server_name, ".fifo");
    
-    remove(serverName1); //remove any existing file of this name
+    unlink(serverName1); //remove any existing file of this name
     mkfifo(serverName1, DEFAULT_PERMS); //join fifo created
     server->join_fd = open(serverName1, O_RDWR); //open fifo and store fd //not exactly sure if its read and write
     server->join_ready = 0;
@@ -52,17 +52,18 @@ void server_shutdown(server_t *server){
     log_printf("BEGIN: server_shutdown()\n");           // at beginning of function
     //printf("SERVER #%5d: Signalled to shut down\n", getpid());
     close(server->join_fd);
-    server->join_ready = 0;
-    remove(server->server_name);
+    //server->join_ready = 0;
+    unlink(server->server_name);
     mesg_t msg = {};
     msg.kind = BL_SHUTDOWN;
+    server_broadcast(server, &msg);
     for (int i = 0; i < server->n_clients; i++){
-        write(server->client[i].to_client_fd, &msg, strlen(msg.body));
+        //write(server->client[i].to_client_fd, &msg, sizeof(mesg_t));
         server_remove_client(server, i);
     }
    
     //strncpy(msg.name, newRequest.name, strlen(newRequest.name));
-    server_broadcast(server, &msg);
+    //server_broadcast(server, &msg);
     log_printf("END: server_shutdown()\n");             // at end of function
     
 }
@@ -120,8 +121,8 @@ int server_remove_client(server_t *server, int idx){
     // uses server_get_client() for readability ?
     close(server_get_client(server, idx)->to_client_fd);
     close(server_get_client(server, idx)->to_server_fd);
-    remove(server_get_client(server, idx)->to_client_fname);
-    remove(server_get_client(server, idx)->to_server_fname);
+    unlink(server_get_client(server, idx)->to_client_fname);
+    unlink(server_get_client(server, idx)->to_server_fname);
 
     for (int i = idx; i < server->n_clients - 1; i++) {
 
@@ -192,10 +193,11 @@ void server_check_sources(server_t *server){
         else{
             server->client[j].data_ready = 0;
         }
-        log_printf("join_ready = %d\n", server->join_ready);
+        
         log_printf("client %d '%s' data_ready = %d\n", j-1, server->client[j-1].name, server->client[j-1].data_ready);
     }
     }
+    log_printf("join_ready = %d\n", server->join_ready);
     log_printf("END: server_check_sources()\n");
 
 }
@@ -283,8 +285,9 @@ void server_handle_client(server_t *server, int idx){
 
                 if(newMessageType == BL_DEPARTED) {
                     server_broadcast(server, &newMessage);
+                    log_printf("client %d '%s' DEPARTED\n", idx, server->client[idx].name);
                     server_remove_client(server, idx);
-                    log_printf("client %d '%s' DEPARTED\n", idx, server->client[idx].name);                 // indicates client departed
+                                     // indicates client departed
                 } 
                 else if(newMessageType == BL_MESG){
                     server_broadcast(server, &newMessage);

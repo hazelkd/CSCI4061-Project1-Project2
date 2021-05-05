@@ -52,7 +52,7 @@ void *user_worker(void *x){
       }
       if(simpio->line_ready){
 
-        iprintf(simpio, "%s You entered: %s\n",client->name,simpio->buf);
+        //iprintf(simpio, "%s You entered: %s\n",client->name,simpio->buf);
         mesg_t newMes = {};
         strncpy(newMes.body, simpio->buf, strlen(simpio->buf));
         strncpy(newMes.name, client->name, strlen(client->name));
@@ -94,7 +94,7 @@ void *background_worker(void *x){
         iprintf(simpio, "-- %s JOINED --\n", msg.name);
       }
       else if(msg.kind == BL_MESG){
-        iprintf(simpio, "[%s]%s\n", msg.name, msg.body);
+        iprintf(simpio, "[%s] : %s\n", msg.name, msg.body);
         //log_printf("Message name: %s Message Body: %s\n", msg.name, msg.body);
       }
       else if(msg.kind == BL_DEPARTED){
