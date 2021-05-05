@@ -1,0 +1,6 @@
+==1914500== Memcheck, a memory error detector
+==1914500== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1914500== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==1914500== Command: ./bl_server metropolis
+==1914500== Parent PID: 1914498
+==1914500== 

@@ -11,35 +11,6 @@ client_t *client = &client_actual;
 pthread_t user_thread;          // thread managing user input
 pthread_t background_thread;
 
-/*
-To summarize, bl_client will roughly take the following steps.
-
-read name of server and name of user from command line args
-create to-server and to-client FIFOs
-write a join_t request to the server FIFO
-start a user thread to read input
-start a server thread to listen to the server
-wait for threads to return
-restore standard terminal output
-
-user thread{
-  repeat:
-    read input using simpio
-    when a line is ready
-    create a mesg_t with the line and write it to the to-server FIFO
-  until end of input
-  print "End of Input, Departing"
-  write a DEPARTED mesg_t into to-server
-  cancel the server thread
-
-server thread{
-  repeat:
-    read a mesg_t from to-client FIFO
-    print appropriate response to terminal with simpio
-  until a SHUTDOWN mesg_t is read
-  cancel the user thread
-  */
-
 void *user_worker(void *x){
 
     while(!simpio->end_of_input){
@@ -58,18 +29,16 @@ void *user_worker(void *x){
         strncpy(newMes.name, client->name, strlen(client->name));
         //log_printf("Nnew message body: %s New msg name: %s\n", newMes.body, newMes.name);
         newMes.kind = BL_MESG;
-        //log_printf("New message body: %s New msg name: %s\n", newMes.body, newMes.name);
         write(client->to_server_fd, &newMes, sizeof(mesg_t));  
       }
     }
   iprintf(simpio,"End of Input, Departing\n");
   pthread_cancel(background_thread); 
-  mesg_t newMes2 = {};
+  mesg_t newMes2 = {};              // Making a departed message to send to server to print
   newMes2.kind = BL_DEPARTED;
-  strncpy(newMes2.name, client->name, strlen(client->name)); //client shouldnt be apointer
+  strncpy(newMes2.name, client->name, strlen(client->name)); 
   write(client->to_server_fd, &newMes2, sizeof(mesg_t)); 
 
-  
 
   return NULL;
 }
@@ -81,21 +50,20 @@ void *background_worker(void *x){
 
     mesg_t msg = {};
 
-    nread = read(client->to_client_fd, &msg, sizeof(mesg_t));     
-    //log_printf("Message body: %s Message name: %s\n", msg.body, msg.name);
+    nread = read(client->to_client_fd, &msg, sizeof(mesg_t));    // Server is getting what client wrote to the to_server_fd
+  
     if(nread == -1){
       status = 0;
       break;
     }
     
     else if (nread != 0){
-      
+      // If no more messages to be read, determine message type for next action
       if(msg.kind == BL_JOINED){
         iprintf(simpio, "-- %s JOINED --\n", msg.name);
       }
       else if(msg.kind == BL_MESG){
         iprintf(simpio, "[%s] : %s\n", msg.name, msg.body);
-        //log_printf("Message name: %s Message Body: %s\n", msg.name, msg.body);
       }
       else if(msg.kind == BL_DEPARTED){
         iprintf(simpio, "-- %s DEPARTED --\n", msg.name);
@@ -106,23 +74,13 @@ void *background_worker(void *x){
       }
     }
   }
-  pthread_cancel(user_thread);
+  pthread_cancel(user_thread); // When no more messages to be read
 
   return NULL;
 }
 
 int main(int argc, char *argv[]){
   
-  /*log_printf("From bl_client: argv1 is %s and argv2 is %s \n", argv[1], argv[2]);
-
-  char *fifo_name = ".fifo";
-  char *name_server = argv[1];
-  strcat(name_server, fifo_name);
-  snprintf to concatenate and put into a new var %s
-  log_printf("Name of server from bl_client: %s\n", argv[1]);
-
-  char *name_client = argv[2];
-  strcat(name_client, fifo_name);*/
 
   char prompt[MAXNAME];
   snprintf(prompt, MAXNAME, "%s>> ",argv[2]); // create a prompt string

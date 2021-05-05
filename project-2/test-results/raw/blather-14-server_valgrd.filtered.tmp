@@ -1,0 +1,6 @@
+==1913427== Memcheck, a memory error detector
+==1913427== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1913427== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==1913427== Command: ./bl_server metropolis
+==1913427== Parent PID: 1913425
+==1913427== 

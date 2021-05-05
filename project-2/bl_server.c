@@ -22,7 +22,7 @@ void sig_handle(int signal){
 }
 
 int main(int argc, char *argv[]) {
-
+    // Signal handling for graceful shutdown of server 
     struct sigaction sig = {};
     sigemptyset(&sig.sa_mask);
     sig.sa_handler = sig_handle;
@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 
     server_start(&server, argv[1], DEFAULT_PERMS);
 
-    while(KEEP_GOING){
+    while(KEEP_GOING){ 
         server_check_sources(&server);
 
         if(server_join_ready(&server)){
@@ -42,11 +42,11 @@ int main(int argc, char *argv[]) {
         }
         for (int i = 0; i < server.n_clients; i++) {
             if(server_client_ready(&server, i)){
-                //log_printf("Server client %s at %d\n", server.client[i].name, i);
+
                 server_handle_client(&server, i);
             }
         }
     }
-    server_shutdown(&server);
+    server_shutdown(&server); // If signal is recieved
     return 0;
 }

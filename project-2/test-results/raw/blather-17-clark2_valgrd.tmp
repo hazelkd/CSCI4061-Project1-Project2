@@ -1,0 +1,15 @@
+==1914994== Memcheck, a memory error detector
+==1914994== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1914994== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==1914994== Command: ./bl_client metropolis Clark
+==1914994== Parent PID: 1914992
+==1914994== 
+==1914994== 
+==1914994== HEAP SUMMARY:
+==1914994==     in use at exit: 0 bytes in 0 blocks
+==1914994==   total heap usage: 7 allocs, 7 frees, 2,254 bytes allocated
+==1914994== 
+==1914994== All heap blocks were freed -- no leaks are possible
+==1914994== 
+==1914994== For lists of detected and suppressed errors, rerun with: -s
+==1914994== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
