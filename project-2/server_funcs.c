@@ -177,27 +177,27 @@ void server_check_sources(server_t *server){
     
     int ret = poll(pfds, (server->n_clients + 1), -1); 
     log_printf("poll() completed with return value %d\n", ret);
-    if (pfds[0].revents & POLLIN){
-        server->join_ready = 1;
-        log_printf("join_ready = %d\n", server->join_ready);
-        
-    }   
     if (ret == -1){
         log_printf("poll() interrupted by a signal\n");
     }
-    else {
-    for(int j = 1; j <= server->n_clients; j++){        // If one is ready then set the server and client flags
-        if (pfds[j].revents & POLLIN) {
-            server->client[j-1].data_ready = 1;   
+    else{
+        if (pfds[0].revents & POLLIN){
+            server->join_ready = 1;  
+        }   
+        log_printf("join_ready = %d\n", server->join_ready);
+    
+        for(int j = 0; j < server->n_clients; j++){        // If one is ready then set the server and client flags
+            if (pfds[j+1].revents & POLLIN) {
+                server->client[j].data_ready = 1; 
+                log_printf("client %d '%s' data_ready = %d\n", j, server->client[j].name,1);  
+            }
+            else{
+                //server->client[j].data_ready = 0;
+                log_printf("client %d '%s' data_ready = %d\n", j, server->client[j].name, 0);
+            }
+            
         }
-        else{
-            server->client[j].data_ready = 0;
-        }
-        
-        log_printf("client %d '%s' data_ready = %d\n", j-1, server->client[j-1].name, server->client[j-1].data_ready);
     }
-    }
-    log_printf("join_ready = %d\n", server->join_ready);
     log_printf("END: server_check_sources()\n");
 
 }

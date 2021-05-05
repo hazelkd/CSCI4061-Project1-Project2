@@ -1,0 +1,6 @@
+==1805001== Memcheck, a memory error detector
+==1805001== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1805001== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==1805001== Command: ./bl_server metropolis
+==1805001== Parent PID: 1804999
+==1805001== 

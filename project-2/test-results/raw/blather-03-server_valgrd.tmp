@@ -1,6 +1,15 @@
-==1770833== Memcheck, a memory error detector
-==1770833== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==1770833== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
-==1770833== Command: ./bl_server gotham
-==1770833== Parent PID: 1770831
-==1770833== 
+==1801517== Memcheck, a memory error detector
+==1801517== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1801517== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==1801517== Command: ./bl_server gotham
+==1801517== Parent PID: 1801515
+==1801517== 
+==1801517== 
+==1801517== HEAP SUMMARY:
+==1801517==     in use at exit: 0 bytes in 0 blocks
+==1801517==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
+==1801517== 
+==1801517== All heap blocks were freed -- no leaks are possible
+==1801517== 
+==1801517== For lists of detected and suppressed errors, rerun with: -s
+==1801517== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

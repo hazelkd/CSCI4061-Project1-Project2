@@ -31,7 +31,6 @@ LOG: BEGIN: server_check_sources()
 LOG: poll()'ing to check 2 input sources
 LOG: poll() completed with return value 1
 LOG: join_ready = 1
-LOG: join_ready = 1
 LOG: client 0 'Bruce' data_ready = 0
 LOG: END: server_check_sources()
 LOG: BEGIN: server_handle_join()
@@ -44,11 +43,10 @@ LOG: poll()'ing to check 3 input sources
 LOG: poll() completed with return value 1
 LOG: join_ready = 0
 LOG: client 0 'Bruce' data_ready = 1
-LOG: join_ready = 0
 LOG: client 1 'Clark' data_ready = 0
 LOG: END: server_check_sources()
 LOG: BEGIN: server_handle_client()
-LOG: client 0 'Clark' DEPARTED
+LOG: client 0 'Bruce' DEPARTED
 LOG: END: server_handle_client()
 LOG: BEGIN: server_check_sources()
 LOG: poll()'ing to check 2 input sources

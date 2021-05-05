@@ -3,6 +3,7 @@ LOG: END: server_start()
 LOG: BEGIN: server_check_sources()
 LOG: poll()'ing to check 1 input sources
 LOG: poll() completed with return value 1
+LOG: join_ready = 1
 LOG: END: server_check_sources()
 LOG: BEGIN: server_handle_join()
 LOG: join request for new client 'Bruce'

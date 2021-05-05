@@ -1,0 +1,6 @@
+==1806976== Memcheck, a memory error detector
+==1806976== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1806976== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==1806976== Command: ./bl_server metropolis
+==1806976== Parent PID: 1806974
+==1806976== 
