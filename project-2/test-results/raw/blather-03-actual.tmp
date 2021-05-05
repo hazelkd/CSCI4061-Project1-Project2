@@ -1,10 +1,1 @@
 >> START server ./bl_server gotham
->> START bruce ./bl_client gotham Bruce
->> SIGNAL server -15
->> CHECK_ALL cat
-<testy> CHECK_FAILURES for server
-<testy> CHECK_FAILURES for bruce
->> WAIT_ALL
-<testy> WAIT for server
-Non-zero return code 13
-<testy> WAIT for bruce

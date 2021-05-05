@@ -10,65 +10,6 @@ program: TESTY_MULTI
 * Summary Program Information
 
 | KEY      | COMMAND            | RET | STATE      | OUTPUT-FILE                       | VALGRIND                     | 
-| server   | ./bl_server gotham |  13 | ValgErr    | blather-01-server_output_file.tmp | blather-01-server_valgrd.tmp | 
+| server   | ./bl_server gotham |   0 | Done       | blather-01-server_output_file.tmp | blather-01-server_valgrd.tmp | 
 
-2 FAILURES FOUND
-
------------------------------------------------------------------------------------------------
-* FAILURE 1
-Valgrind found errors for program server (./bl_server gotham : return code 13[VALG_ERROR])\nValgrind output from 'test-results/raw/blather-01-server_valgrd.tmp'\n==1133328== Memcheck, a memory error detector
-==1133328== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==1133328== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
-==1133328== Command: ./bl_server gotham
-==1133328== Parent PID: 1133326
-==1133328== 
-==1133328== Conditional jump or move depends on uninitialised value(s)
-==1133328==    at 0x109E9C: server_check_sources (server_funcs.c:175)
-==1133328==    by 0x10950A: main (bl_server.c:38)
-==1133328==  Uninitialised value was created by a stack allocation
-==1133328==    at 0x109CF3: server_check_sources (server_funcs.c:159)
-==1133328== 
-==1133328== 
-==1133328== HEAP SUMMARY:
-==1133328==     in use at exit: 0 bytes in 0 blocks
-==1133328==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
-==1133328== 
-==1133328== All heap blocks were freed -- no leaks are possible
-==1133328== 
-==1133328== For lists of detected and suppressed errors, rerun with: -s
-==1133328== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
-
------------------------------------------------------------------------------------------------
-* FAILURE 2
-TEST OUTPUT MISMATCH: Side by Side Differences shown below 
-- Expect output in: test-results/raw/blather-01-expect.tmp
-- Acutal output in: test-results/raw/blather-01-actual.tmp
-- Differing lines have a character like '|' and '<' in the middle
-
-#+BEGIN_SRC diff
-==== EXPECT ====                             ==== ACTUAL ====                          
->> START server ./bl_server gotham           >> START server ./bl_server gotham
->> SIGNAL server -15                         >> SIGNAL server -15
->> WAIT server                               >> WAIT server
-                                           > Non-zero return code 13
->> CHECK_ALL cat                             >> CHECK_ALL cat
-<testy> CHECK_FAILURES for server            <testy> CHECK_FAILURES for server
->> OUTPUT_ALL cat                            >> OUTPUT_ALL cat
-
-<testy> OUTPUT for server                    <testy> OUTPUT for server
-LOG: BEGIN: server_start()                   LOG: BEGIN: server_start()
-LOG: END: server_start()                     LOG: END: server_start()
-LOG: BEGIN: server_check_sources()           LOG: BEGIN: server_check_sources()
-LOG: poll()'ing to check 1 input sources     LOG: poll()'ing to check 1 input sources
-LOG: poll() completed with return value -1   LOG: poll() completed with return value -1
-LOG: poll() interrupted by a signal          LOG: poll() interrupted by a signal
-LOG: END: server_check_sources()             LOG: END: server_check_sources()
-LOG: BEGIN: server_shutdown()                LOG: BEGIN: server_shutdown()
-LOG: END: server_shutdown()                  LOG: END: server_shutdown()
-                                           )
-#+END_SRC
-
---- Line Differences ---
-ACTUAL:   4) Non-zero return code 13
-
-
+ALL OK

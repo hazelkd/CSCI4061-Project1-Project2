@@ -8,7 +8,6 @@ TEST OUTPUT MISMATCH: Side by Side Differences shown below
 >> START server ./bl_server gotham           >> START server ./bl_server gotham
 >> SIGNAL server -15                         >> SIGNAL server -15
 >> WAIT server                               >> WAIT server
-                                           > Non-zero return code 13
 >> CHECK_ALL cat                             >> CHECK_ALL cat
 <testy> CHECK_FAILURES for server            <testy> CHECK_FAILURES for server
 >> OUTPUT_ALL cat                            >> OUTPUT_ALL cat
@@ -27,4 +26,3 @@ LOG: END: server_shutdown()                  LOG: END: server_shutdown()
 #+END_SRC
 
 --- Line Differences ---
-ACTUAL:   4) Non-zero return code 13

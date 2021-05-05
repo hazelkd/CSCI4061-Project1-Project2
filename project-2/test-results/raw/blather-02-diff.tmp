@@ -9,7 +9,7 @@ TEST OUTPUT MISMATCH: Side by Side Differences shown below
 >> START bruce ./bl_client gotham Bruce                                               >> START bruce ./bl_client gotham Bruce
 >> INPUT bruce <EOF>                                                                  >> INPUT bruce <EOF>
 >> SIGNAL server -15                                                                  >> SIGNAL server -15
-                                                                                    > Program 'server' is not alive: ./testy: line 284: kill: (1130274) - No such process
+                                                                                    > Program 'server' is not alive: ./testy: line 284: kill: (1210253) - No such process
                                                                                     > Return Code 139: KILLED by OS likely a SEGFAULT occured
                                                                                     > Can't send SIGNAL to dead program 'server' (./bl_server gotham)
 >> WAIT_ALL                                                                           >> WAIT_ALL
@@ -59,7 +59,7 @@ Bruce>>                                                                         
 #+END_SRC
 
 --- Line Differences ---
-ACTUAL:   5) Program 'server' is not alive: ./testy: line 284: kill: (1130274) - No such process
+ACTUAL:   5) Program 'server' is not alive: ./testy: line 284: kill: (1210253) - No such process
 ACTUAL:   6) Return Code 139: KILLED by OS likely a SEGFAULT occured
 ACTUAL:   7) Can't send SIGNAL to dead program 'server' (./bl_server gotham)
 ACTUAL:  10) Return Code 139: KILLED by OS likely a SEGFAULT occured

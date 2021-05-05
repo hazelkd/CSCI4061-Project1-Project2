@@ -159,13 +159,13 @@ void server_check_sources(server_t *server){
     struct pollfd pfds[server->n_clients+1];                               // array of structures for poll, 1 per fd to be monitored
 
     pfds[0].fd     = server->join_fd;                                      // populate first entry with server join fd
-    pfds[0].events = POLLIN; 
+    pfds[0].events = POLLIN;
+    pfds[0].revents = -1;
     //log_printf("Events of pfds at 0 is %d\n", pfds[0].events);
     if (server->n_clients > 0) {
         for(int i = 1; i <= server->n_clients; i++){
             pfds[i].fd     = server->client[i-1].to_server_fd;                                      // populate other entries with fds
-            pfds[i].events = POLLIN; 
-            
+            pfds[i].events = POLLIN;        
         }
     }
     log_printf("poll()'ing to check %d input sources\n", 1 + server->n_clients);
