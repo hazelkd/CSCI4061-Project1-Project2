@@ -35,6 +35,7 @@ LOG: BEGIN: server_shutdown()
 LOG: END: server_shutdown()
 
 <testy> OUTPUT for bruce
+-- Bruce JOINED --
 Bruce>> 
 
 

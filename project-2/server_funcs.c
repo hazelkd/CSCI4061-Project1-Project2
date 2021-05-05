@@ -141,8 +141,7 @@ void server_broadcast(server_t *server, mesg_t *mesg){
     // Loop through server->client
     int num_loops = server->n_clients;
     for(int i=0; i < num_loops; i++){ 
-        write(server->client[i].to_client_fd, mesg, strlen(mesg->body)); 
-        write(server->client[i].to_server_fd, mesg, strlen(mesg->body));  
+        write(server->client[i].to_client_fd, mesg, sizeof(mesg_t)); 
     } 
 }
 // Send the given message to all clients connected to the server by

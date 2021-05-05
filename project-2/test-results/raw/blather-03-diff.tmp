@@ -42,7 +42,7 @@ LOG: BEGIN: server_shutdown()                                                 LO
 LOG: END: server_shutdown()                                                   LOG: END: server_shutdown()
 
 <testy> OUTPUT for bruce                                                      <testy> OUTPUT for bruce
--- Bruce JOINED --                                                          <
+-- Bruce JOINED --                                                            -- Bruce JOINED --
 !!! server is shutting down !!!                                             <
 Bruce>>                                                                       Bruce>> 
                                                                             )
@@ -54,5 +54,4 @@ ACTUAL:   9) Non-zero return code 13
 ACTUAL:  11) Return Code 137: TIMEOUT, program killed, not complete within 20s sec limit
 ACTUAL:  31) LOG: join_ready = 0
 ACTUAL:  32) LOG: client 0 'Bruce' data_ready = 0
-EXPECT:  34) -- Bruce JOINED --
 EXPECT:  35) !!! server is shutting down !!!

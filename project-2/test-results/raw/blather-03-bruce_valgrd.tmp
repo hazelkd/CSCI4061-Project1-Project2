@@ -1,6 +1,6 @@
-==1333521== Memcheck, a memory error detector
-==1333521== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==1333521== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
-==1333521== Command: ./bl_client gotham Bruce
-==1333521== Parent PID: 1333518
-==1333521== 
+==1696002== Memcheck, a memory error detector
+==1696002== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1696002== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==1696002== Command: ./bl_client gotham Bruce
+==1696002== Parent PID: 1696000
+==1696002== 

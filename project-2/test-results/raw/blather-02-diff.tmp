@@ -48,14 +48,11 @@ LOG: BEGIN: server_shutdown()                LOG: BEGIN: server_shutdown()
 LOG: END: server_shutdown()                  LOG: END: server_shutdown()
 
 <testy> OUTPUT for bruce                     <testy> OUTPUT for bruce
--- Bruce JOINED --                         | End of input, Departing
-End of Input, Departing                    <
+-- Bruce JOINED --                           -- Bruce JOINED --
+End of Input, Departing                      End of Input, Departing
 Bruce>>                                      Bruce>> 
                                            )
                                            )
 #+END_SRC
 
 --- Line Differences ---
-EXPECT:  44) -- Bruce JOINED --
-EXPECT:  45) End of Input, Departing
-ACTUAL:  44) End of input, Departing

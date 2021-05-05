@@ -43,25 +43,7 @@ LOG: join_ready = 0
 LOG: client 0 'Bruce' data_ready = 1
 LOG: END: server_check_sources()
 LOG: BEGIN: server_handle_client()
-LOG: client 0 'Bruce' MESSAGE ''
-LOG: END: server_handle_client()
-LOG: BEGIN: server_check_sources()
-LOG: poll()'ing to check 2 input sources
-LOG: poll() completed with return value 1
-LOG: join_ready = 0
-LOG: client 0 'Bruce' data_ready = 1
-LOG: END: server_check_sources()
-LOG: BEGIN: server_handle_client()
 LOG: client 0 'Bruce' MESSAGE 'Is anyone there? Anyone at all?'
-LOG: END: server_handle_client()
-LOG: BEGIN: server_check_sources()
-LOG: poll()'ing to check 2 input sources
-LOG: poll() completed with return value 1
-LOG: join_ready = 0
-LOG: client 0 'Bruce' data_ready = 1
-LOG: END: server_check_sources()
-LOG: BEGIN: server_handle_client()
-LOG: client 0 'Bruce' MESSAGE ''
 LOG: END: server_handle_client()
 LOG: BEGIN: server_check_sources()
 LOG: poll()'ing to check 2 input sources
@@ -74,15 +56,6 @@ LOG: client 0 'Bruce' MESSAGE 'Alfreeeed!'
 LOG: END: server_handle_client()
 LOG: BEGIN: server_check_sources()
 LOG: poll()'ing to check 2 input sources
-LOG: poll() completed with return value 1
-LOG: join_ready = 0
-LOG: client 0 'Bruce' data_ready = 1
-LOG: END: server_check_sources()
-LOG: BEGIN: server_handle_client()
-LOG: client 0 'Bruce' MESSAGE ''
-LOG: END: server_handle_client()
-LOG: BEGIN: server_check_sources()
-LOG: poll()'ing to check 2 input sources
 LOG: poll() completed with return value -1
 LOG: poll() interrupted by a signal
 LOG: join_ready = 0
@@ -92,18 +65,20 @@ LOG: BEGIN: server_shutdown()
 LOG: END: server_shutdown()
 
 <testy> OUTPUT for bruce
+Bruce>> Message body:  Message name: Bruce
+-- Bruce JOINED --
 Bruce You entered: This is a test
-Bruce>> LOG: Message body:  Message name: Bruce
-[Bruce]
-Bruce>> LOG: Message name: Bruce Message Body: 
+Bruce>> LOG: Message body: This is a test Message name: Bruce
+[Bruce]This is a test
+Bruce>> LOG: Message name: Bruce Message Body: This is a test
 Bruce You entered: Is anyone there? Anyone at all?
-Bruce>> LOG: Message body:  Message name: Bruce
-[Bruce]
-Bruce>> LOG: Message name: Bruce Message Body: 
+Bruce>> LOG: Message body: Is anyone there? Anyone at all? Message name: Bruce
+[Bruce]Is anyone there? Anyone at all?
+Bruce>> LOG: Message name: Bruce Message Body: Is anyone there? Anyone at all?
 Bruce You entered: Alfreeeed!
-Bruce>> LOG: Message body:  Message name: Bruce
-[Bruce]
-Bruce>> LOG: Message name: Bruce Message Body: 
+Bruce>> LOG: Message body: Alfreeeed! Message name: Bruce
+[Bruce]Alfreeeed!
+Bruce>> LOG: Message name: Bruce Message Body: Alfreeeed!
 
 
 

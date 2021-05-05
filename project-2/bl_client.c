@@ -62,14 +62,14 @@ void *user_worker(void *x){
         write(client->to_server_fd, &newMes, sizeof(mesg_t));  
       }
     }
-  iprintf(simpio,"End of input, Departing\n");
-
+  iprintf(simpio,"End of Input, Departing\n");
+  pthread_cancel(background_thread); 
   mesg_t newMes2 = {};
   newMes2.kind = BL_DEPARTED;
   strncpy(newMes2.name, client->name, strlen(client->name)); //client shouldnt be apointer
   write(client->to_server_fd, &newMes2, sizeof(mesg_t)); 
 
-  pthread_cancel(background_thread); 
+  
 
   return NULL;
 }
@@ -82,7 +82,7 @@ void *background_worker(void *x){
     mesg_t msg = {};
 
     nread = read(client->to_client_fd, &msg, sizeof(mesg_t));     
-    log_printf("Message body: %s Message name: %s\n", msg.body, msg.name);
+    //log_printf("Message body: %s Message name: %s\n", msg.body, msg.name);
     if(nread == -1){
       status = 0;
       break;
@@ -95,7 +95,7 @@ void *background_worker(void *x){
       }
       else if(msg.kind == BL_MESG){
         iprintf(simpio, "[%s]%s\n", msg.name, msg.body);
-        log_printf("Message name: %s Message Body: %s\n", msg.name, msg.body);
+        //log_printf("Message name: %s Message Body: %s\n", msg.name, msg.body);
       }
       else if(msg.kind == BL_DEPARTED){
         iprintf(simpio, "-- %s DEPARTED --\n", msg.name);
