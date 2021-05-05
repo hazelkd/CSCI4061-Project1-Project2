@@ -1,16 +1,9 @@
-LOG: [2KBruce>> Message body:  Message name: Bruce
 [2K-- Bruce JOINED --
-Bruce>> This is a test[2KBruce You entered: This is a test
-Bruce>> This is a test[2KBruce>> LOG: Message body: This is a test Message name: Bruce
-[2K[Bruce]This is a test
-Bruce>> LOG: Message name: Bruce Message Body: This is a test
-Is anyone there? Anyone at all?[2KBruce You entered: Is anyone there? Anyone at all?
-Bruce>> Is anyone there? Anyone at all?[2KBruce>> LOG: Message body: Is anyone there? Anyone at all? Message name: Bruce
-[2K[Bruce]Is anyone there? Anyone at all?
-Bruce>> LOG: Message name: Bruce Message Body: Is anyone there? Anyone at all?
-Alfreeeed![2KBruce You entered: Alfreeeed!
-Bruce>> Alfreeeed![2KBruce>> LOG: Message body: Alfreeeed! Message name: Bruce
-[2K[Bruce]Alfreeeed!
-Bruce>> LOG: Message name: Bruce Message Body: Alfreeeed!
-[2KEnd of input, Departing
+Bruce>> [2KBruce>> This is a test[2KBruce You entered: This is a test
+Bruce>> This is a test[2KBruce>> [2K[Bruce]This is a test
+Bruce>> Is anyone there? Anyone at all?[2KBruce You entered: Is anyone there? Anyone at all?
+Bruce>> Is anyone there? Anyone at all?[2KBruce>> [2K[Bruce]Is anyone there? Anyone at all?
+Bruce>> Alfreeeed![2KBruce You entered: Alfreeeed!
+Bruce>> Alfreeeed![2KBruce>> [2K[Bruce]Alfreeeed!
+Bruce>> [2KEnd of Input, Departing
 Bruce>> 

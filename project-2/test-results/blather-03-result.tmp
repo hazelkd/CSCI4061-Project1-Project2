@@ -12,7 +12,7 @@ program: TESTY_MULTI
 * Summary Program Information
 
 | KEY      | COMMAND                  | RET | STATE      | OUTPUT-FILE                       | VALGRIND                     | 
-| server   | ./bl_server gotham       |  13 | Done       | blather-03-server_output_file.tmp | blather-03-server_valgrd.tmp | 
+| server   | ./bl_server gotham       |   0 | Done       | blather-03-server_output_file.tmp | blather-03-server_valgrd.tmp | 
 | bruce    | ./bl_client gotham Bruce | 137 | Done       | blather-03-bruce_output_file.tmp  | blather-03-bruce_valgrd.tmp  | 
 
 1 FAILURES FOUND
@@ -34,7 +34,6 @@ TEST OUTPUT MISMATCH: Side by Side Differences shown below
 <testy> CHECK_FAILURES for bruce                                              <testy> CHECK_FAILURES for bruce
 >> WAIT_ALL                                                                   >> WAIT_ALL
 <testy> WAIT for server                                                       <testy> WAIT for server
-                                                                            > Non-zero return code 13
 <testy> WAIT for bruce                                                        <testy> WAIT for bruce
                                                                             > Return Code 137: TIMEOUT, program killed, not complete within 20s sec limit
 >> OUTPUT_ALL ./test_filter_client_output                                     >> OUTPUT_ALL ./test_filter_client_output
@@ -56,8 +55,6 @@ LOG: BEGIN: server_check_sources()                                            LO
 LOG: poll()'ing to check 2 input sources                                      LOG: poll()'ing to check 2 input sources
 LOG: poll() completed with return value -1                                    LOG: poll() completed with return value -1
 LOG: poll() interrupted by a signal                                           LOG: poll() interrupted by a signal
-                                                                            > LOG: join_ready = 0
-                                                                            > LOG: client 0 'Bruce' data_ready = 0
 LOG: END: server_check_sources()                                              LOG: END: server_check_sources()
 LOG: BEGIN: server_shutdown()                                                 LOG: BEGIN: server_shutdown()
 LOG: END: server_shutdown()                                                   LOG: END: server_shutdown()
@@ -71,10 +68,7 @@ Bruce>>                                                                       Br
 #+END_SRC
 
 --- Line Differences ---
-ACTUAL:   9) Non-zero return code 13
-ACTUAL:  11) Return Code 137: TIMEOUT, program killed, not complete within 20s sec limit
-ACTUAL:  31) LOG: join_ready = 0
-ACTUAL:  32) LOG: client 0 'Bruce' data_ready = 0
+ACTUAL:  10) Return Code 137: TIMEOUT, program killed, not complete within 20s sec limit
 EXPECT:  35) !!! server is shutting down !!!
 
 

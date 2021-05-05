@@ -60,8 +60,11 @@ void server_shutdown(server_t *server){
         write(server->client[i].to_client_fd, &msg, strlen(msg.body));
         server_remove_client(server, i);
     }
+   
+    //strncpy(msg.name, newRequest.name, strlen(newRequest.name));
+    server_broadcast(server, &msg);
     log_printf("END: server_shutdown()\n");             // at end of function
-
+    
 }
 
 // Shut down the server. Close the join FIFO and unlink (remove) it so
@@ -165,7 +168,8 @@ void server_check_sources(server_t *server){
     if (server->n_clients > 0) {
         for(int i = 1; i <= server->n_clients; i++){
             pfds[i].fd     = server->client[i-1].to_server_fd;                                      // populate other entries with fds
-            pfds[i].events = POLLIN;        
+            pfds[i].events = POLLIN;
+            pfds[i].revents = -1;        
         }
     }
     log_printf("poll()'ing to check %d input sources\n", 1 + server->n_clients);
@@ -180,6 +184,7 @@ void server_check_sources(server_t *server){
     if (ret == -1){
         log_printf("poll() interrupted by a signal\n");
     }
+    else {
     for(int j = 1; j <= server->n_clients; j++){        // If one is ready then set the server and client flags
         if (pfds[j].revents & POLLIN) {
             server->client[j-1].data_ready = 1;   
@@ -190,7 +195,7 @@ void server_check_sources(server_t *server){
         log_printf("join_ready = %d\n", server->join_ready);
         log_printf("client %d '%s' data_ready = %d\n", j-1, server->client[j-1].name, server->client[j-1].data_ready);
     }
-    
+    }
     log_printf("END: server_check_sources()\n");
 
 }
