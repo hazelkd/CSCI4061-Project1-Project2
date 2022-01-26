@@ -3,6 +3,9 @@ CSCI 4061: Intro to Operating Systems. Semester was made up of two main projects
 
 The course was made up of two portions, part 1 being in the first part of the semester, and part 2 following.
 
+The two parts had separate ideas, but had concepts that built off each other.
+Part 1 had the main idea of creating a command line shell, while part 2 was focused on creating a chat room.
+
 Part 1:
 The main goal of this project is to write a simple, quasi-command line shell called commando. It is not as functional
 as a standard shell, but has properties that distinguish it separately, like the ability to recall old output.
